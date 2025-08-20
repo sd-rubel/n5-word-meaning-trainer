@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Japanese Vocabulary Carousel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans&family=Noto+Sans+Bengali&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,700;1,400&family=Noto+Sans+Bengali:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
@@ -12,7 +12,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #f0f4f8;
+            background: linear-gradient(135deg, #e0e7ff, #a3bffa);
             font-family: 'Noto Sans', sans-serif;
             overflow: hidden;
         }
@@ -20,118 +20,140 @@
         .carousel-container {
             position: relative;
             width: 100%;
-            max-width: 1000px;
-            height: 400px;
+            max-width: 1200px;
+            height: 450px;
             display: flex;
             align-items: center;
-            perspective: 1000px;
+            perspective: 1200px;
         }
 
         .card {
             position: absolute;
-            width: 300px;
-            height: 350px;
+            width: 320px;
+            height: 380px;
             background-color: #ffffff;
-            border-radius: 15px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            padding: 25px;
             text-align: center;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            transition: all 0.8s ease-in-out;
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             transform: translateX(0) scale(1);
             z-index: 2;
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .card.left {
-            transform: translateX(-400px) scale(0.7);
-            opacity: 0.7;
+            transform: translateX(-450px) scale(0.75) rotateY(15deg);
+            opacity: 0.8;
             z-index: 1;
         }
 
         .card.right {
-            transform: translateX(400px) scale(0.7);
-            opacity: 0.7;
+            transform: translateX(450px) scale(0.75) rotateY(-15deg);
+            opacity: 0.8;
             z-index: 1;
         }
 
         .card.center {
-            transform: translateX(0) scale(1);
+            transform: translateX(0) scale(1) rotateY(0deg);
             opacity: 1;
             z-index: 3;
         }
 
         .jp-word {
-            font-size: 2.2em;
-            color: #2c3e50;
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #1a237e;
             margin: 0;
             font-family: 'Noto Sans', sans-serif;
         }
 
         .pronunciation {
-            font-size: 1.1em;
-            color: #7f8c8d;
-            margin: 10px 0;
+            font-size: 1.2em;
+            font-style: italic;
+            color: #546e7a;
+            margin: 12px 0;
         }
 
         .bengali-meaning {
-            font-size: 1.4em;
-            color: #e74c3c;
-            margin: 10px 0;
+            font-size: 1.6em;
+            font-weight: 700;
+            color: #d81b60;
+            margin: 12px 0;
             font-family: 'Noto Sans Bengali', sans-serif;
         }
 
         .comment {
-            font-size: 0.9em;
-            color: #34495e;
+            font-size: 0.95em;
+            color: #263238;
             margin-top: 15px;
-            line-height: 1.5;
+            line-height: 1.6;
             font-family: 'Noto Sans Bengali', sans-serif;
         }
 
         .error {
-            font-size: 1.2em;
-            color: #e74c3c;
+            font-size: 1.3em;
+            color: #d81b60;
             text-align: center;
+            font-family: 'Noto Sans Bengali', sans-serif;
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1000px) {
             .card {
-                width: 250px;
-                height: 300px;
+                width: 280px;
+                height: 340px;
             }
 
             .card.left {
-                transform: translateX(-300px) scale(0.6);
+                transform: translateX(-350px) scale(0.65) rotateY(15deg);
             }
 
             .card.right {
-                transform: translateX(300px) scale(0.6);
+                transform: translateX(350px) scale(0.65) rotateY(-15deg);
             }
 
             .jp-word {
-                font-size: 1.8em;
+                font-size: 2.2em;
             }
 
             .bengali-meaning {
-                font-size: 1.2em;
+                font-size: 1.4em;
             }
 
             .comment {
-                font-size: 0.8em;
+                font-size: 0.85em;
             }
         }
 
         @media (max-width: 600px) {
+            .carousel-container {
+                height: 350px;
+            }
+
             .card {
                 width: 90%;
-                height: 280px;
+                height: 300px;
+                padding: 20px;
             }
 
             .card.left, .card.right {
                 transform: translateX(0) scale(0);
                 opacity: 0;
+            }
+
+            .jp-word {
+                font-size: 2em;
+            }
+
+            .bengali-meaning {
+                font-size: 1.3em;
+            }
+
+            .comment {
+                font-size: 0.8em;
             }
         }
     </style>
@@ -144,16 +166,19 @@
         const container = document.querySelector('.carousel-container');
         let vocabData = [];
         let currentIndex = 0;
+        let intervalId = null;
 
         // Fetch JSON data
         async function fetchVocabData() {
             try {
-                const response = await fetch(jsonUrl);
+                const response = await fetch(jsonUrl, { cache: 'no-store' });
                 if (!response.ok) throw new Error('Failed to load JSON data');
                 vocabData = await response.json();
+                if (vocabData.length === 0) throw new Error('No vocabulary data found');
                 initializeCarousel();
             } catch (error) {
-                container.innerHTML = `<p class="error">Error loading vocabulary data: ${error.message}</p>`;
+                container.innerHTML = `<p class="error">ত্রুটি: শব্দভাণ্ডার লোড করতে ব্যর্থ হয়েছে: ${error.message}</p>`;
+                console.error('Error fetching data:', error);
             }
         }
 
@@ -175,6 +200,12 @@
         function initializeCarousel() {
             if (vocabData.length === 0) return;
             container.innerHTML = '';
+            updateCards();
+        }
+
+        // Update cards for the carousel
+        function updateCards() {
+            container.innerHTML = ''; // Clear existing cards
             const prevIndex = (currentIndex - 1 + vocabData.length) % vocabData.length;
             const nextIndex = (currentIndex + 1) % vocabData.length;
 
@@ -189,33 +220,22 @@
             container.appendChild(leftCard);
             container.appendChild(centerCard);
             container.appendChild(rightCard);
-
-            // Start cycling
-            setInterval(updateCarousel, 5000);
         }
 
-        // Update the carousel
-        function updateCarousel() {
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => card.classList.remove('left', 'center', 'right'));
-
-            // Move current center to left
-            cards[1].classList.add('left');
-            // Move right to center
-            cards[2].classList.add('center');
-            // Remove left card
-            cards[0].remove();
-
-            // Add new right card
+        // Cycle to the next card
+        function cycleCarousel() {
             currentIndex = (currentIndex + 1) % vocabData.length;
-            const nextIndex = (currentIndex + 1) % vocabData.length;
-            const newRightCard = createCard(nextIndex);
-            newRightCard.classList.add('right');
-            container.appendChild(newRightCard);
+            updateCards();
         }
 
-        // Start fetching data
-        fetchVocabData();
+        // Start the carousel
+        function startCarousel() {
+            if (intervalId) clearInterval(intervalId); // Clear any existing interval
+            intervalId = setInterval(cycleCarousel, 5000);
+        }
+
+        // Fetch data and start the carousel
+        fetchVocabData().then(() => startCarousel());
     </script>
 </body>
 </html>
