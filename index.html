@@ -1,1 +1,395 @@
-hello world
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japanese Vocabulary Flashcards</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans&family=Noto+Sans+Bengali&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f4f8;
+            font-family: 'Noto Sans', sans-serif;
+        }
+
+        .card {
+            width: 350px;
+            height: 400px;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .card.fade {
+            opacity: 0;
+        }
+
+        .jp-word {
+            font-size: 2.5em;
+            color: #2c3e50;
+            margin: 0;
+            font-family: 'Noto Sans', sans-serif;
+        }
+
+        .pronunciation {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            margin: 10px 0;
+        }
+
+        .bengali-meaning {
+            font-size: 1.5em;
+            color: #e74c3c;
+            margin: 10px 0;
+            font-family: 'Noto Sans Bengali', sans-serif;
+        }
+
+        .comment {
+            font-size: 1em;
+            color: #34495e;
+            margin-top: 15px;
+            line-height: 1.5;
+            font-family: 'Noto Sans Bengali', sans-serif;
+        }
+
+        @media (max-width: 400px) {
+            .card {
+                width: 90%;
+                height: 350px;
+                padding: 15px;
+            }
+
+            .jp-word {
+                font-size: 2em;
+            }
+
+            .bengali-meaning {
+                font-size: 1.3em;
+            }
+
+            .comment {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1 class="jp-word"></h1>
+        <p class="pronunciation"></p>
+        <p class="bengali-meaning"></p>
+        <p class="comment"></p>
+    </div>
+
+    <script>
+        const vocabData = [
+            {
+                "jp": "わたし",
+                "prnc": "Watashi",
+                "bn": "আমি",
+                "cmt": "এটি একটি সর্বনাম (Pronoun)। জাপানি ভাষায় নিজের পরিচয় দেওয়ার জন্য এটি একটি বহুল ব্যবহৃত শব্দ।"
+            },
+            {
+                "jp": "あなた",
+                "prnc": "Anata",
+                "bn": "আপনি/তুমি",
+                "cmt": "এটি একটি সর্বনাম (Pronoun)। কাউকে সম্বোধন করার জন্য ব্যবহৃত হয়। এটি 'আপনি' অর্থে সম্মানজনক, তবে ঘনিষ্ঠদের জন্য 'তুমি' অর্থেও ব্যবহৃত হয়।"
+            },
+            {
+                "jp": "あのひと",
+                "prnc": "anohito",
+                "bn": "ঐ ব্যক্তি",
+                "cmt": "এটি একটি যৌগিক শব্দ (Compound Word), যা 'あの (ano)' অর্থাৎ 'ঐ' এবং 'ひと (hito)' অর্থাৎ 'মানুষ' বা 'ব্যক্তি' দিয়ে গঠিত। এটি একটি সর্বনাম (Pronoun)।"
+            },
+            {
+                "jp": "〜さん",
+                "prnc": "san",
+                "bn": "মিস্টার/মিস/মিসেস",
+                "cmt": "এটি কোনো ব্যক্তির নামের পরে ব্যবহৃত একটি সম্মানসূচক প্রত্যয় (Suffix)। এটি নারী-পুরুষ নির্বিশেষে সবার জন্য ব্যবহৃত হয়।"
+            },
+            {
+                "jp": "〜ちゃん",
+                "prnc": "chan",
+                "bn": "ছোট বাচ্চাদের নাম্বারে অথবা ঘনিষ্ঠদের নাম্বারে ব্যবহৃত হয়",
+                "cmt": "এটি একটি স্নেহসূচক প্রত্যয় (Suffix), যা সাধারণত ছোট বাচ্চা, ঘনিষ্ঠ নারী বা পোষা প্রাণীর নামের পরে ব্যবহৃত হয়।"
+            },
+            {
+                "jp": "〜くん",
+                "prnc": "kun",
+                "bn": "ছোট ছেলেদের নাম্বারে ব্যবহৃত হয়",
+                "cmt": "এটি একটি বন্ধুত্বপূর্ণ প্রত্যয় (Suffix), যা সাধারণত ছোট ছেলে বা সহকর্মীদের নামের পরে ব্যবহৃত হয়।"
+            },
+            {
+                "jp": "〜じん",
+                "prnc": "jin",
+                "bn": "জাতি (জাতীয়তা)",
+                "cmt": "এটি একটি বিশেষ্য (Noun) এবং প্রত্যয় (Suffix), যা দেশের নামের সাথে যুক্ত হয়ে ওই দেশের নাগরিক বোঝায়, যেমন: 'にほんじん' (Nihon-jin) - জাপানি জাতি।"
+            },
+            {
+                "jp": "せんせい",
+                "prnc": "Sensei",
+                "bn": "শিক্ষক",
+                "cmt": "এটি একটি বিশেষ্য (Noun)। শিক্ষককে সম্মান জানাতে এই শব্দটি ব্যবহৃত হয়। অনুরূপ শব্দ: 'きょうし (kyoushi)' - শিক্ষক (পেশা)।"
+            },
+            {
+                "jp": "きょうし",
+                "prnc": "kyoushi",
+                "bn": "শিক্ষক (পেশা)",
+                "cmt": "এটি একটি বিশেষ্য (Noun) যা শিক্ষক পেশাকে নির্দেশ করে। এটি 'せんせい' থেকে কিছুটা ভিন্ন, কারণ 'きょうし' পেশা আর 'せんせい' সম্মানসূচক।"
+            },
+            {
+                "jp": "がくせい",
+                "prnc": "gakusei",
+                "bn": "ছাত্র",
+                "cmt": "এটি একটি যৌগিক শব্দ, যা 'がく (gaku)' (শিক্ষা) এবং 'せい (sei)' (ছাত্র) দিয়ে গঠিত। এটি একটি বিশেষ্য (Noun)। অনুরূপ শব্দ: 'だいがく (daigaku)' - বিশ্ববিদ্যালয়।"
+            },
+            {
+                "jp": "かいしゃいん",
+                "prnc": "Kaishain",
+                "bn": "কোম্পানির কর্মী",
+                "cmt": "এটি একটি যৌগিক শব্দ, যা 'かいしゃ (kaisha)' (কোম্পানি) এবং 'いん (in)' (কর্মী/সদস্য) দিয়ে গঠিত। এটি একটি বিশেষ্য (Noun)।"
+            },
+            {
+                "jp": "〜しゃいん",
+                "prnc": "shain",
+                "bn": "কোনো কোম্পানির কর্মীকে বোঝাতে",
+                "cmt": "এটি একটি প্রত্যয় (Suffix) এবং বিশেষ্য (Noun), যা কোম্পানির নামের পরে বসে ওই কোম্পানির কর্মী বোঝায়।"
+            },
+            {
+                "jp": "ぎんこういん",
+                "prnc": "Ginkouin",
+                "bn": "ব্যাংকের কর্মী",
+                "cmt": "এটি একটি যৌগিক শব্দ, যা 'ぎんこう (ginkou)' (ব্যাংক) এবং 'いん (in)' (কর্মী/সদস্য) দিয়ে গঠিত। এটি একটি বিশেষ্য (Noun)।"
+            },
+            {
+                "jp": "いしゃ",
+                "prnc": "isha",
+                "bn": "ডাক্তার",
+                "cmt": "এটি একটি বিশেষ্য (Noun)। চিকিৎসা পেশার মানুষকে বোঝাতে এই শব্দটি ব্যবহৃত হয়।"
+            },
+            {
+                "jp": "けんきゅうしゃ",
+                "prnc": "kenkyuusha",
+                "bn": "গবেষক",
+                "cmt": "এটি একটি যৌগিক শব্দ, যা 'けんきゅう (kenkyuu)' (গবেষণা) এবং 'しゃ (sha)' (ব্যক্তি) দিয়ে গঠিত। এটি একটি বিশেষ্য (Noun)।"
+            },
+            {
+                "jp": "だいがく",
+                "prnc": "daigaku",
+                "bn": "বিশ্ববিদ্যালয়",
+                "cmt": "এটি একটি যৌগিক শব্দ, যা 'だい (dai)' (বড়) এবং 'がく (gaku)' (শিক্ষা) দিয়ে গঠিত। এটি একটি বিশেষ্য (Noun)।"
+            },
+            {
+                "jp": "びょういん",
+                "prnc": "byouin",
+                "bn": "হাসপাতাল",
+                "cmt": "এটি একটি যৌগিক শব্দ, যা 'びょう (byou)' (রোগ) এবং 'いん (in)' (প্রতিষ্ঠান) দিয়ে গঠিত। এটি একটি বিশেষ্য (Noun)।"
+            },
+            {
+                "jp": "でんき",
+                "prnc": "denki",
+                "bn": "বিদ্যুৎ/বাতি",
+                "cmt": "এটি একটি যৌগিক শব্দ, যা 'でん (den)' (বিদ্যুৎ) এবং 'き (ki)' (শক্তি) দিয়ে গঠিত। এটি একটি বিশেষ্য (Noun)।"
+            },
+            {
+                "jp": "だれ",
+                "prnc": "dare",
+                "bn": "কে",
+                "cmt": "এটি একটি সর্বনাম (Pronoun) এবং প্রশ্নবাচক শব্দ। এর সম্মানসূচক রূপ হলো 'どなた (donata)'। N5 সিলেবাসের অনুরূপ শব্দ: 'どれ (dore)' যার অর্থ 'কোনটি'।"
+            },
+            {
+                "jp": "どなた",
+                "prnc": "donate",
+                "bn": "কে (সম্মান সূচক)",
+                "cmt": "এটি একটি সর্বনাম (Pronoun) এবং 'だれ (dare)' এর সম্মানসূচক রূপ।"
+            },
+            {
+                "jp": "〜さい",
+                "prnc": "sai",
+                "bn": "বয়স",
+                "cmt": "এটি বয়স গণনার জন্য ব্যবহৃত একটি প্রত্যয় (Suffix) এবং বিশেষ্য (Noun)।"
+            },
+            {
+                "jp": "なんさい",
+                "prnc": "Nansai",
+                "bn": "কত বয়স",
+                "cmt": "এটি একটি যৌগিক প্রশ্নবাচক শব্দ, যা 'なん (nan)' (কত) এবং 'さい (sai)' (বয়স) দিয়ে গঠিত। এটি 'কোন বয়স' বোঝানোর জন্য ব্যবহৃত হয়। এর সম্মানসূচক রূপ হলো 'おいくつ (oikutsu)'।"
+            },
+            {
+                "jp": "おいくつ",
+                "prnc": "Oikutsu",
+                "bn": "কত বয়স (সম্মান সূচক)",
+                "cmt": "এটি একটি সর্বনাম (Pronoun) এবং 'なんさい (nansai)' এর সম্মানসূচক রূপ।"
+            },
+            {
+                "jp": "はい",
+                "prnc": "hai",
+                "bn": "হ্যাঁ",
+                "cmt": "এটি একটি অব্যয় (Interjection) যা ইতিবাচক বা সম্মতিসূচক উত্তর দিতে ব্যবহৃত হয়।"
+            },
+            {
+                "jp": "いいえ",
+                "prnc": "iie",
+                "bn": "না",
+                "cmt": "এটি একটি অব্যয় (Interjection) যা নেতিবাচক বা অসম্মতিসূচক উত্তর দিতে ব্যবহৃত হয়।"
+            },
+            {
+                "jp": "しつれいですが",
+                "prnc": "shitsureidesuga",
+                "bn": "কিছু কিছু মাফ করবেন",
+                "cmt": "এটি একটি যৌগিক অভিব্যক্তি, যা 'しつれい (shitsurei)' (অভদ্রতা) এবং 'ですが (desuga)' (কিন্তু) দিয়ে গঠিত। এর অর্থ 'আমি দুঃখিত, কিন্তু...'। এটি একটি ভদ্রতাপূর্ণ প্রারম্ভিক উক্তি।"
+            },
+            {
+                "jp": "おなまえは",
+                "prnc": "onamaewa",
+                "bn": "আপনার নাম কি?",
+                "cmt": "এটি একটি প্রশ্নসূচক বাক্য। 'お (o)' সম্ম荣সূচক উপসর্গ, 'なまえ (namae)' (নাম) এবং 'は (wa)' (বিষয়সূচক অব্যয়) নিয়ে গঠিত।"
+            },
+            {
+                "jp": "はじめまして",
+                "prnc": "Hajimemashite",
+                "bn": "প্রথম দেখা",
+                "cmt": "এটি একটি অভিব্যক্তি (Expression), যা কারো সাথে প্রথমবার দেখা হলে ব্যবহৃত হয়। এর অর্থ 'আপনার সাথে দেখা হয়ে ভালো লাগলো'।"
+            },
+            {
+                "jp": "どうぞ よろしく おねがいします",
+                "prnc": "Doujo yoroshiku onegaishimasu",
+                "bn": "পরিচিত হলে খুশি হবো অথবা পরিচয়ে বাধিত হলাম",
+                "cmt": "এটি একটি অত্যন্ত গুরুত্বপূর্ণ অভিব্যক্তি, যা নতুন পরিচিতির পর ব্যবহৃত হয়। এর মাধ্যমে সম্মান ও সৌহার্দ্য প্রকাশ করা হয়।"
+            },
+            {
+                "jp": "こちらは 〜さんです",
+                "prnc": "Kochira wa san desu",
+                "bn": "এদিককার জনাব/বেগম...",
+                "cmt": "এটি একটি বাক্য, যার মাধ্যমে অন্য কাউকে তৃতীয় কোনো ব্যক্তির সাথে পরিচয় করিয়ে দেওয়া হয়। 'こちら (kochira)' একটি সর্বনাম, যার অর্থ 'এই ব্যক্তি' (সম্মানজনক)।"
+            },
+            {
+                "jp": "〜から きました",
+                "prnc": "kara kimashita",
+                "bn": "থেকে এসেছি",
+                "cmt": "এটি একটি যৌগিক অভিব্যক্তি। 'から (kara)' একটি অনুসর্গ (Particle) যার অর্থ 'থেকে', এবং 'きました (kimashita)' হলো 'きます (kimasu)' (আসা) ক্রিয়াপদের অতীত রূপ। এর মাধ্যমে কোথা থেকে আসা হয়েছে তা জানানো হয়।"
+            },
+            {
+                "jp": "アメリカ",
+                "prnc": "Amerika",
+                "bn": "আমেরিকা",
+                "cmt": "এটি একটি বিশেষ্য (Noun) এবং দেশের নাম।"
+            },
+            {
+                "jp": "イギリス",
+                "prnc": "Igirisu",
+                "bn": "ইংল্যান্ড",
+                "cmt": "এটি একটি বিশেষ্য (Noun) এবং দেশের নাম।"
+            },
+            {
+                "jp": "インド",
+                "prnc": "Indo",
+                "bn": "ভারত",
+                "cmt": "এটি একটি বিশেষ্য (Noun) এবং দেশের নাম।"
+            },
+            {
+                "jp": "インドネシア",
+                "prnc": "Indoneshia",
+                "bn": "ইন্দোনেশিয়া",
+                "cmt": "এটি একটি বিশেষ্য (Noun) এবং দেশের নাম।"
+            },
+            {
+                "jp": "かんこく",
+                "prnc": "Kankoku",
+                "bn": "কোরিয়া",
+                "cmt": "এটি একটি বিশেষ্য (Noun) এবং দেশের নাম।"
+            },
+            {
+                "jp": "タイ",
+                "prnc": "Tai",
+                "bn": "থাইল্যান্ড",
+                "cmt": "এটি একটি বিশেষ্য (Noun) এবং দেশের নাম।"
+            },
+            {
+                "jp": "ちゅうごく",
+                "prnc": "Chugoku",
+                "bn": "চীন",
+                "cmt": "এটি একটি বিশেষ্য (Noun) এবং দেশের নাম।"
+            },
+            {
+                "jp": "ドイツ",
+                "prnc": "Doitsu",
+                "bn": "জার্মান",
+                "cmt": "এটি একটি বিশেষ্য (Noun) এবং দে�শের নাম।"
+            },
+            {
+                "jp": "にほん",
+                "prnc": "Nihon",
+                "bn": "জাপান",
+                "cmt": "এটি একটি বিশেষ্য (Noun) এবং দেশের নাম। এটি 'にっぽん' হিসেবেও উচ্চারণ করা হয়। এই শব্দের সাথে যুক্ত কিছু N5 যৌগিক শব্দ হলো 'にほんご (Nihongo)' - জাপানি ভাষা, এবং 'にほんじん (Nihonjin)' - জাপানি মানুষ।"
+            },
+            {
+                "jp": "フランス",
+                "prnc": "Furansu",
+                "bn": "ফ্রান্স",
+                "cmt": "এটি একটি বিশেষ্য (Noun) এবং দেশের নাম।"
+            },
+            {
+                "jp": "ブラジル",
+                "prnc": "Burajiru",
+                "bn": "ব্রাজিল",
+                "cmt": "এটি একটি বিশেষ্য (Noun) এবং দেশের নাম।"
+            },
+            {
+                "jp": "さくらだいがく",
+                "prnc": "Sakura daigaku",
+                "bn": "সাকুরা বিশ্ববিদ্যালয়",
+                "cmt": "এটি একটি বিশেষ্য (Noun)। এটি 'さくら (sakura)' (সাকুরা) এবং 'だいがく (daigaku)' (বিশ্ববিদ্যালয়) দিয়ে গঠিত একটি যৌগিক নাম।"
+            },
+            {
+                "jp": "ふじだいがく",
+                "prnc": "Fuji daigaku",
+                "bn": "ফুজি বিশ্ববিদ্যালয়",
+                "cmt": "এটি একটি বিশেষ্য (Noun)। এটি 'ふじ (fuji)' (ফুজি) এবং 'だいがく (daigaku)' (বিশ্ববিদ্যালয়) দিয়ে গঠিত একটি যৌগিক নাম।"
+            }
+        ];
+
+        const card = document.querySelector('.card');
+        const jpWord = document.querySelector('.jp-word');
+        const pronunciation = document.querySelector('.pronunciation');
+        const bengaliMeaning = document.querySelector('.bengali-meaning');
+        const comment = document.querySelector('.comment');
+
+        let currentIndex = 0;
+
+        function displayWord(index) {
+            card.classList.add('fade');
+            setTimeout(() => {
+                const word = vocabData[index];
+                jpWord.textContent = word.jp;
+                pronunciation.textContent = word.prnc;
+                bengaliMeaning.textContent = word.bn;
+                comment.textContent = word.cmt;
+                card.classList.remove('fade');
+            }, 500); // Match the CSS transition duration
+        }
+
+        function cycleWords() {
+            displayWord(currentIndex);
+            currentIndex = (currentIndex + 1) % vocabData.length;
+        }
+
+        // Initial display
+        displayWord(currentIndex);
+
+        // Cycle every 5 seconds
+        setInterval(cycleWords, 5000);
+    </script>
+</body>
+</html>
