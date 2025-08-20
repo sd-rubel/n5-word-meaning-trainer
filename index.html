@@ -6,13 +6,18 @@
     <title>Japanese Vocabulary Carousel</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,700;1,400&family=Noto+Sans+Bengali:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body {
+        * {
+            box-sizing: border-box;
             margin: 0;
+            padding: 0;
+        }
+
+        body {
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(135deg, #e0e7ff, #a3bffa);
+            background: linear-gradient(145deg, #6b7280, #1e3a8a);
             font-family: 'Noto Sans', sans-serif;
             overflow: hidden;
         }
@@ -21,110 +26,141 @@
             position: relative;
             width: 100%;
             max-width: 1200px;
-            height: 450px;
+            height: 500px;
             display: flex;
             align-items: center;
-            perspective: 1200px;
+            perspective: 1500px;
+            overflow: visible;
         }
 
         .card {
             position: absolute;
-            width: 320px;
-            height: 380px;
-            background-color: #ffffff;
+            width: 340px;
+            height: 400px;
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
             border-radius: 20px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.1);
             padding: 25px;
             text-align: center;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            transform: translateX(0) scale(1);
+            transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(0) scale(1) rotateY(0deg);
             z-index: 2;
-            border: 1px solid rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
         }
 
         .card.left {
-            transform: translateX(-450px) scale(0.75) rotateY(15deg);
-            opacity: 0.8;
+            transform: translateX(-500px) scale(0.7) rotateY(20deg);
+            opacity: 0.85;
             z-index: 1;
+            filter: brightness(0.9);
         }
 
         .card.right {
-            transform: translateX(450px) scale(0.75) rotateY(-15deg);
-            opacity: 0.8;
+            transform: translateX(500px) scale(0.7) rotateY(-20deg);
+            opacity: 0.85;
             z-index: 1;
+            filter: brightness(0.9);
         }
 
         .card.center {
             transform: translateX(0) scale(1) rotateY(0deg);
             opacity: 1;
             z-index: 3;
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.25), 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.3), transparent);
+            border-radius: 20px;
+            opacity: 0.5;
+            z-index: -1;
         }
 
         .jp-word {
-            font-size: 2.5em;
+            font-size: 2.8em;
             font-weight: 700;
-            color: #1a237e;
+            color: #1e3a8a;
             margin: 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             font-family: 'Noto Sans', sans-serif;
         }
 
         .pronunciation {
-            font-size: 1.2em;
+            font-size: 1.3em;
             font-style: italic;
-            color: #546e7a;
-            margin: 12px 0;
+            color: #475569;
+            margin: 15px 0;
+            letter-spacing: 0.5px;
         }
 
         .bengali-meaning {
-            font-size: 1.6em;
+            font-size: 1.8em;
             font-weight: 700;
-            color: #d81b60;
-            margin: 12px 0;
+            color: #be185d;
+            margin: 15px 0;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
             font-family: 'Noto Sans Bengali', sans-serif;
         }
 
         .comment {
-            font-size: 0.95em;
-            color: #263238;
-            margin-top: 15px;
-            line-height: 1.6;
+            font-size: 1em;
+            color: #1f2937;
+            margin-top: 20px;
+            line-height: 1.7;
             font-family: 'Noto Sans Bengali', sans-serif;
+            padding: 0 10px;
         }
 
         .error {
-            font-size: 1.3em;
-            color: #d81b60;
+            font-size: 1.4em;
+            color: #be185d;
             text-align: center;
             font-family: 'Noto Sans Bengali', sans-serif;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
         }
 
         @media (max-width: 1000px) {
+            .carousel-container {
+                max-width: 900px;
+                height: 450px;
+            }
+
             .card {
-                width: 280px;
-                height: 340px;
+                width: 300px;
+                height: 360px;
+                padding: 20px;
             }
 
             .card.left {
-                transform: translateX(-350px) scale(0.65) rotateY(15deg);
+                transform: translateX(-400px) scale(0.65) rotateY(20deg);
             }
 
             .card.right {
-                transform: translateX(350px) scale(0.65) rotateY(-15deg);
+                transform: translateX(400px) scale(0.65) rotateY(-20deg);
             }
 
             .jp-word {
-                font-size: 2.2em;
+                font-size: 2.4em;
             }
 
             .bengali-meaning {
-                font-size: 1.4em;
+                font-size: 1.6em;
             }
 
             .comment {
-                font-size: 0.85em;
+                font-size: 0.9em;
             }
         }
 
@@ -135,8 +171,9 @@
 
             .card {
                 width: 90%;
-                height: 300px;
-                padding: 20px;
+                max-width: 320px;
+                height: 320px;
+                padding: 15px;
             }
 
             .card.left, .card.right {
@@ -149,11 +186,12 @@
             }
 
             .bengali-meaning {
-                font-size: 1.3em;
+                font-size: 1.4em;
             }
 
             .comment {
-                font-size: 0.8em;
+                font-size: 0.85em;
+                margin-top: 15px;
             }
         }
     </style>
@@ -196,21 +234,15 @@
             return card;
         }
 
-        // Initialize the carousel with three cards
-        function initializeCarousel() {
-            if (vocabData.length === 0) return;
-            container.innerHTML = '';
-            updateCards();
-        }
-
-        // Update cards for the carousel
-        function updateCards() {
+        // Initialize or update the carousel with exactly three cards
+        function updateCarousel() {
             container.innerHTML = ''; // Clear existing cards
             const prevIndex = (currentIndex - 1 + vocabData.length) % vocabData.length;
+            const currentCardIndex = currentIndex;
             const nextIndex = (currentIndex + 1) % vocabData.length;
 
             const leftCard = createCard(prevIndex);
-            const centerCard = createCard(currentIndex);
+            const centerCard = createCard(currentCardIndex);
             const rightCard = createCard(nextIndex);
 
             leftCard.classList.add('left');
@@ -220,22 +252,26 @@
             container.appendChild(leftCard);
             container.appendChild(centerCard);
             container.appendChild(rightCard);
-        }
 
-        // Cycle to the next card
-        function cycleCarousel() {
+            // Increment index for next cycle
             currentIndex = (currentIndex + 1) % vocabData.length;
-            updateCards();
         }
 
-        // Start the carousel
+        // Initialize the carousel
+        function initializeCarousel() {
+            if (vocabData.length === 0) return;
+            updateCarousel();
+            startCarousel();
+        }
+
+        // Start the carousel with a 5-second interval
         function startCarousel() {
-            if (intervalId) clearInterval(intervalId); // Clear any existing interval
-            intervalId = setInterval(cycleCarousel, 5000);
+            if (intervalId) clearInterval(intervalId);
+            intervalId = setInterval(updateCarousel, 5000);
         }
 
         // Fetch data and start the carousel
-        fetchVocabData().then(() => startCarousel());
+        fetchVocabData();
     </script>
 </body>
 </html>
