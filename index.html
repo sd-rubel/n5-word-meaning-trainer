@@ -1,340 +1,423 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Japanese Vocabulary Carousel</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Japanese Vocabulary – Premium Carousel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    /* ============== RESET ============== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            background: url('https://raw.githubusercontent.com/sd-rubel/n5-word-meaning-trainer/main/background-img.jpg') no-repeat center center/cover;
-            position: relative;
-        }
+    :root{
+      --card-w: clamp(380px, 42vw, 560px); /* প্রশস্ততা বাড়ানো হয়েছে */
+      --card-h: clamp(320px, 55vh, 520px);
+      --radius: 28px;
+      --blur: 20px;
+      --shadow: 0 18px 48px rgba(0,0,0,.45);
+      --accent: #ffd54f;
+      --accent-soft: #ffe082;
+      --text-light: #e8f1ff;
+      --text-bn: #9be7a1;
+      --glass: rgba(255,255,255,.10);
+      --glass-border: rgba(255,255,255,.28);
+      --fx: cubic-bezier(.4,0,.2,1);
+      --anim-dur: 900ms;
+    }
 
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1));
-            z-index: 0;
-            animation: bubbleAnimation 10s infinite ease-in-out;
-        }
+    @media (prefers-reduced-motion: reduce) {
+      :root{ --anim-dur: 120ms; }
+    }
 
-        @keyframes bubbleAnimation {
-            0% { background-size: 100% 100%; }
-            50% { background-size: 120% 120%; }
-            100% { background-size: 100% 100%; }
-        }
+    /* ============== STAGE ============== */
+    body{
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      font-family: 'Noto Sans', system-ui, -apple-system, Segoe UI, Roboto, "Hind Siliguri", sans-serif;
+      color: white;
+      background:
+        url('https://raw.githubusercontent.com/sd-rubel/n5-word-meaning-trainer/main/background-img.jpg')
+        no-repeat center/cover;
+      position: relative;
+      overflow: hidden;
+    }
 
-        .carousel-container {
-            position: relative;
-            width: 100%;
-            max-width: 1400px;
-            height: 500px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            perspective: 1200px;
-            z-index: 1;
-        }
+    /* Dark veil */
+    body::before{
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(120deg, rgba(4,8,20,.70), rgba(4,8,20,.50));
+      z-index: 0;
+    }
 
-        .card {
-            position: absolute;
-            width: 400px;
-            height: 450px;
-            background: rgba(255, 255, 255, 0.12);
-            border-radius: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            padding: 30px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            transform-style: preserve-3d;
-            z-index: 2;
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+    /* UI Gradient Overlay (animated, soft) */
+    body::after{
+      content:'';
+      position: absolute; inset: -20%;
+      background:
+        radial-gradient(60rem 40rem at 12% 18%, rgba(255,193,7,.28), transparent 55%),
+        radial-gradient(48rem 48rem at 88% 78%, rgba(41,182,246,.24), transparent 60%),
+        radial-gradient(42rem 30rem at 60% 30%, rgba(129,199,132,.20), transparent 60%),
+        conic-gradient(from 210deg at 50% 50%, rgba(255,255,255,.05), transparent 30%, rgba(255,255,255,.06), transparent 70%, rgba(255,255,255,.05));
+      filter: blur(36px);
+      mix-blend-mode: screen;
+      animation: floaty 12s ease-in-out infinite alternate;
+      z-index: 0;
+      pointer-events: none;
+    }
+    @keyframes floaty {
+      0%   { transform: translateY(0) translateX(0) scale(1); opacity: .95; }
+      100% { transform: translateY(-2%) translateX(1%) scale(1.03); opacity: 1; }
+    }
 
-        .card.left {
-            transform: translateX(-600px) scale(0.7) rotateY(15deg);
-            opacity: 0.6;
-            z-index: 1;
-        }
+    /* ============== WRAPPER ============== */
+    .app-frame{
+      position: relative;
+      width: min(96vw, 1480px);
+      height: min(78vh, 680px);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 16px;
+      z-index: 1;
+    }
 
-        .card.right {
-            transform: translateX(600px) scale(0.7) rotateY(-15deg);
-            opacity: 0.6;
-            z-index: 1;
-        }
+    .app-header{
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      padding: 8px 14px;
+      color: #f5f7ff;
+      text-shadow: 0 2px 12px rgba(0,0,0,.35);
+      user-select: none;
+    }
+    .title{
+      font-weight: 700;
+      letter-spacing: .3px;
+      font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+      opacity:.95;
+    }
 
-        .card.center {
-            transform: translateX(0) scale(1) rotateY(0deg);
-            opacity: 1;
-            z-index: 3;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-        }
+    /* ============== CAROUSEL ============== */
+    .carousel{
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      perspective: 1200px;
+      overflow: visible;
+    }
 
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.15), transparent);
-            border-radius: 25px;
-            z-index: -1;
-        }
+    .card{
+      position: absolute;
+      width: var(--card-w);
+      height: var(--card-h);
+      padding: clamp(18px, 2.8vw, 32px);
+      border-radius: var(--radius);
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(var(--blur));
+      box-shadow: var(--shadow);
+      transform-style: preserve-3d;
+      transition:
+        transform var(--anim-dur) var(--fx),
+        opacity var(--anim-dur) var(--fx),
+        box-shadow var(--anim-dur) var(--fx);
+      opacity: 0;
+    }
 
-        .card-content {
-            position: relative;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .card.left{
+      transform: translateX(calc(-1 * (var(--card-w) + 120px))) rotateY(16deg) scale(.78);
+      opacity: .7; z-index: 1;
+    }
+    .card.center{
+      transform: translateX(0) rotateY(0) scale(1);
+      opacity: 1; z-index: 3;
+      box-shadow: 0 22px 60px rgba(0,0,0,.52);
+    }
+    .card.right{
+      transform: translateX(calc(var(--card-w) + 120px)) rotateY(-16deg) scale(.78);
+      opacity: .7; z-index: 1;
+    }
 
-        .jp-word {
-            font-size: 3.2em;
-            font-weight: 700;
-            color: #ffd700;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            font-family: 'Noto Sans', sans-serif;
-        }
+    /* Enter/Exit keyframes (horizontal slide with slight scale) */
+    @keyframes slideInFromRight {
+      0%   { transform: translateX(calc(var(--card-w) + 220px)) rotateY(-12deg) scale(.7); opacity: 0; }
+      65%  { transform: translateX(-22px) rotateY(-2deg) scale(1.04); opacity: .96; }
+      100% { transform: translateX(0) rotateY(0) scale(1); opacity: 1; }
+    }
+    @keyframes slideOutToLeft {
+      0%   { transform: translateX(0) rotateY(0) scale(1); opacity: 1; }
+      100% { transform: translateX(calc(-1 * (var(--card-w) + 220px))) rotateY(10deg) scale(.68); opacity: 0; }
+    }
+    .enter{ animation: slideInFromRight var(--anim-dur) var(--fx) forwards; }
+    .exit { animation: slideOutToLeft   var(--anim-dur) var(--fx) forwards; }
 
-        .pronunciation {
-            font-size: 1.5em;
-            font-style: italic;
-            color: #b3e5fc;
-            margin: 15px 0;
-            font-family: 'Noto Sans', sans-serif;
-        }
+    /* ============== CONTENT ============== */
+    .card-content{
+      height: 100%;
+      display: grid;
+      grid-template-rows: 1fr auto auto 1fr;
+      align-items: center;
+      justify-items: center;
+      gap: clamp(6px, 1.2vw, 12px);
+      text-align: center;
+    }
 
-        .bengali-meaning {
-            font-size: 2em;
-            font-weight: 700;
-            color: #81c784;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            font-family: 'Hind Siliguri', sans-serif;
-        }
+    .jp-word{
+      line-height: 1.05;
+      font-weight: 800;
+      letter-spacing: .3px;
+      color: var(--accent);
+      text-shadow: 0 4px 14px rgba(0,0,0,.38);
+      /* বড় শব্দেও সুন্দর দেখাতে clamp */
+      font-size: clamp(2.1rem, 4.6vw, 3.8rem);
+      white-space: nowrap; /* fitText JS দিয়ে সাইজ অ্যাডজাস্ট হবে */
+      max-width: 100%;
+    }
 
-        .comment {
-            font-size: 1.2em;
-            color: #e0e0e0;
-            margin-top: 20px;
-            line-height: 1.8;
-            font-family: 'Hind Siliguri', sans-serif;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
-        }
+    .pronunciation{
+      font-style: italic;
+      font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+      color: #cfe8ff;
+      opacity: .95;
+    }
 
-        .error {
-            font-size: 1.5em;
-            color: #ef4444;
-            text-align: center;
-            font-family: 'Hind Siliguri', sans-serif;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            z-index: 2;
-        }
+    .bengali-meaning{
+      font-family: "Hind Siliguri", sans-serif;
+      color: var(--text-bn);
+      font-weight: 700;
+      font-size: clamp(1.35rem, 2.8vw, 2rem);
+      text-shadow: 0 2px 8px rgba(0,0,0,.28);
+    }
 
-        @keyframes gallerySlideIn {
-            0% { transform: translateX(1200px) scale(0.6); opacity: 0; }
-            50% { transform: translateX(-50px) scale(1.1); opacity: 0.9; }
-            100% { transform: translateX(0) scale(1); opacity: 1; }
-        }
+    .comment{
+      font-family: "Hind Siliguri", sans-serif;
+      color: var(--text-light);
+      opacity: .94;
+      font-size: clamp(.95rem, 1.8vw, 1.12rem);
+      line-height: 1.7;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.08);
+      max-width: 92%;
+    }
 
-        @keyframes gallerySlideOut {
-            0% { transform: translateX(0) scale(1); opacity: 1; }
-            100% { transform: translateX(-1200px) scale(0.6); opacity: 0; }
-        }
+    /* Footer (optional info) */
+    .app-footer{
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      opacity: .85;
+      font-size: .92rem;
+      user-select: none;
+      text-shadow: 0 2px 10px rgba(0,0,0,.35);
+    }
 
-        .card.center.enter {
-            animation: gallerySlideIn 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-
-        .card.left.exit {
-            animation: gallerySlideOut 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-
-        @media (max-width: 1100px) {
-            .carousel-container {
-                max-width: 1000px;
-                height: 450px;
-            }
-
-            .card {
-                width: 350px;
-                height: 400px;
-            }
-
-            .card.left {
-                transform: translateX(-500px) scale(0.65) rotateY(15deg);
-            }
-
-            .card.right {
-                transform: translateX(500px) scale(0.65) rotateY(-15deg);
-            }
-
-            .jp-word {
-                font-size: 2.8em;
-            }
-
-            .bengali-meaning {
-                font-size: 1.8em;
-            }
-
-            .comment {
-                font-size: 1.1em;
-            }
-        }
-
-        @media (max-width: 700px) {
-            .carousel-container {
-                height: 350px;
-            }
-
-            .card {
-                width: 90%;
-                max-width: 350px;
-                height: 300px;
-            }
-
-            .card.left, .card.right {
-                transform: translateX(0) scale(0);
-                opacity: 0;
-            }
-
-            .jp-word {
-                font-size: 2.2em;
-            }
-
-            .bengali-meaning {
-                font-size: 1.4em;
-            }
-
-            .comment {
-                font-size: 0.9em;
-            }
-        }
-    </style>
+    /* Responsive tweaks */
+    @media (max-width: 1100px){
+      .card.left{ transform: translateX(calc(-1 * (var(--card-w) + 80px))) rotateY(14deg) scale(.76); }
+      .card.right{ transform: translateX(calc(var(--card-w) + 80px)) rotateY(-14deg) scale(.76); }
+    }
+    @media (max-width: 720px){
+      :root{ --card-w: min(94vw, 560px); --card-h: min(70vh, 460px); }
+      .card.left, .card.right{ opacity: 0; transform: translateX(0) scale(0.6) rotateY(0); pointer-events: none; }
+      .carousel{ perspective: 900px; }
+    }
+  </style>
 </head>
 <body>
-    <div class="carousel-container"></div>
+  <div class="app-frame">
+    <header class="app-header">
+      <div class="title">Japanese Vocabulary • Premium Carousel</div>
+    </header>
 
-    <script>
-        const jsonUrl = 'https://raw.githubusercontent.com/sd-rubel/n5-word-meaning-trainer/refs/heads/main/lesson-1.json';
-        const container = document.querySelector('.carousel-container');
-        let vocabData = [];
-        let currentIndex = 0;
-        let intervalId = null;
+    <main class="carousel" id="carousel"></main>
 
-        // Fetch JSON data with retry mechanism
-        async function fetchVocabData(retries = 3) {
-            try {
-                const response = await fetch(jsonUrl, { cache: 'no-store' });
-                if (!response.ok) throw new Error('Failed to load JSON data');
-                vocabData = await response.json();
-                if (vocabData.length === 0) throw new Error('No vocabulary data found');
-                initializeCarousel();
-            } catch (error) {
-                if (retries > 0) {
-                    console.warn(`Retry attempt ${4 - retries} due to: ${error.message}`);
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                    return fetchVocabData(retries - 1);
-                }
-                container.innerHTML = `<p class="error">ত্রুটি: শব্দভাণ্ডার লোড করতে ব্যর্থ হয়েছে: ${error.message}. পুনরায় চেষ্টা করুন।</p>`;
-                console.error('Error fetching data:', error);
-            }
+    <footer class="app-footer">
+      <span>Auto-slide: 5s</span>
+      <span>•</span>
+      <span>Smooth 3D Animations</span>
+    </footer>
+  </div>
+
+  <script>
+    /* ================== DATA & SETUP ================== */
+    const JSON_URL = 'https://raw.githubusercontent.com/sd-rubel/n5-word-meaning-trainer/main/lesson-1.json';
+    const root = document.getElementById('carousel');
+
+    let vocab = [];
+    let current = 0;
+    let timer = null;
+    let isAnimating = false;
+
+    // Elements for left, center, right
+    let cards = []; // Use an array to manage the cards
+
+    async function loadData(retries = 3){
+      try{
+        const res = await fetch(JSON_URL, {cache: 'no-store'});
+        if(!res.ok) throw new Error('Failed to load JSON');
+        const data = await res.json();
+        if(!Array.isArray(data) || !data.length) throw new Error('No vocabulary found');
+        vocab = data;
+        initCarousel();
+      }catch(e){
+        if(retries>0){
+          await new Promise(r=>setTimeout(r,1500));
+          return loadData(retries-1);
         }
+        root.innerHTML = `<div style="padding:20px;border-radius:14px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.25);">
+          <div style="font-family:'Hind Siliguri',sans-serif;font-size:1.1rem;color:#ff8a80;">ত্রুটি:</div>
+          <div style="margin-top:6px;color:#fff;">${e.message}</div>
+        </div>`;
+      }
+    }
 
-        // Create a card for a given index
-        function createCard(index, className = 'card') {
-            const word = vocabData[index];
-            const card = document.createElement('div');
-            card.className = `${className}`;
-            card.innerHTML = `
-                <div class="card-content">
-                    <h1 class="jp-word">${word.jp}</h1>
-                    <p class="pronunciation">${word.prnc}</p>
-                    <p class="bengali-meaning">${word.bn}</p>
-                    <p class="comment">${word.cmt}</p>
-                </div>
-            `;
-            return card;
-        }
+    /* ================== HELPERS ================== */
+    function makeCard(){
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.innerHTML = `
+        <div class="card-content">
+          <div class="spacer"></div>
+          <h1 class="jp-word"></h1>
+          <p class="pronunciation"></p>
+          <p class="bengali-meaning"></p>
+          <p class="comment"></p>
+        </div>
+      `;
+      return el;
+    }
 
-        // Initialize or update the carousel with exactly three cards
-        function updateCarousel() {
-            container.innerHTML = '';
-            const prevIndex = (currentIndex - 1 + vocabData.length) % vocabData.length;
-            const currentCardIndex = currentIndex;
-            const nextIndex = (currentIndex + 1) % vocabData.length;
+    function fillCard(card, idx){
+      const w = vocab[idx];
+      // graceful fallback for keys
+      const jp   = w.jp ?? w.japanese ?? '';
+      const prnc = w.prnc ?? w.pronunciation ?? '';
+      const bn   = w.bn ?? w.meaning ?? '';
+      const cmt  = w.cmt ?? w.comment ?? '';
 
-            // Create and position cards with animation classes
-            const leftCard = createCard(prevIndex, 'card left');
-            const centerCard = createCard(currentCardIndex, 'card center');
-            const rightCard = createCard(nextIndex, 'card right enter');
+      card.querySelector('.jp-word').textContent = jp;
+      card.querySelector('.pronunciation').textContent = prnc;
+      card.querySelector('.bengali-meaning').textContent = bn;
+      card.querySelector('.comment').textContent = cmt;
 
-            container.appendChild(leftCard);
-            container.appendChild(centerCard);
-            container.appendChild(rightCard);
+      fitHeading(card.querySelector('.jp-word'), card);
+    }
 
-            // Apply exit animation to the old center card
-            const oldCenter = container.querySelector('.center');
-            if (oldCenter) oldCenter.classList.add('exit');
+    // Reduce font-size if JP word overflows card width (simple fit)
+    function fitHeading(headingEl, card){
+      // reset first
+      headingEl.style.fontSize = '';
+      const maxPx = Math.min(card.clientWidth * 0.16 + 24, 64); // dynamic upper bound
+      const minPx = 24; // do not go below
+      let size = maxPx;
+      headingEl.style.fontSize = size + 'px';
 
-            // Remove animation classes after transition
-            setTimeout(() => {
-                const center = container.querySelector('.center');
-                const exiting = container.querySelector('.exit');
-                if (center) center.classList.remove('enter', 'exit');
-                if (exiting) exiting.remove();
-            }, 1000); // Match animation duration
+      // decrease until fits horizontally
+      const pad = 24;
+      const maxWidth = card.clientWidth - pad * 2;
+      let safety = 40;
+      while(headingEl.scrollWidth > maxWidth && size > minPx && safety--){
+        size -= 2;
+        headingEl.style.fontSize = size + 'px';
+      }
+    }
 
-            // Increment index for next cycle
-            currentIndex = (currentIndex + 1) % vocabData.length;
-        }
+    function applyRoles(){
+      // Clear classes then assign roles
+      cards.forEach(c => c.className = 'card');
+      cards[0].classList.add('left');
+      cards[1].classList.add('center');
+      cards[2].classList.add('right');
+    }
 
-        // Initialize the carousel
-        function initializeCarousel() {
-            if (vocabData.length === 0) return;
-            updateCarousel();
-            startCarousel();
-        }
+    function nextIndex(i=1){ return (current + i) % vocab.length; }
+    function prevIndex(i=1){ return (current - i + vocab.length) % vocab.length; }
 
-        // Start the carousel with a 5-second interval
-        function startCarousel() {
-            if (intervalId) clearInterval(intervalId);
-            intervalId = setInterval(() => {
-                updateCarousel();
-            }, 5000);
-        }
+    /* ================== INIT ================== */
+    function initCarousel(){
+      root.innerHTML = '';
+      cards = [makeCard(), makeCard(), makeCard()];
 
-        // Fetch data and start the carousel
-        fetchVocabData();
-    </script>
+      cards.forEach(card => root.append(card));
+
+      // Initial content
+      fillCard(cards[0], prevIndex(1));
+      fillCard(cards[1], current);
+      fillCard(cards[2], nextIndex(1));
+
+      applyRoles();
+      startAuto();
+      window.addEventListener('resize', () => {
+        cards.forEach(card => {
+          const h = card.querySelector('.jp-word');
+          if(h) fitHeading(h, card);
+        });
+      });
+    }
+
+    /* ================== ANIMATION (NEXT) ================== */
+    async function slideNext(){
+      if(isAnimating || vocab.length < 3) return;
+      isAnimating = true;
+
+      // The new card needs to be preloaded off-screen
+      const newCard = makeCard();
+      const nextNextIdx = nextIndex(2);
+      fillCard(newCard, nextNextIdx);
+      root.append(newCard);
+
+      // We move all 3 cards at once.
+      // The old left becomes hidden, center moves to left, right moves to center, new card slides in from right.
+      cards[0].classList.add('exit');
+      cards[1].classList.add('left');
+      cards[2].classList.add('center');
+      newCard.classList.add('enter');
+
+      // Wait for the exit and enter animations to finish
+      await Promise.all([
+        waitAnimationEnd(cards[0]),
+        waitAnimationEnd(newCard)
+      ]);
+
+      // Remove the old card from the DOM and update the card array
+      root.removeChild(cards[0]);
+      cards.shift();
+      cards.push(newCard);
+
+      // Clean up classes and re-apply roles
+      cards.forEach(card => card.classList.remove('exit', 'enter', 'left', 'center', 'right'));
+      applyRoles();
+
+      current = nextIndex(1);
+      isAnimating = false;
+    }
+
+    function waitAnimationEnd(el){
+      return new Promise(resolve=>{
+        const done = () => {
+          el.removeEventListener('animationend', done);
+          resolve();
+        };
+        el.addEventListener('animationend', done, { once: true });
+      });
+    }
+
+    /* ================== AUTO TIMER ================== */
+    function startAuto(){
+      stopAuto();
+      timer = setInterval(slideNext, 5000);
+    }
+    function stopAuto(){
+      if(timer) clearInterval(timer);
+      timer = null;
+    }
+
+    // Kickoff
+    loadData();
+  </script>
 </body>
 </html>
