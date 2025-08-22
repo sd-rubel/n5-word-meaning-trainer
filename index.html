@@ -8,7 +8,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
   <style>
-    /* ============== RESET ============== */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root{
@@ -24,19 +23,14 @@
       --glass: rgba(255,255,255,.10);
       --glass-border: rgba(255,255,255,.28);
       --fx: cubic-bezier(.4,0,.2,1);
-      --anim-dur: 800ms;
+      --anim-dur: 600ms;
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      :root{ --anim-dur: 120ms; }
-    }
-
-    /* ============== STAGE ============== */
     body{
       min-height: 100svh;
       display: grid;
       place-items: center;
-      font-family: 'Noto Sans', system-ui, -apple-system, Segoe UI, Roboto, "Hind Siliguri", sans-serif;
+      font-family: 'Noto Sans',"Hind Siliguri",sans-serif;
       color: white;
       background:
         url('https://raw.githubusercontent.com/sd-rubel/n5-word-meaning-trainer/main/background-img.jpg')
@@ -46,7 +40,6 @@
       user-select: none;
     }
 
-    /* Dark veil */
     body::before{
       content: '';
       position: absolute; inset: 0;
@@ -54,7 +47,6 @@
       z-index: 0;
     }
 
-    /* UI Gradient Overlay (animated, soft) */
     body::after{
       content:'';
       position: absolute; inset: -20%;
@@ -74,17 +66,14 @@
       100% { transform: translateY(-2%) translateX(1%) scale(1.03); opacity: 1; }
     }
 
-    /* ============== WRAPPER ============== */
     .app-frame{
       position: relative;
       width: min(96vw, 1480px);
       height: min(78vh, 680px);
       display: grid;
-      grid-template-rows: 1fr;
       z-index: 1;
     }
 
-    /* ============== CAROUSEL ============== */
     .carousel{
       position: relative;
       width: 100%;
@@ -106,92 +95,68 @@
       backdrop-filter: blur(var(--blur));
       box-shadow: var(--shadow);
       transition: transform var(--anim-dur) var(--fx), opacity var(--anim-dur) var(--fx);
-      z-index: 0;
       opacity: 0;
     }
 
     .card.active{
         opacity: 1;
-        z-index: 1;
+        z-index: 2;
         transform: translateX(0) scale(1);
     }
 
     .card.next {
-        opacity: 1;
-        z-index: 0;
-        transform: translateX(calc(var(--card-w) + 80px));
+        opacity: 0.8;
+        z-index: 1;
+        transform: translateX(calc(var(--card-w) + 60px)) scale(0.9);
     }
     
     .card.prev {
-        opacity: 1;
-        z-index: 0;
-        transform: translateX(calc(-1 * (var(--card-w) + 80px)));
+        opacity: 0.8;
+        z-index: 1;
+        transform: translateX(calc(-1 * (var(--card-w) + 60px))) scale(0.9);
     }
 
-    /* Animations for sliding in/out */
-    @keyframes slide-in-right {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-    
-    @keyframes slide-out-left {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(-100%); opacity: 0; }
-    }
-
-    /* ============== CONTENT ============== */
     .card-content{
       height: 100%;
       display: grid;
       grid-template-rows: 1fr auto auto auto 1fr;
       align-items: center;
       justify-items: center;
-      gap: clamp(6px, 1.2vw, 12px);
+      gap: 12px;
       text-align: center;
     }
 
     .jp-word{
-      line-height: 1.05;
       font-weight: 800;
-      letter-spacing: .3px;
       color: var(--accent);
       text-shadow: 0 4px 14px rgba(0,0,0,.38);
       font-size: clamp(2.1rem, 4.6vw, 3.8rem);
-      white-space: nowrap;
-      max-width: 100%;
     }
 
     .pronunciation{
       font-style: italic;
-      font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+      font-size: 1.3rem;
       color: #cfe8ff;
-      opacity: .95;
     }
 
     .bengali-meaning{
       font-family: "Hind Siliguri", sans-serif;
       color: var(--text-bn);
       font-weight: 700;
-      font-size: clamp(1.35rem, 2.8vw, 2rem);
-      text-shadow: 0 2px 8px rgba(0,0,0,.28);
+      font-size: 1.8rem;
     }
 
     .comment{
       font-family: "Hind Siliguri", sans-serif;
       color: var(--text-light);
       opacity: .94;
-      font-size: clamp(.95rem, 1.8vw, 1.12rem);
-      line-height: 1.7;
+      font-size: 1rem;
       padding: 10px 12px;
       border-radius: 12px;
       background: rgba(255,255,255,.08);
       max-width: 92%;
     }
     
-    /* Responsive tweaks */
-    @media (max-width: 1100px){
-      .card.left, .card.right{ opacity: 0; }
-    }
     @media (max-width: 720px){
       :root{ --card-w: min(94vw, 560px); --card-h: min(80vh, 600px); }
     }
@@ -203,50 +168,30 @@
   </div>
 
   <script>
-    /* ================== DATA & SETUP ================== */
     const JSON_URL = 'https://raw.githubusercontent.com/sd-rubel/n5-word-meaning-trainer/main/lesson-1.json';
     const root = document.getElementById('carousel');
 
     let vocab = [];
     let current = 0;
-    
-    // Use Web Speech API for pronunciation
-    const synth = window.speechSynthesis;
 
-    async function loadData(retries = 3){
-      try{
-        const res = await fetch(JSON_URL, {cache: 'no-store'});
-        if(!res.ok) throw new Error('Failed to load JSON');
-        const data = await res.json();
-        if(!Array.isArray(data) || !data.length) throw new Error('No vocabulary found');
-        vocab = data;
-        initCarousel();
-      }catch(e){
-        if(retries > 0){
-          await new Promise(r => setTimeout(r, 1500));
-          return loadData(retries - 1);
-        }
-        root.innerHTML = `<div style="padding:20px;border-radius:14px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.25);">
-          <div style="font-family:'Hind Siliguri',sans-serif;font-size:1.1rem;color:#ff8a80;">ত্রুটি:</div>
-          <div style="margin-top:6px;color:#fff;">${e.message}</div>
-        </div>`;
-      }
+    const synth = window.speechSynthesis;
+    let voices = [];
+
+    function loadVoices() {
+      voices = synth.getVoices();
+    }
+    loadVoices();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = loadVoices;
     }
 
-    /* ================== SPEECH LOGIC ================== */
     function speak(text, lang = 'ja-JP') {
       if (!synth || !text) return;
-      
       const utter = new SpeechSynthesisUtterance(text);
       utter.lang = lang;
-      
-      const availableVoices = synth.getVoices();
-      const voice = availableVoices.find(v => v.lang.startsWith(lang));
-      if (voice) {
-        utter.voice = voice;
-      }
-      
-      synth.cancel(); // Stop any ongoing speech
+      const voice = voices.find(v => v.lang.startsWith(lang));
+      if (voice) utter.voice = voice;
+      synth.cancel();
       synth.speak(utter);
     }
     
@@ -256,103 +201,90 @@
         speak(jpWord, 'ja-JP');
     }
 
-    /* ================== CAROUSEL LOGIC ================== */
-    function makeCard(){
-        const el = document.createElement('div');
-        el.className = 'card';
-        el.innerHTML = `
-            <div class="card-content">
-                <div class="spacer"></div>
-                <h1 class="jp-word"></h1>
-                <p class="pronunciation"></p>
-                <p class="bengali-meaning"></p>
-                <p class="comment"></p>
-                <div class="spacer"></div>
-            </div>
-        `;
-        return el;
-    }
-
-    function fillCard(card, idx){
+    function makeCard(idx){
         const w = vocab[idx];
         const jp   = w.jp ?? w.japanese ?? '';
         const prnc = w.prnc ?? w.pronunciation ?? '';
         const bn   = w.bn ?? w.meaning ?? '';
         const cmt  = w.cmt ?? w.comment ?? '';
 
-        card.querySelector('.jp-word').textContent = jp;
-        card.querySelector('.pronunciation').textContent = prnc;
-        card.querySelector('.bengali-meaning').textContent = bn;
-        card.querySelector('.comment').textContent = cmt;
+        const el = document.createElement('div');
+        el.className = 'card';
+        el.setAttribute('data-index', idx);
+        el.innerHTML = `
+            <div class="card-content">
+                <div></div>
+                <h1 class="jp-word">${jp}</h1>
+                <p class="pronunciation">${prnc}</p>
+                <p class="bengali-meaning">${bn}</p>
+                <p class="comment">${cmt}</p>
+                <div></div>
+            </div>
+        `;
+        return el;
     }
 
-    function showCard(index, direction) {
-        if (index < 0 || index >= vocab.length) return;
+    function showCard(index){
+        const cards = root.querySelectorAll('.card');
+        cards.forEach(c => c.className = 'card');
 
-        const oldCard = document.querySelector('.card.active');
-        const nextCard = root.querySelector(`[data-index="${index}"]`);
-        
-        if (oldCard && nextCard) {
-            oldCard.classList.remove('active');
-            nextCard.classList.remove('prev', 'next');
-            nextCard.classList.add('active');
-        }
+        const active = root.querySelector(`[data-index="${index}"]`);
+        if (active) active.classList.add('active');
+
+        const prevIndex = (index - 1 + vocab.length) % vocab.length;
+        const nextIndex = (index + 1) % vocab.length;
+
+        const prev = root.querySelector(`[data-index="${prevIndex}"]`);
+        const next = root.querySelector(`[data-index="${nextIndex}"]`);
+        if (prev) prev.classList.add('prev');
+        if (next) next.classList.add('next');
+
         current = index;
-
-        // Preload next/prev cards to the side
-        const nextIndex = (current + 1) % vocab.length;
-        const prevIndex = (current - 1 + vocab.length) % vocab.length;
-
-        const nextCardToLoad = root.querySelector(`[data-index="${nextIndex}"]`);
-        const prevCardToLoad = root.querySelector(`[data-index="${prevIndex}"]`);
-
-        if(nextCardToLoad) {
-            nextCardToLoad.classList.remove('active', 'prev', 'hidden');
-            nextCardToLoad.classList.add('next');
-        }
-        if(prevCardToLoad) {
-            prevCardToLoad.classList.remove('active', 'next', 'hidden');
-            prevCardToLoad.classList.add('prev');
-        }
     }
 
     function slideNext() {
         const nextIndex = (current + 1) % vocab.length;
-        showCard(nextIndex, 'right');
+        showCard(nextIndex);
     }
     
     function slidePrev() {
         const prevIndex = (current - 1 + vocab.length) % vocab.length;
-        showCard(prevIndex, 'left');
+        showCard(prevIndex);
+    }
+
+    async function loadData(){
+      try{
+        const res = await fetch(JSON_URL);
+        const data = await res.json();
+        vocab = data;
+        initCarousel();
+      }catch(e){
+        root.innerHTML = `<div style="color:#ff8a80;">লোড ব্যর্থ</div>`;
+      }
     }
 
     function initCarousel(){
         root.innerHTML = '';
         for (let i = 0; i < vocab.length; i++) {
-            const card = makeCard();
-            card.setAttribute('data-index', i);
-            fillCard(card, i);
+            const card = makeCard(i);
             root.append(card);
         }
-
         if(vocab.length > 0) {
-            showCard(0, 'right');
+            showCard(0);
         }
     }
 
-    /* ================== KEYBOARD CONTROLS ================== */
     document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight') {
             slideNext();
         } else if (e.key === 'ArrowLeft') {
             slidePrev();
         } else if (e.key === ' ') {
-            e.preventDefault(); // Prevents the page from scrolling
+            e.preventDefault();
             speakCurrentJpWord();
         }
     });
 
-    // Kickoff
     loadData();
   </script>
 </body>
