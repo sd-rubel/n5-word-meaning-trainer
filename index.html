@@ -116,7 +116,7 @@
       font-weight: 800;
       color: var(--accent);
       text-shadow: 0 4px 14px rgba(0,0,0,.38);
-      font-size: clamp(2.1rem, 4.6vw, 3.8rem);
+      font-size: clamp(1.8rem, 3.8vw, 3.2rem); /* Reduced font size */
     }
 
     .jp-word span {
@@ -124,8 +124,9 @@
     }
 
     .jp-word .highlight {
-      color: #e91e63; /* Vibrant pink for highlight */
-      transform: scale(1.1); /* Slightly scaled up */
+      color: #ffca28; /* Golden yellow for premium look */
+      transform: scale(1.2); /* Slightly larger for prominence */
+      text-shadow: 0 2px 6px rgba(0,0,0,0.4); /* Subtle shadow for premium effect */
       display: inline-block;
     }
 
@@ -148,7 +149,7 @@
     let current = 0;
     let highlightIndex = -1;
 
-    const special_list = ['っ', 'ゃ', 'ゅ', 'ょ', 'あ', 'い', 'う', 'え', 'お', 'ん', 'ー'];
+    const special_list = ['っ', 'ゃ', 'ゅ', 'ょ', 'あ', 'い', 'う', 'え', 'お', 'ん', 'ー', 'ッ', 'ャ', 'ュ', 'ョ', 'ア', 'イ', 'ウ', 'エ', 'オ', 'ン'];
 
     const synth = window.speechSynthesis;
     let voices = [];
@@ -185,17 +186,17 @@
       while (i < word.length) {
         let unit = '';
 
-        // Handle standalone vowels (あ, い, う, え, お)
-        if (['あ', 'い', 'う', 'え', 'お'].includes(word[i])) {
+        // Handle standalone vowels (あ, い, う, え, お / ア, イ, ウ, エ, オ)
+        if (['あ', 'い', 'う', 'え', 'お', 'ア', 'イ', 'ウ', 'エ', 'オ'].includes(word[i])) {
           unit = word[i];
           i++;
-          // If followed by ん, include it
-          if (i < word.length && word[i] === 'ん') {
+          // If followed by ん or ン, include it
+          if (i < word.length && ['ん', 'ン'].includes(word[i])) {
             unit += word[i];
             i++;
           }
-          // If followed by long vowel ー or う, include it
-          else if (i < word.length && (word[i] === 'ー' || word[i] === 'う')) {
+          // If followed by long vowel ー or う/ウ, include it
+          else if (i < word.length && (word[i] === 'ー' || ['う', 'ウ'].includes(word[i]))) {
             unit += word[i];
             i++;
           }
@@ -207,44 +208,44 @@
         unit = word[i];
         i++;
         // Add vowel if present
-        if (i < word.length && ['あ', 'い', 'う', 'え', 'お'].includes(word[i])) {
+        if (i < word.length && ['あ', 'い', 'う', 'え', 'お', 'ア', 'イ', 'ウ', 'エ', 'オ'].includes(word[i])) {
           unit += word[i];
           i++;
         }
-        // Add small ゃ, ゅ, ょ if present
-        if (i < word.length && ['ゃ', 'ゅ', 'ょ'].includes(word[i])) {
+        // Add small ゃ, ゅ, ょ / ャ, ュ, ョ if present
+        if (i < word.length && ['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ョ'].includes(word[i])) {
           unit += word[i];
           i++;
         }
-        // Add long vowel ー or う if present
-        if (i < word.length && (word[i] === 'ー' || word[i] === 'う')) {
+        // Add long vowel ー or う/ウ if present
+        if (i < word.length && (word[i] === 'ー' || ['う', 'ウ'].includes(word[i]))) {
           unit += word[i];
           i++;
         }
-        // Add ん if present
-        if (i < word.length && word[i] === 'ん') {
+        // Add ん/ン if present
+        if (i < word.length && ['ん', 'ン'].includes(word[i])) {
           unit += word[i];
           i++;
         }
-        // Handle っ followed by a consonant or vowel
-        if (i < word.length && word[i] === 'っ') {
+        // Handle っ/ッ followed by a consonant or vowel
+        if (i < word.length && ['っ', 'ッ'].includes(word[i])) {
           unit += word[i];
           i++;
           if (i < word.length) {
             unit += word[i];
             i++;
-            // Add small ゃ, ゅ, ょ if present
-            if (i < word.length && ['ゃ', 'ゅ', 'ょ'].includes(word[i])) {
+            // Add small ゃ, ゅ, ょ / ャ, ュ, ョ if present
+            if (i < word.length && ['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ョ'].includes(word[i])) {
               unit += word[i];
               i++;
             }
-            // Add long vowel ー or う if present
-            if (i < word.length && (word[i] === 'ー' || word[i] === 'う')) {
+            // Add long vowel ー or う/ウ if present
+            if (i < word.length && (word[i] === 'ー' || ['う', 'ウ'].includes(word[i]))) {
               unit += word[i];
               i++;
             }
-            // Add ん if present
-            if (i < word.length && word[i] === 'ん') {
+            // Add ん/ン if present
+            if (i < word.length && ['ん', 'ン'].includes(word[i])) {
               unit += word[i];
               i++;
             }
