@@ -145,7 +145,6 @@
     let vocab = [];
     let current = 0;
     let charIndex = -1;
-    let speaking = false;
 
     const synth = window.speechSynthesis;
     let voices = [];
@@ -157,19 +156,15 @@
     loadVoices();
     synth.onvoiceschanged = loadVoices;
 
-    function speak(text, lang = 'ja-JP', callback) {
+    function speak(text, callback) {
       if (!text) return;
-      if (!voices || voices.length === 0) {
-        setTimeout(() => speak(text, lang, callback), 50);
-        return;
-      }
       const utter = new SpeechSynthesisUtterance(text);
-      utter.lang = lang;
-      const voice = voices.find(v => v.lang.startsWith(lang));
+      utter.lang = 'ja-JP';
+      const voice = voices.find(v => v.lang.startsWith('ja'));
       if (voice) utter.voice = voice;
 
-      utter.onstart = () => { if(callback) callback(true); };
-      utter.onend   = () => { if(callback) callback(false); };
+      utter.onstart = () => callback(true);
+      utter.onend = () => callback(false);
 
       synth.speak(utter);
     }
@@ -179,48 +174,47 @@
       const jpWord = vocab[current].jp ?? vocab[current].japanese;
       const activeCard = root.querySelector('.card.active');
       if(activeCard) activeCard.querySelector('.jp-word').classList.add('speaking');
-      speak(jpWord, 'ja-JP', (isSpeaking) => {
-        speaking = isSpeaking;
+      speak(jpWord, (isSpeaking) => {
         if(!isSpeaking && activeCard) activeCard.querySelector('.jp-word').classList.remove('speaking');
       });
     }
 
-    // Character grouping according to rules
-    const smallKana = ['ゃ','ゅ','ょ','ぁ','ぃ','ぅ','ぇ','ぉ','ん','ー'];
-    const doubleKana = ['っ'];
+    const specialAfter = ['ゃ','ゅ','ょ','ぁ','ぃ','ぅ','ぇ','ぉ','ん','ー'];
+    const specialBefore = ['っ'];
 
-    function getCharGroups(word) {
+    function getCharGroups(word){
       const groups = [];
       let i = 0;
-      while(i < word.length){
+      while(i<word.length){
         let group = word[i];
 
-        if(doubleKana.includes(word[i]) && i+1<word.length){
-          // small っ joins next char
+        // current char is normal, next char is specialAfter → join
+        while(i+1 < word.length && specialAfter.includes(word[i+1])){
           group += word[i+1];
-          i+=2;
-        } else if(i>0 && smallKana.includes(word[i])) {
-          // small kana joins previous char
-          groups[groups.length-1] += word[i];
-          i++;
-          continue;
-        } else {
           i++;
         }
 
+        // previous char specialBefore → join
+        if(i>0 && specialBefore.includes(word[i-1])){
+          groups[groups.length-1] += group;
+          i++;
+          continue;
+        }
+
         groups.push(group);
+        i++;
       }
       return groups;
     }
 
-    function makeCard(idx) {
+    function makeCard(idx){
       const w = vocab[idx];
       const jp = w.jp ?? w.japanese ?? '';
       const prnc = w.prnc ?? w.pronunciation ?? '';
       const bn = w.bn ?? w.meaning ?? '';
       const cmt = w.cmt ?? w.comment ?? '';
       const charGroups = getCharGroups(jp);
-      const jpHtml = charGroups.map((g, i) => `<span class="char-wrapper" data-char-index="${i}">${g}</span>`).join('');
+      const jpHtml = charGroups.map((g,i)=>`<span class="char-wrapper" data-char-index="${i}">${g}</span>`).join('');
       const el = document.createElement('div');
       el.className = 'card';
       el.dataset.index = idx;
@@ -237,13 +231,13 @@
       return el;
     }
 
-    function showCard(index) {
+    function showCard(index){
       const cards = root.querySelectorAll('.card');
-      cards.forEach(c => c.className = 'card');
+      cards.forEach(c=>c.className='card');
       const active = root.querySelector(`[data-index="${index}"]`);
       if(active) active.classList.add('active');
-      const prevIndex = (index - 1 + vocab.length) % vocab.length;
-      const nextIndex = (index + 1) % vocab.length;
+      const prevIndex = (index-1+vocab.length)%vocab.length;
+      const nextIndex = (index+1)%vocab.length;
       const prev = root.querySelector(`[data-index="${prevIndex}"]`);
       const next = root.querySelector(`[data-index="${nextIndex}"]`);
       if(prev) prev.classList.add('prev');
@@ -253,18 +247,18 @@
       resetCharHighlights();
     }
 
-    function resetCharHighlights() {
+    function resetCharHighlights(){
       const activeCard = root.querySelector('.card.active');
       if(!activeCard) return;
       activeCard.querySelectorAll('.char-wrapper').forEach(c=>c.classList.remove('highlight'));
     }
 
-    function highlightChar() {
+    function highlightChar(){
       const activeCard = root.querySelector('.card.active');
       if(!activeCard) return;
       const chars = activeCard.querySelectorAll('.char-wrapper');
       if(!chars || chars.length===0) return;
-      charIndex = (charIndex + 1) % (chars.length + 1);
+      charIndex = (charIndex+1)%(chars.length+1);
       resetCharHighlights();
       if(charIndex===chars.length) return;
       chars[charIndex].classList.add('highlight');
@@ -278,14 +272,14 @@
         const res = await fetch(JSON_URL);
         vocab = await res.json();
         initCarousel();
-      } catch{
-        root.innerHTML = `<div style="color:#ff8a80;">লোড ব্যর্থ</div>`;
+      }catch{
+        root.innerHTML=`<div style="color:#ff8a80;">লোড ব্যর্থ</div>`;
       }
     }
 
     function initCarousel(){
-      root.innerHTML = '';
-      vocab.forEach((_, i) => root.append(makeCard(i)));
+      root.innerHTML='';
+      vocab.forEach((_,i)=>root.append(makeCard(i)));
       if(vocab.length>0) showCard(0);
     }
 
