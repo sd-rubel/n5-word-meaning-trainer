@@ -183,15 +183,72 @@
       const units = [];
       let i = 0;
       while (i < word.length) {
-        if (special_list.includes(word[i])) {
+        let unit = '';
+
+        // Handle standalone vowels (あ, い, う, え, お)
+        if (['あ', 'い', 'う', 'え', 'お'].includes(word[i])) {
+          unit = word[i];
           i++;
+          // If followed by ん, include it
+          if (i < word.length && word[i] === 'ん') {
+            unit += word[i];
+            i++;
+          }
+          // If followed by long vowel ー or う, include it
+          else if (i < word.length && (word[i] === 'ー' || word[i] === 'う')) {
+            unit += word[i];
+            i++;
+          }
+          units.push(unit);
           continue;
         }
-        let unit = word[i];
+
+        // Handle consonant-based units
+        unit = word[i];
         i++;
-        while (i < word.length && special_list.includes(word[i])) {
+        // Add vowel if present
+        if (i < word.length && ['あ', 'い', 'う', 'え', 'お'].includes(word[i])) {
           unit += word[i];
           i++;
+        }
+        // Add small ゃ, ゅ, ょ if present
+        if (i < word.length && ['ゃ', 'ゅ', 'ょ'].includes(word[i])) {
+          unit += word[i];
+          i++;
+        }
+        // Add long vowel ー or う if present
+        if (i < word.length && (word[i] === 'ー' || word[i] === 'う')) {
+          unit += word[i];
+          i++;
+        }
+        // Add ん if present
+        if (i < word.length && word[i] === 'ん') {
+          unit += word[i];
+          i++;
+        }
+        // Handle っ followed by a consonant or vowel
+        if (i < word.length && word[i] === 'っ') {
+          unit += word[i];
+          i++;
+          if (i < word.length) {
+            unit += word[i];
+            i++;
+            // Add small ゃ, ゅ, ょ if present
+            if (i < word.length && ['ゃ', 'ゅ', 'ょ'].includes(word[i])) {
+              unit += word[i];
+              i++;
+            }
+            // Add long vowel ー or う if present
+            if (i < word.length && (word[i] === 'ー' || word[i] === 'う')) {
+              unit += word[i];
+              i++;
+            }
+            // Add ん if present
+            if (i < word.length && word[i] === 'ん') {
+              unit += word[i];
+              i++;
+            }
+          }
         }
         units.push(unit);
       }
