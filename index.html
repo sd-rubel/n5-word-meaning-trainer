@@ -127,11 +127,6 @@
     .comment { font-family: "Hind Siliguri", sans-serif; color: var(--text-light); opacity: .94; font-size: 1rem; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.08); max-width: 92%; }
 
     @media (max-width: 720px) { :root { --card-w: min(94vw, 500px); --card-h: min(80vh, 580px); } }
-
-    /* Character highlighting */
-    .char-wrapper { position: relative; display: inline-block; transition: transform 300ms var(--fx), color 300ms var(--fx); }
-    .char-wrapper.highlight { transform: scale(1.3); color: var(--highlight-color); text-shadow: 0 0 12px rgba(0, 229, 255, 0.8); }
-    .jp-word.speaking { transform: scale(1.3); color: var(--highlight-color); }
   </style>
 </head>
 <body>
@@ -144,24 +139,19 @@
 
     let vocab = [];
     let current = 0;
-    let charIndex = -1;
     let speaking = false;
     
-    // Store voices to avoid repeated fetching
     let voices = [];
     const synth = window.speechSynthesis;
 
-    // Load voices and store them once
     function loadVoices() {
       voices = synth.getVoices();
     }
     
-    // Listen for voices to be loaded
     if (synth.onvoiceschanged !== undefined) {
       synth.onvoiceschanged = loadVoices;
     }
 
-    // Call loadVoices immediately in case they are already loaded
     loadVoices();
 
     function speak(text, lang = 'ja-JP', callback) {
@@ -173,7 +163,7 @@
       if (voice) utter.voice = voice;
 
       utter.onstart = () => { if(callback) callback(true); };
-      utter.onend   = () => { if(callback) callback(false); };
+      utter.onend = () => { if(callback) callback(false); };
 
       try {
         synth.speak(utter);
@@ -185,46 +175,9 @@
     function speakCurrentJpWord() {
       if (!vocab[current] || speaking) return;
       const jpWord = vocab[current].jp ?? vocab[current].japanese;
-      const activeCard = root.querySelector('.card.active');
-      
-      if(activeCard) activeCard.querySelector('.jp-word').classList.add('speaking');
-      
       speak(jpWord, 'ja-JP', (isSpeaking) => {
         speaking = isSpeaking;
-        if(!isSpeaking && activeCard) activeCard.querySelector('.jp-word').classList.remove('speaking');
       });
-    }
-
-    // New grouping rule
-    function getCharGroups(word) {
-      const groups = [];
-      const specialKana = ['っ', 'ゃ', 'ゅ', 'ょ', 'ぁ', 'ぃ', 'ぅ', 'ぇ', 'ぉ', 'ん', 'ー'];
-      let currentGroup = '';
-
-      for (let i = 0; i < word.length; i++) {
-        const char = word[i];
-        
-        // Check if the character is a small kana
-        const isSpecial = specialKana.includes(char);
-        
-        // If the current group is empty or the current character is not a special one, start a new group
-        if (!isSpecial || currentGroup === '') {
-          if (currentGroup !== '') {
-            groups.push(currentGroup);
-          }
-          currentGroup = char;
-        } else {
-          // If it's a special character, add it to the current group
-          currentGroup += char;
-        }
-      }
-      
-      // Push the last group
-      if (currentGroup !== '') {
-        groups.push(currentGroup);
-      }
-      
-      return groups;
     }
 
     function makeCard(idx) {
@@ -233,15 +186,13 @@
       const prnc = w.prnc ?? w.pronunciation ?? '';
       const bn = w.bn ?? w.meaning ?? '';
       const cmt = w.cmt ?? w.comment ?? '';
-      const charGroups = getCharGroups(jp);
-      const jpHtml = charGroups.map((g, i) => `<span class="char-wrapper" data-char-index="${i}">${g}</span>`).join('');
       const el = document.createElement('div');
       el.className = 'card';
       el.dataset.index = idx;
       el.innerHTML = `
         <div class="card-content">
           <div></div>
-          <h1 class="jp-word">${jpHtml}</h1>
+          <h1 class="jp-word">${jp}</h1>
           <p class="pronunciation">${prnc}</p>
           <p class="bengali-meaning">${bn}</p>
           <p class="comment">${cmt}</p>
@@ -263,25 +214,6 @@
       if(prev) prev.classList.add('prev');
       if(next) next.classList.add('next');
       current = index;
-      charIndex = -1;
-      resetCharHighlights();
-    }
-
-    function resetCharHighlights() {
-      const activeCard = root.querySelector('.card.active');
-      if(!activeCard) return;
-      activeCard.querySelectorAll('.char-wrapper').forEach(c=>c.classList.remove('highlight'));
-    }
-
-    function highlightChar() {
-      const activeCard = root.querySelector('.card.active');
-      if(!activeCard) return;
-      const chars = activeCard.querySelectorAll('.char-wrapper');
-      if(!chars || chars.length===0) return;
-      charIndex = (charIndex + 1) % (chars.length + 1);
-      resetCharHighlights();
-      if(charIndex===chars.length) return;
-      chars[charIndex].classList.add('highlight');
     }
 
     function slideNext(){ showCard((current+1)%vocab.length); }
@@ -307,7 +239,6 @@
       if(e.key==='ArrowRight') slideNext();
       else if(e.key==='ArrowLeft') slidePrev();
       else if(e.key===' ') { e.preventDefault(); speakCurrentJpWord(); }
-      else if(e.key==='p') { e.preventDefault(); highlightChar(); }
     });
 
     loadData();
