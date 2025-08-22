@@ -116,7 +116,14 @@
       font-weight: 800;
       color: var(--accent);
       text-shadow: 0 4px 14px rgba(0,0,0,.38);
-      font-size: clamp(2.1rem, 4.6vw, 3.8rem);
+      font-size: clamp(1.8rem, 4vw, 3.2rem); /* Reduced size */
+      transition: transform 300ms var(--fx), color 300ms var(--fx);
+    }
+
+    .jp-word.speaking {
+      transform: scale(1.2);
+      color: #ff4081; /* Bright pink for speaking */
+      text-shadow: 0 0 12px rgba(255, 64, 129, 0.8);
     }
 
     .pronunciation { font-style: italic; font-size: 1.3rem; color: #cfe8ff; }
@@ -163,40 +170,42 @@
       const voice = voices.find(v => v.lang.startsWith(lang));
       if (voice) utter.voice = voice;
       synth.speak(utter);
+      return utter; // Return utterance for event handling
     }
 
     function speakCurrentJpWord() {
       if (!vocab[current]) return;
       const jpWord = vocab[current].jp ?? vocab[current].japanese;
-      speak(jpWord, 'ja-JP');
+      const activeCard = root.querySelector('.card.active');
+      if (!activeCard) return;
+      const jpElement = activeCard.querySelector('.jp-word');
+      if (jpElement) {
+        jpElement.classList.add('speaking');
+        const utter = speak(jpWord, 'ja-JP');
+        if (utter) {
+          utter.onend = () => jpElement.classList.remove('speaking');
+        }
+      }
     }
 
     function getCharGroups(word) {
       const groups = [];
       let i = 0;
+      const specialChars = ['ゃ', 'ゅ', 'ょ', 'ぁ', 'ぃ', 'ぅ', 'ぇ', 'ぉ', 'ん', 'ー'];
       while (i < word.length) {
         let group = word[i];
-        // Handle small kana (ゃ, ゅ, ょ, っ, ぅ) or ん
-        if (i + 1 < word.length && ['ゃ', 'ゅ', 'ょ', 'っ', 'ぅ', 'ん'].includes(word[i + 1])) {
+        if (i < word.length - 1 && word[i] === 'っ') {
+          // Small っ groups with the next character
           group += word[i + 1];
           i += 2;
-          // Check for ん following small kana (e.g., ちゃん)
-          if (i < word.length && word[i] === 'ん') {
-            group += word[i];
-            i++;
-          }
-        } else if (i + 1 < word.length && ['い', 'す'].includes(word[i + 1]) && i + 1 === word.length - 1) {
-          // Handle い or す at the end of the word
-          group += word[i + 1];
-          i += 2;
-        } else if (i + 1 < word.length && word[i + 1] === 'ん') {
-          // Handle ん following a regular kana
-          group += word[i + 1];
-          i += 2;
+        } else if (i > 0 && specialChars.includes(word[i])) {
+          // Special chars (except っ) group with the previous character
+          groups[groups.length - 1] += word[i];
+          i++;
         } else {
           i++;
+          groups.push(group);
         }
-        groups.push(group);
       }
       return groups;
     }
