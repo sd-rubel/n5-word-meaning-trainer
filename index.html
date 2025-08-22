@@ -50,7 +50,7 @@
       content: '';
       position: absolute; inset: 0;
       background: linear-gradient(120deg, rgba(4,8,20,.70), rgba(4,8,20,.50));
-      z-index: 0;
+      z-index: 0; /* Z-index is fine here as it's the base layer */
     }
 
     /* UI Gradient Overlay (animated, soft) */
@@ -65,7 +65,7 @@
       filter: blur(36px);
       mix-blend-mode: screen;
       animation: floaty 12s ease-in-out infinite alternate;
-      z-index: 0;
+      z-index: 0; /* Z-index is fine here */
       pointer-events: none;
     }
     @keyframes floaty {
@@ -80,7 +80,7 @@
       height: min(78vh, 680px);
       display: grid;
       grid-template-rows: 1fr;
-      z-index: 1;
+      z-index: 1; /* Ensures content is above the body pseudo-elements */
     }
 
     /* ============== CAROUSEL ============== */
@@ -105,17 +105,18 @@
       backdrop-filter: blur(var(--blur));
       box-shadow: var(--shadow);
       opacity: 0;
-      transition: opacity 800ms ease-in-out;
+      transition: opacity 800ms ease-in-out, transform 800ms ease-in-out;
       transform: scale(0.9);
+      z-index: 0;
     }
     .card.active{
         opacity: 1;
-        z-index: 1;
+        z-index: 1; /* Active card should be on top */
         transform: scale(1);
     }
     .card.hidden{
         opacity: 0;
-        z-index: 0;
+        z-index: 0; /* Hidden card is behind */
         transform: scale(0.9);
     }
 
@@ -301,14 +302,15 @@
             'ば': 'ba', 'び': 'bi', 'ぶ': 'bu', 'べ': 'be', 'ぼ': 'bo',
             'ぱ': 'pa', 'ぴ': 'pi', 'ぷ': 'pu', 'ぺ': 'pe', 'ぽ': 'po',
             'ヴ': 'vu',
-            'ゐ': 'wi', 'ゑ': 'we', 'を': 'wo' // archaic
+            'ゐ': 'wi', 'ゑ': 'we', 'を': 'wo', // archaic
+            'ゃ': 'ゃ', 'ゅ': 'ゅ', 'ょ': 'ょ' // small letters
         };
 
         const chars = [];
         let i = 0;
         while (i < text.length) {
             let combined = text.substring(i, i + 2);
-            if (hiraganaMap[combined]) {
+            if (hiraganaMap[combined] && combined.length === 2) {
                 chars.push({ char: combined, romaji: hiraganaMap[combined] });
                 i += 2;
             } else if (hiraganaMap[text[i]]) {
@@ -363,19 +365,20 @@
         const currentWord = vocab[current];
         const jpWordEl = document.querySelector('.card.active .jp-word-container');
         
-        // Reset container for full word
+        // Step 1: Speak the full Japanese word (1st time)
         jpWordEl.classList.remove('spaced');
         jpWordEl.innerHTML = `<span class="char">${currentWord.jp}</span>`;
-
-        // 1. Speak the full Japanese word (1st time)
         await new Promise(resolve => speak(currentWord.jp, 'ja-JP', () => resolve()));
         await new Promise(resolve => setTimeout(resolve, 2000)); // 2s pause
 
-        // 2. Animate and speak character by character
+        // Step 2: Animate and speak character by character
         await animateAndSpeakChars();
         await new Promise(resolve => setTimeout(resolve, 2000)); // 2s pause
 
-        // 3. Speak the full Japanese word (3rd time)
+        // Step 3: Speak the full Japanese word (3rd time)
+        const finalWordEl = document.querySelector('.card.active .jp-word-container');
+        finalWordEl.innerHTML = `<span class="char">${currentWord.jp}</span>`;
+        finalWordEl.classList.remove('spaced');
         await new Promise(resolve => speak(currentWord.jp, 'ja-JP', () => resolve()));
         
         isSpeaking = false;
@@ -403,12 +406,10 @@
 
     function fillCard(card, idx){
         const w = vocab[idx];
-        const jp   = w.jp ?? w.japanese ?? '';
         const prnc = w.prnc ?? w.pronunciation ?? '';
-        const bn   = w.bn ?? w.meaning ?? '';
-        const cmt  = w.cmt ?? w.comment ?? '';
+        const bn = w.bn ?? w.meaning ?? '';
+        const cmt = w.cmt ?? w.comment ?? '';
 
-        // Fill other content
         card.querySelector('.pronunciation').textContent = prnc;
         card.querySelector('.bengali-meaning').textContent = bn;
         card.querySelector('.comment').textContent = cmt;
