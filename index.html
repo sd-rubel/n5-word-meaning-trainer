@@ -139,31 +139,26 @@
 
     let vocab = [];
     let current = 0;
-    let speaking = false;
-    
+
     let voices = [];
     const synth = window.speechSynthesis;
 
     function loadVoices() {
       voices = synth.getVoices();
     }
-    
+
+    // শুধু onvoiceschanged থেকে কল করুন
     if (synth.onvoiceschanged !== undefined) {
       synth.onvoiceschanged = loadVoices;
     }
 
-    loadVoices();
-
-    function speak(text, lang = 'ja-JP', callback) {
-      if (!text || speaking || !voices.length) return;
+    function speak(text, lang = 'ja-JP') {
+      if (!text) return;
       const utter = new SpeechSynthesisUtterance(text);
       utter.lang = lang;
-      
+
       const voice = voices.find(v => v.lang.startsWith(lang));
       if (voice) utter.voice = voice;
-
-      utter.onstart = () => { if(callback) callback(true); };
-      utter.onend = () => { if(callback) callback(false); };
 
       try {
         synth.speak(utter);
@@ -173,11 +168,9 @@
     }
 
     function speakCurrentJpWord() {
-      if (!vocab[current] || speaking) return;
+      if (!vocab[current]) return;
       const jpWord = vocab[current].jp ?? vocab[current].japanese;
-      speak(jpWord, 'ja-JP', (isSpeaking) => {
-        speaking = isSpeaking;
-      });
+      speak(jpWord, 'ja-JP');
     }
 
     function makeCard(idx) {
@@ -238,7 +231,10 @@
     document.addEventListener('keydown', e=>{
       if(e.key==='ArrowRight') slideNext();
       else if(e.key==='ArrowLeft') slidePrev();
-      else if(e.key===' ') { e.preventDefault(); speakCurrentJpWord(); }
+      else if(e.key===' ') { 
+        e.preventDefault(); 
+        speakCurrentJpWord(); 
+      }
     });
 
     loadData();
