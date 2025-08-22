@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premium Japanese Vocabulary Carousel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;700&family=Noto+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
@@ -18,14 +21,26 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            background: linear-gradient(45deg, #1e1b4b, #4a2c6f);
-            animation: bgPulse 15s infinite alternate;
+            background: url('https://raw.githubusercontent.com/sd-rubel/n5-word-meaning-trainer/main/background-img.jpg') no-repeat center center/cover;
+            position: relative;
         }
 
-        @keyframes bgPulse {
-            0% { background-position: 0% 0%; filter: brightness(0.9); }
-            50% { background-position: 50% 50%; filter: brightness(1.1); }
-            100% { background-position: 100% 100%; filter: brightness(0.9); }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1));
+            z-index: 0;
+            animation: bubbleAnimation 10s infinite ease-in-out;
+        }
+
+        @keyframes bubbleAnimation {
+            0% { background-size: 100% 100%; }
+            50% { background-size: 120% 120%; }
+            100% { background-size: 100% 100%; }
         }
 
         .carousel-container {
@@ -37,6 +52,7 @@
             justify-content: center;
             align-items: center;
             perspective: 1200px;
+            z-index: 1;
         }
 
         .card {
@@ -55,6 +71,7 @@
             z-index: 2;
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .card.left {
@@ -118,7 +135,7 @@
             font-weight: 700;
             color: #81c784;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            font-family: 'Noto Sans Bengali', sans-serif;
+            font-family: 'Hind Siliguri', sans-serif;
         }
 
         .comment {
@@ -126,7 +143,7 @@
             color: #e0e0e0;
             margin-top: 20px;
             line-height: 1.8;
-            font-family: 'Noto Sans Bengali', sans-serif;
+            font-family: 'Hind Siliguri', sans-serif;
             padding: 12px;
             background: rgba(255, 255, 255, 0.08);
             border-radius: 10px;
@@ -136,29 +153,30 @@
             font-size: 1.5em;
             color: #ef4444;
             text-align: center;
-            font-family: 'Noto Sans Bengali', sans-serif;
+            font-family: 'Hind Siliguri', sans-serif;
             padding: 20px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
+            z-index: 2;
         }
 
-        @keyframes slideInPremium {
-            0% { transform: translateX(-1200px) scale(0.6) rotateY(-20deg); opacity: 0; }
-            50% { transform: translateX(50px) scale(1.1) rotateY(5deg); opacity: 0.9; }
-            100% { transform: translateX(0) scale(1) rotateY(0deg); opacity: 1; }
+        @keyframes gallerySlideIn {
+            0% { transform: translateX(1200px) scale(0.6); opacity: 0; }
+            50% { transform: translateX(-50px) scale(1.1); opacity: 0.9; }
+            100% { transform: translateX(0) scale(1); opacity: 1; }
         }
 
-        @keyframes slideOutPremium {
-            0% { transform: translateX(0) scale(1) rotateY(0deg); opacity: 1; }
-            100% { transform: translateX(-1200px) scale(0.6) rotateY(20deg); opacity: 0; }
+        @keyframes gallerySlideOut {
+            0% { transform: translateX(0) scale(1); opacity: 1; }
+            100% { transform: translateX(-1200px) scale(0.6); opacity: 0; }
         }
 
         .card.center.enter {
-            animation: slideInPremium 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            animation: gallerySlideIn 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         .card.left.exit {
-            animation: slideOutPremium 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            animation: gallerySlideOut 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         @media (max-width: 1100px) {
@@ -244,7 +262,7 @@
             } catch (error) {
                 if (retries > 0) {
                     console.warn(`Retry attempt ${4 - retries} due to: ${error.message}`);
-                    await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2s before retry
+                    await new Promise(resolve => setTimeout(resolve, 2000));
                     return fetchVocabData(retries - 1);
                 }
                 container.innerHTML = `<p class="error">ত্রুটি: শব্দভাণ্ডার লোড করতে ব্যর্থ হয়েছে: ${error.message}. পুনরায় চেষ্টা করুন।</p>`;
@@ -270,24 +288,30 @@
 
         // Initialize or update the carousel with exactly three cards
         function updateCarousel() {
-            container.innerHTML = ''; // Clear existing cards
+            container.innerHTML = '';
             const prevIndex = (currentIndex - 1 + vocabData.length) % vocabData.length;
             const currentCardIndex = currentIndex;
             const nextIndex = (currentIndex + 1) % vocabData.length;
 
             // Create and position cards with animation classes
             const leftCard = createCard(prevIndex, 'card left');
-            const centerCard = createCard(currentCardIndex, 'card center enter');
-            const rightCard = createCard(nextIndex, 'card right');
+            const centerCard = createCard(currentCardIndex, 'card center');
+            const rightCard = createCard(nextIndex, 'card right enter');
 
             container.appendChild(leftCard);
             container.appendChild(centerCard);
             container.appendChild(rightCard);
 
+            // Apply exit animation to the old center card
+            const oldCenter = container.querySelector('.center');
+            if (oldCenter) oldCenter.classList.add('exit');
+
             // Remove animation classes after transition
             setTimeout(() => {
                 const center = container.querySelector('.center');
-                if (center) center.classList.remove('enter');
+                const exiting = container.querySelector('.exit');
+                if (center) center.classList.remove('enter', 'exit');
+                if (exiting) exiting.remove();
             }, 1000); // Match animation duration
 
             // Increment index for next cycle
