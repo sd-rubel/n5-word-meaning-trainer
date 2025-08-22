@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Japanese Vocabulary Carousel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,700;1,400&family=Noto+Sans+Bengali:wght@400;700&display=swap" rel="stylesheet">
+    <title>Premium Japanese Vocabulary Carousel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&family=Noto+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
@@ -17,49 +17,56 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(90deg, #d4a4eb, #f8bbd0);
-            font-family: 'Noto Sans', sans-serif;
             overflow: hidden;
+            background: linear-gradient(45deg, #0f172a, #1e293b);
+            animation: bgAnimation 10s infinite alternate;
+        }
+
+        @keyframes bgAnimation {
+            0% { background-position: 0% 0%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 100%; }
         }
 
         .carousel-container {
             position: relative;
             width: 100%;
-            max-width: 1200px;
-            height: 450px;
+            max-width: 1400px;
+            height: 500px;
             display: flex;
             justify-content: center;
             align-items: center;
-            perspective: 1000px;
+            perspective: 1200px;
         }
 
         .card {
             position: absolute;
-            width: 300px;
-            height: 400px;
-            background: linear-gradient(135deg, #78909c, #546e7a);
-            border-radius: 15px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            padding: 20px;
+            width: 400px;
+            height: 450px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 30px;
             text-align: center;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            transition: all 0.6s ease-in-out;
-            transform: translateX(0) scale(1);
+            transition: all 0.8s ease-out;
+            transform: translateX(0) scale(1) rotateY(0deg);
             z-index: 2;
-            color: #ffffff;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .card.left {
-            transform: translateX(-400px) scale(0.7) rotateY(10deg);
-            opacity: 0.7;
+            transform: translateX(-600px) scale(0.7) rotateY(15deg);
+            opacity: 0.6;
             z-index: 1;
         }
 
         .card.right {
-            transform: translateX(400px) scale(0.7) rotateY(-10deg);
-            opacity: 0.7;
+            transform: translateX(600px) scale(0.7) rotateY(-15deg);
+            opacity: 0.6;
             z-index: 1;
         }
 
@@ -67,63 +74,139 @@
             transform: translateX(0) scale(1) rotateY(0deg);
             opacity: 1;
             z-index: 3;
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.2), transparent);
+            border-radius: 25px;
+            z-index: -1;
+        }
+
+        .card-content {
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .jp-word {
-            font-size: 2.5em;
+            font-size: 3em;
             font-weight: 700;
-            margin: 0;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            color: #f9a825;
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+            font-family: 'Noto Sans Devanagari', sans-serif;
         }
 
         .pronunciation {
-            font-size: 1.2em;
+            font-size: 1.4em;
             font-style: italic;
-            margin: 10px 0;
+            color: #a3bffa;
+            margin: 15px 0;
+            font-family: 'Noto Sans', sans-serif;
         }
 
         .bengali-meaning {
-            font-size: 1.6em;
+            font-size: 1.8em;
             font-weight: 700;
-            margin: 10px 0;
-            font-family: 'Noto Sans Bengali', sans-serif;
+            color: #34d399;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            font-family: 'Noto Sans Devanagari', sans-serif;
         }
 
         .comment {
-            font-size: 0.9em;
-            margin-top: 15px;
-            line-height: 1.6;
-            font-family: 'Noto Sans Bengali', sans-serif;
+            font-size: 1.1em;
+            color: #e5e7eb;
+            margin-top: 20px;
+            line-height: 1.8;
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
         }
 
         .error {
-            font-size: 1.3em;
-            color: #be185d;
+            font-size: 1.4em;
+            color: #ef4444;
             text-align: center;
-            font-family: 'Noto Sans Bengali', sans-serif;
+            font-family: 'Noto Sans Devanagari', sans-serif;
             padding: 20px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
         }
 
-        @media (max-width: 900px) {
+        @keyframes slideIn {
+            0% { transform: translateX(-1000px) scale(0.7); opacity: 0; }
+            70% { transform: translateX(50px) scale(1.1); opacity: 0.8; }
+            100% { transform: translateX(0) scale(1); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            0% { transform: translateX(0) scale(1); opacity: 1; }
+            100% { transform: translateX(-1000px) scale(0.7); opacity: 0; }
+        }
+
+        .card.center.enter {
+            animation: slideIn 0.8s forwards;
+        }
+
+        .card.left.exit {
+            animation: slideOut 0.8s forwards;
+        }
+
+        @media (max-width: 1100px) {
             .carousel-container {
-                max-width: 800px;
-                height: 400px;
+                max-width: 1000px;
+                height: 450px;
             }
 
             .card {
-                width: 250px;
-                height: 350px;
+                width: 350px;
+                height: 400px;
             }
 
             .card.left {
-                transform: translateX(-300px) scale(0.6) rotateY(10deg);
+                transform: translateX(-500px) scale(0.65) rotateY(15deg);
             }
 
             .card.right {
-                transform: translateX(300px) scale(0.6) rotateY(-10deg);
+                transform: translateX(500px) scale(0.65) rotateY(-15deg);
+            }
+
+            .jp-word {
+                font-size: 2.6em;
+            }
+
+            .bengali-meaning {
+                font-size: 1.6em;
+            }
+
+            .comment {
+                font-size: 1em;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .carousel-container {
+                height: 350px;
+            }
+
+            .card {
+                width: 90%;
+                max-width: 350px;
+                height: 300px;
+            }
+
+            .card.left, .card.right {
+                transform: translateX(0) scale(0);
+                opacity: 0;
             }
 
             .jp-word {
@@ -135,36 +218,7 @@
             }
 
             .comment {
-                font-size: 0.85em;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .carousel-container {
-                height: 350px;
-            }
-
-            .card {
-                width: 90%;
-                max-width: 300px;
-                height: 300px;
-            }
-
-            .card.left, .card.right {
-                transform: translateX(0) scale(0);
-                opacity: 0;
-            }
-
-            .jp-word {
-                font-size: 2em;
-            }
-
-            .bengali-meaning {
-                font-size: 1.3em;
-            }
-
-            .comment {
-                font-size: 0.8em;
+                font-size: 0.9em;
             }
         }
     </style>
@@ -194,15 +248,17 @@
         }
 
         // Create a card for a given index
-        function createCard(index) {
+        function createCard(index, className = 'card') {
             const word = vocabData[index];
             const card = document.createElement('div');
-            card.className = 'card';
+            card.className = `${className}`;
             card.innerHTML = `
-                <h1 class="jp-word">${word.jp}</h1>
-                <p class="pronunciation">${word.prnc}</p>
-                <p class="bengali-meaning">${word.bn}</p>
-                <p class="comment">${word.cmt}</p>
+                <div class="card-content">
+                    <h1 class="jp-word">${word.jp}</h1>
+                    <p class="pronunciation">${word.prnc}</p>
+                    <p class="bengali-meaning">${word.bn}</p>
+                    <p class="comment">${word.cmt}</p>
+                </div>
             `;
             return card;
         }
@@ -214,17 +270,20 @@
             const currentCardIndex = currentIndex;
             const nextIndex = (currentIndex + 1) % vocabData.length;
 
-            const leftCard = createCard(prevIndex);
-            const centerCard = createCard(currentCardIndex);
-            const rightCard = createCard(nextIndex);
-
-            leftCard.classList.add('left');
-            centerCard.classList.add('center');
-            rightCard.classList.add('right');
+            // Create and position cards
+            const leftCard = createCard(prevIndex, 'card left');
+            const centerCard = createCard(currentCardIndex, 'card center enter');
+            const rightCard = createCard(nextIndex, 'card right');
 
             container.appendChild(leftCard);
             container.appendChild(centerCard);
             container.appendChild(rightCard);
+
+            // Remove animation classes after transition
+            setTimeout(() => {
+                const center = container.querySelector('.center');
+                if (center) center.classList.remove('enter');
+            }, 800);
 
             // Increment index for next cycle
             currentIndex = (currentIndex + 1) % vocabData.length;
@@ -240,7 +299,9 @@
         // Start the carousel with a 5-second interval
         function startCarousel() {
             if (intervalId) clearInterval(intervalId);
-            intervalId = setInterval(updateCarousel, 5000);
+            intervalId = setInterval(() => {
+                updateCarousel();
+            }, 5000);
         }
 
         // Fetch data and start the carousel
