@@ -147,20 +147,25 @@
 
     function loadVoices() {
       voices = synth.getVoices();
-      if (!voices || voices.length === 0) setTimeout(loadVoices, 100);
+      if (!voices || voices.length === 0) setTimeout(loadVoices, 100); // Retry if empty
     }
     loadVoices();
     speechSynthesis.onvoiceschanged = loadVoices;
 
+    // ============ OPTIMIZED SPEAK FUNCTION =============
     function speak(text, lang = 'ja-JP') {
       if (!text) return;
+      if (!voices || voices.length === 0) { 
+        setTimeout(() => speak(text, lang), 50); 
+        return;
+      }
       const utter = new SpeechSynthesisUtterance(text);
       utter.lang = lang;
       const voice = voices.find(v => v.lang.startsWith(lang));
       if (voice) utter.voice = voice;
-      synth.cancel();
-      synth.speak(utter);
+      synth.speak(utter); // cancel() বাদ দিয়ে queue-তে পাঠানো
     }
+    // ==================================================
 
     function speakCurrentJpWord() {
       if (!vocab[current]) return;
@@ -172,15 +177,8 @@
       const groups = [];
       for (let i = 0; i < word.length; i++) {
         let group = word[i];
-        if (i + 1 < word.length && ['ゃ','ゅ','ょ','っ'].includes(word[i + 1])) {
-          group += word[i + 1];
-          i++;
-        }
-        // ん should stay with previous kana
-        if (i + 1 < word.length && word[i + 1] === 'ん') {
-          group += word[i + 1];
-          i++;
-        }
+        if (i + 1 < word.length && ['ゃ','ゅ','ょ','っ'].includes(word[i + 1])) { group += word[i+1]; i++; }
+        if (i + 1 < word.length && word[i+1] === 'ん') { group += word[i+1]; i++; }
         groups.push(group);
       }
       return groups;
@@ -192,10 +190,8 @@
       const prnc = w.prnc ?? w.pronunciation ?? '';
       const bn = w.bn ?? w.meaning ?? '';
       const cmt = w.cmt ?? w.comment ?? '';
-
       const charGroups = getCharGroups(jp);
       const jpHtml = charGroups.map((g,i)=>`<span class="char-wrapper" data-char-index="${i}">${g}</span>`).join('');
-
       const el = document.createElement('div');
       el.className = 'card';
       el.dataset.index = idx;
@@ -215,18 +211,14 @@
     function showCard(index) {
       const cards = root.querySelectorAll('.card');
       cards.forEach(c=>c.className='card');
-
       const active = root.querySelector(`[data-index="${index}"]`);
       if (active) active.classList.add('active');
-
-      const prevIndex = (index - 1 + vocab.length) % vocab.length;
-      const nextIndex = (index + 1) % vocab.length;
-
+      const prevIndex = (index-1+vocab.length)%vocab.length;
+      const nextIndex = (index+1)%vocab.length;
       const prev = root.querySelector(`[data-index="${prevIndex}"]`);
       const next = root.querySelector(`[data-index="${nextIndex}"]`);
       if (prev) prev.classList.add('prev');
       if (next) next.classList.add('next');
-
       current = index;
       charIndex = -1;
       resetCharHighlights();
@@ -242,8 +234,7 @@
       const activeCard = root.querySelector('.card.active');
       if (!activeCard) return;
       const chars = activeCard.querySelectorAll('.char-wrapper');
-      if (!chars || chars.length === 0) return;
-
+      if (!chars || chars.length===0) return;
       charIndex = (charIndex + 1) % chars.length;
       resetCharHighlights();
       const currentChar = chars[charIndex];
