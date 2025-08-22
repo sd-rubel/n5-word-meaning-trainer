@@ -127,7 +127,7 @@
 
     /* Character highlighting */
     .char-wrapper { position: relative; display: inline-block; transition: transform 300ms var(--fx), color 300ms var(--fx); }
-    .char-wrapper.highlight { transform: scale(1.3); color: #ff5252; text-shadow: 0 0 18px rgba(255,82,82,0.85); }
+    .char-wrapper.highlight { transform: scale(1.3); color: #00e5ff; text-shadow: 0 0 12px rgba(0, 229, 255, 0.8); }
   </style>
 </head>
 <body>
@@ -142,12 +142,59 @@
     let current = 0;
     let charIndex = -1;
 
+    const synth = window.speechSynthesis;
+    let voices = [];
+
+    function loadVoices() {
+      voices = synth.getVoices();
+      if (!voices || voices.length === 0) setTimeout(loadVoices, 100);
+    }
+    loadVoices();
+    speechSynthesis.onvoiceschanged = loadVoices;
+
+    function speak(text, lang = 'ja-JP') {
+      if (!text) return;
+      if (!voices || voices.length === 0) {
+        setTimeout(() => speak(text, lang), 50);
+        return;
+      }
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = lang;
+      const voice = voices.find(v => v.lang.startsWith(lang));
+      if (voice) utter.voice = voice;
+      synth.speak(utter);
+    }
+
+    function speakCurrentJpWord() {
+      if (!vocab[current]) return;
+      const jpWord = vocab[current].jp ?? vocab[current].japanese;
+      speak(jpWord, 'ja-JP');
+    }
+
     function getCharGroups(word) {
       const groups = [];
-      for (let i = 0; i < word.length; i++) {
+      let i = 0;
+      while (i < word.length) {
         let group = word[i];
-        if (i + 1 < word.length && ['ゃ','ゅ','ょ','っ','ぅ'].includes(word[i+1])) { 
-          group += word[i+1]; i++; 
+        // Handle small kana (ゃ, ゅ, ょ, っ, ぅ) or ん
+        if (i + 1 < word.length && ['ゃ', 'ゅ', 'ょ', 'っ', 'ぅ', 'ん'].includes(word[i + 1])) {
+          group += word[i + 1];
+          i += 2;
+          // Check for ん following small kana (e.g., ちゃん)
+          if (i < word.length && word[i] === 'ん') {
+            group += word[i];
+            i++;
+          }
+        } else if (i + 1 < word.length && ['い', 'す'].includes(word[i + 1]) && i + 1 === word.length - 1) {
+          // Handle い or す at the end of the word
+          group += word[i + 1];
+          i += 2;
+        } else if (i + 1 < word.length && word[i + 1] === 'ん') {
+          // Handle ん following a regular kana
+          group += word[i + 1];
+          i += 2;
+        } else {
+          i++;
         }
         groups.push(group);
       }
@@ -161,9 +208,7 @@
       const bn = w.bn ?? w.meaning ?? '';
       const cmt = w.cmt ?? w.comment ?? '';
       const charGroups = getCharGroups(jp);
-
-      const jpHtml = charGroups.map((g,i)=>`<span class="char-wrapper" data-char-index="${i}">${g}</span>`).join('');
-
+      const jpHtml = charGroups.map((g, i) => `<span class="char-wrapper" data-char-index="${i}">${g}</span>`).join('');
       const el = document.createElement('div');
       el.className = 'card';
       el.dataset.index = idx;
@@ -182,11 +227,11 @@
 
     function showCard(index) {
       const cards = root.querySelectorAll('.card');
-      cards.forEach(c=>c.className='card');
+      cards.forEach(c => c.className = 'card');
       const active = root.querySelector(`[data-index="${index}"]`);
       if (active) active.classList.add('active');
-      const prevIndex = (index-1+vocab.length)%vocab.length;
-      const nextIndex = (index+1)%vocab.length;
+      const prevIndex = (index - 1 + vocab.length) % vocab.length;
+      const nextIndex = (index + 1) % vocab.length;
       const prev = root.querySelector(`[data-index="${prevIndex}"]`);
       const next = root.querySelector(`[data-index="${nextIndex}"]`);
       if (prev) prev.classList.add('prev');
@@ -199,36 +244,23 @@
     function resetCharHighlights() {
       const activeCard = root.querySelector('.card.active');
       if (!activeCard) return;
-      activeCard.querySelectorAll('.char-wrapper').forEach(c=>c.classList.remove('highlight'));
+      activeCard.querySelectorAll('.char-wrapper').forEach(c => c.classList.remove('highlight'));
     }
 
-    // Highlight only logic with rules
     function highlightChar() {
       const activeCard = root.querySelector('.card.active');
       if (!activeCard) return;
-      const chars = Array.from(activeCard.querySelectorAll('.char-wrapper'));
-      if (chars.length === 0) return;
-
-      charIndex = (charIndex + 1) % chars.length;
+      const chars = activeCard.querySelectorAll('.char-wrapper');
+      if (!chars || chars.length === 0) return;
       resetCharHighlights();
-
-      // Determine group to highlight based on rules
-      let start = charIndex;
-      let end = charIndex;
-
-      // Rule 1: 'ぅ' joins with previous
-      if (chars[charIndex].textContent.includes('ぅ') && charIndex>0) start = charIndex-1;
-
-      // Rule 2: 'い' or 'す' at the end joins with previous
-      if (['い','す'].includes(chars[charIndex].textContent) && charIndex>0) start = charIndex-1;
-
-      for (let i=start;i<=end;i++) {
-        chars[i].classList.add('highlight');
-      }
+      charIndex = (charIndex + 1) % (chars.length + 1);
+      if (charIndex === chars.length) return; // Reset highlights after last group
+      const currentChar = chars[charIndex];
+      currentChar.classList.add('highlight');
     }
 
-    function slideNext() { showCard((current+1)%vocab.length); }
-    function slidePrev() { showCard((current-1+vocab.length)%vocab.length); }
+    function slideNext() { showCard((current + 1) % vocab.length); }
+    function slidePrev() { showCard((current - 1 + vocab.length) % vocab.length); }
 
     async function loadData() {
       try {
@@ -242,14 +274,15 @@
 
     function initCarousel() {
       root.innerHTML = '';
-      vocab.forEach((_,i)=>root.append(makeCard(i)));
-      if (vocab.length>0) showCard(0);
+      vocab.forEach((_, i) => root.append(makeCard(i)));
+      if (vocab.length > 0) showCard(0);
     }
 
     document.addEventListener('keydown', e => {
-      if (e.key==='ArrowRight') slideNext();
-      else if (e.key==='ArrowLeft') slidePrev();
-      else if (e.key==='p') { e.preventDefault(); highlightChar(); }
+      if (e.key === 'ArrowRight') slideNext();
+      else if (e.key === 'ArrowLeft') slidePrev();
+      else if (e.key === ' ') { e.preventDefault(); speakCurrentJpWord(); }
+      else if (e.key === 'p') { e.preventDefault(); highlightChar(); }
     });
 
     loadData();
