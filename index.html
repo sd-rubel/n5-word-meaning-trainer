@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Japanese Vocabulary – Premium Carousel</title>
+  <title>Japanese Vocabulary – Minimal Carousel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
@@ -79,23 +79,8 @@
       width: min(96vw, 1480px);
       height: min(78vh, 680px);
       display: grid;
-      grid-template-rows: auto 1fr auto;
-      gap: 16px;
+      grid-template-rows: 1fr;
       z-index: 1;
-    }
-
-    .app-header{
-      display: flex; align-items: center; justify-content: center; gap: 12px;
-      padding: 8px 14px;
-      color: #f5f7ff;
-      text-shadow: 0 2px 12px rgba(0,0,0,.35);
-      user-select: none;
-    }
-    .title{
-      font-weight: 700;
-      letter-spacing: .3px;
-      font-size: clamp(1.05rem, 1.6vw, 1.35rem);
-      opacity:.95;
     }
 
     /* ============== CAROUSEL ============== */
@@ -134,24 +119,6 @@
         transform: scale(0.9);
     }
 
-    /* For pronunciation animation */
-    @keyframes scaleUp {
-        0% { transform: scale(1); opacity: 1; }
-        100% { transform: scale(1.4); opacity: 1; }
-    }
-
-    .jp-word span.animate {
-      display: inline-block;
-      animation: scaleUp 0.6s ease-in-out forwards;
-      color: var(--accent-soft);
-      text-shadow: 0 4px 14px rgba(0,0,0,.45);
-    }
-    .jp-word span.animated {
-      transform: scale(1.4);
-      color: var(--accent-soft);
-      text-shadow: 0 4px 14px rgba(0,0,0,.45);
-    }
-
     /* ============== CONTENT ============== */
     .card-content{
       height: 100%;
@@ -172,10 +139,6 @@
       font-size: clamp(2.1rem, 4.6vw, 3.8rem);
       white-space: nowrap;
       max-width: 100%;
-    }
-
-    .jp-word span {
-      transition: transform 0.3s ease-in-out;
     }
 
     .pronunciation{
@@ -205,17 +168,6 @@
       max-width: 92%;
     }
 
-    /* Footer (optional info) */
-    .app-footer{
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      opacity: .85;
-      font-size: .92rem;
-      user-select: none;
-      text-shadow: 0 2px 10px rgba(0,0,0,.35);
-    }
-
     /* Responsive tweaks */
     @media (max-width: 1100px){
       .card.left, .card.right{ opacity: 0; }
@@ -227,17 +179,7 @@
 </head>
 <body>
   <div class="app-frame">
-    <header class="app-header">
-      <div class="title">Japanese Vocabulary • Premium Carousel</div>
-    </header>
-
     <main class="carousel" id="carousel"></main>
-
-    <footer class="app-footer">
-      <span>Auto-slide on meaning completion</span>
-      <span>•</span>
-      <span>Smooth Fade-in/out</span>
-    </footer>
   </div>
 
   <script>
@@ -247,7 +189,7 @@
 
     let vocab = [];
     let current = 0;
-    let isAnimating = false;
+    let isSpeaking = false;
 
     // Use Web Speech API for pronunciation
     const synth = window.speechSynthesis;
@@ -272,7 +214,7 @@
       }
     }
 
-    /* ================== SPEECH & ANIMATION ================== */
+    /* ================== SPEECH LOGIC ================== */
     function speak(text, lang = 'ja-JP', onEnd = null) {
       if (!synth || !text) {
         if (onEnd) onEnd();
@@ -292,38 +234,32 @@
       synth.speak(utter);
     }
     
-    // Function to split Japanese text by characters, including combined ones
-    function getJapaneseChars(text) {
-        const regex = /([きしちにひみりぎじびぴゃしゅちゅひゅみゅりゅぎゅじゅびゅぴゅ]|っ|ゃ|ゅ|ょ|[a-z0-9\s.,?]|[\u3041-\u3096\u30A0-\u30FF])/gi;
-        const matches = text.match(regex);
-        return matches || [];
-    }
+    // Process all text on the current card
+    async function processCurrentCard() {
+        if(isSpeaking || vocab.length === 0) return;
+        isSpeaking = true;
 
-    // Break down and pronounce each character with animation
-    async function speakAndAnimate(text) {
-        if (!text) return;
-
-        const words = getJapaneseChars(text);
-        const wordEl = document.querySelector('.card.active .jp-word');
-        wordEl.innerHTML = words.map(w => `<span>${w}</span>`).join('');
+        const currentWord = vocab[current];
         
-        const spans = wordEl.querySelectorAll('span');
+        // 1. Speak the full Japanese word (1st time)
+        await new Promise(resolve => speak(currentWord.jp, 'ja-JP', () => resolve()));
+        await new Promise(resolve => setTimeout(resolve, 2000)); // 2s pause
 
-        for (let i = 0; i < words.length; i++) {
-            const span = spans[i];
-            span.classList.add('animate');
-            speak(words[i], 'ja-JP');
-            
-            await new Promise(resolve => {
-                setTimeout(() => {
-                    span.classList.remove('animate');
-                    span.classList.add('animated');
-                    resolve();
-                }, 600);
-            });
-            
-            await new Promise(resolve => setTimeout(resolve, 150));
+        // 2. Speak the full Japanese word (2nd time)
+        await new Promise(resolve => speak(currentWord.jp, 'ja-JP', () => resolve()));
+        await new Promise(resolve => setTimeout(resolve, 1000)); // 1s pause
+
+        // 3. Speak the full card content in a sequence
+        await new Promise(resolve => speak(currentWord.jp, 'ja-JP', () => resolve()));
+        await new Promise(resolve => speak(currentWord.prnc, 'ja-JP', () => resolve()));
+        await new Promise(resolve => speak(currentWord.bn, 'bn-BD', () => resolve()));
+        if (currentWord.cmt) {
+            await new Promise(resolve => speak(currentWord.cmt, 'bn-BD', () => resolve()));
         }
+
+        isSpeaking = false;
+        // Proceed to next card after all content is spoken
+        slideNext();
     }
 
     /* ================== CAROUSEL LOGIC ================== */
@@ -353,56 +289,11 @@
         card.querySelector('.pronunciation').textContent = prnc;
         card.querySelector('.bengali-meaning').textContent = bn;
         card.querySelector('.comment').textContent = cmt;
-
-        fitHeading(card.querySelector('.jp-word'), card);
-    }
-
-    function fitHeading(headingEl, card){
-        headingEl.style.fontSize = '';
-        const maxPx = Math.min(card.clientWidth * 0.16 + 24, 64);
-        const minPx = 24;
-        let size = maxPx;
-        headingEl.style.fontSize = size + 'px';
-
-        const pad = 24;
-        const maxWidth = card.clientWidth - pad * 2;
-        let safety = 40;
-        while(headingEl.scrollWidth > maxWidth && size > minPx && safety--){
-            size -= 2;
-            headingEl.style.fontSize = size + 'px';
-        }
-    }
-
-    async function processCurrentCard() {
-        if(isAnimating || vocab.length === 0) return;
-        isAnimating = true;
-
-        const card = document.querySelector('.card.active');
-        if (!card) return;
-        
-        const jpWord = vocab[current].jp ?? vocab[current].japanese;
-        const bnMeaning = vocab[current].bn ?? vocab[current].meaning;
-
-        // Step 1: Speak the full Japanese word
-        await new Promise(resolve => speak(jpWord, 'ja-JP', () => resolve()));
-        await new Promise(resolve => setTimeout(resolve, 1500)); // Pause
-
-        // Step 2: Animate and speak character by character
-        await speakAndAnimate(jpWord);
-        await new Promise(resolve => setTimeout(resolve, 1500)); // Pause
-
-        // Step 3: Speak the Bengali meaning and automatically advance when finished
-        await new Promise(resolve => speak(bnMeaning, 'bn-BD', () => {
-            isAnimating = false;
-            resolve();
-            slideNext();
-        }));
     }
 
     function slideNext(){
-        if(isAnimating) return;
+        if(isSpeaking) return;
 
-        isAnimating = true;
         const oldCard = document.querySelector('.card.active');
         if (oldCard) {
             oldCard.classList.remove('active');
@@ -415,7 +306,6 @@
         if(nextCard){
             nextCard.classList.remove('hidden');
             nextCard.classList.add('active');
-            isAnimating = false;
             processCurrentCard();
         } else {
             initCarousel();
@@ -436,14 +326,6 @@
             initialCard.classList.add('active');
             processCurrentCard();
         }
-
-        window.addEventListener('resize', () => {
-            const cards = root.querySelectorAll('.card');
-            cards.forEach(card => {
-                const h = card.querySelector('.jp-word');
-                if(h) fitHeading(h, card);
-            });
-        });
     }
 
     // Kickoff
