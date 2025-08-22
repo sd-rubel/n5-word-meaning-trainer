@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Japanese Vocabulary – Keyboard Controlled</title>
+  <title>Japanese Vocabulary – Gallery Slide</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
@@ -24,7 +24,7 @@
       --glass: rgba(255,255,255,.10);
       --glass-border: rgba(255,255,255,.28);
       --fx: cubic-bezier(.4,0,.2,1);
-      --anim-dur: 900ms;
+      --anim-dur: 800ms;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -105,20 +105,38 @@
       border: 1px solid var(--glass-border);
       backdrop-filter: blur(var(--blur));
       box-shadow: var(--shadow);
-      opacity: 0;
-      transition: opacity 800ms ease-in-out, transform 800ms ease-in-out;
-      transform: scale(0.9);
+      transition: transform var(--anim-dur) var(--fx), opacity var(--anim-dur) var(--fx);
       z-index: 0;
+      opacity: 0;
     }
+
     .card.active{
         opacity: 1;
         z-index: 1;
-        transform: scale(1);
+        transform: translateX(0) scale(1);
     }
-    .card.hidden{
-        opacity: 0;
+
+    .card.next {
+        opacity: 1;
         z-index: 0;
-        transform: scale(0.9);
+        transform: translateX(calc(var(--card-w) + 80px));
+    }
+    
+    .card.prev {
+        opacity: 1;
+        z-index: 0;
+        transform: translateX(calc(-1 * (var(--card-w) + 80px)));
+    }
+
+    /* Animations for sliding in/out */
+    @keyframes slide-in-right {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes slide-out-left {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(-100%); opacity: 0; }
     }
 
     /* ============== CONTENT ============== */
@@ -169,7 +187,7 @@
       background: rgba(255,255,255,.08);
       max-width: 92%;
     }
-
+    
     /* Responsive tweaks */
     @media (max-width: 1100px){
       .card.left, .card.right{ opacity: 0; }
@@ -268,22 +286,44 @@
         card.querySelector('.comment').textContent = cmt;
     }
 
-    function showCard(index) {
+    function showCard(index, direction) {
         if (index < 0 || index >= vocab.length) return;
 
         const oldCard = document.querySelector('.card.active');
-        if (oldCard) {
-            oldCard.classList.remove('active');
-            oldCard.classList.add('hidden');
-        }
-
         const nextCard = root.querySelector(`[data-index="${index}"]`);
-        if(nextCard){
-            nextCard.classList.remove('hidden');
+        
+        if (oldCard && nextCard) {
+            oldCard.classList.remove('active');
+            nextCard.classList.remove('prev', 'next');
             nextCard.classList.add('active');
         }
-
         current = index;
+
+        // Preload next/prev cards to the side
+        const nextIndex = (current + 1) % vocab.length;
+        const prevIndex = (current - 1 + vocab.length) % vocab.length;
+
+        const nextCardToLoad = root.querySelector(`[data-index="${nextIndex}"]`);
+        const prevCardToLoad = root.querySelector(`[data-index="${prevIndex}"]`);
+
+        if(nextCardToLoad) {
+            nextCardToLoad.classList.remove('active', 'prev', 'hidden');
+            nextCardToLoad.classList.add('next');
+        }
+        if(prevCardToLoad) {
+            prevCardToLoad.classList.remove('active', 'next', 'hidden');
+            prevCardToLoad.classList.add('prev');
+        }
+    }
+
+    function slideNext() {
+        const nextIndex = (current + 1) % vocab.length;
+        showCard(nextIndex, 'right');
+    }
+    
+    function slidePrev() {
+        const prevIndex = (current - 1 + vocab.length) % vocab.length;
+        showCard(prevIndex, 'left');
     }
 
     function initCarousel(){
@@ -296,18 +336,16 @@
         }
 
         if(vocab.length > 0) {
-            showCard(0);
+            showCard(0, 'right');
         }
     }
 
     /* ================== KEYBOARD CONTROLS ================== */
     document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight') {
-            const nextIndex = (current + 1) % vocab.length;
-            showCard(nextIndex);
+            slideNext();
         } else if (e.key === 'ArrowLeft') {
-            const prevIndex = (current - 1 + vocab.length) % vocab.length;
-            showCard(prevIndex);
+            slidePrev();
         } else if (e.key === ' ') {
             e.preventDefault(); // Prevents the page from scrolling
             speakCurrentJpWord();
