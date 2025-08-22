@@ -145,76 +145,96 @@
     let vocab = [];
     let current = 0;
     let charIndex = -1;
-
-    const synth = window.speechSynthesis;
+    let speaking = false;
+    
+    // Store voices to avoid repeated fetching
     let voices = [];
+    const synth = window.speechSynthesis;
 
+    // Load voices and store them once
     function loadVoices() {
       voices = synth.getVoices();
-      if (!voices || voices.length === 0) setTimeout(loadVoices, 100);
     }
-    loadVoices();
-    synth.onvoiceschanged = loadVoices;
+    
+    // Listen for voices to be loaded
+    if (synth.onvoiceschanged !== undefined) {
+      synth.onvoiceschanged = loadVoices;
+    }
 
-    function speak(text, callback) {
-      if (!text) return;
+    // Call loadVoices immediately in case they are already loaded
+    loadVoices();
+
+    function speak(text, lang = 'ja-JP', callback) {
+      if (!text || speaking || !voices.length) return;
       const utter = new SpeechSynthesisUtterance(text);
-      utter.lang = 'ja-JP';
-      const voice = voices.find(v => v.lang.startsWith('ja'));
+      utter.lang = lang;
+      
+      const voice = voices.find(v => v.lang.startsWith(lang));
       if (voice) utter.voice = voice;
 
-      utter.onstart = () => callback(true);
-      utter.onend = () => callback(false);
+      utter.onstart = () => { if(callback) callback(true); };
+      utter.onend   = () => { if(callback) callback(false); };
 
-      synth.speak(utter);
+      try {
+        synth.speak(utter);
+      } catch (e) {
+        console.error("SpeechSynthesisUtterance failed:", e);
+      }
     }
 
     function speakCurrentJpWord() {
-      if (!vocab[current]) return;
+      if (!vocab[current] || speaking) return;
       const jpWord = vocab[current].jp ?? vocab[current].japanese;
       const activeCard = root.querySelector('.card.active');
+      
       if(activeCard) activeCard.querySelector('.jp-word').classList.add('speaking');
-      speak(jpWord, (isSpeaking) => {
+      
+      speak(jpWord, 'ja-JP', (isSpeaking) => {
+        speaking = isSpeaking;
         if(!isSpeaking && activeCard) activeCard.querySelector('.jp-word').classList.remove('speaking');
       });
     }
 
-    const specialAfter = ['ゃ','ゅ','ょ','ぁ','ぃ','ぅ','ぇ','ぉ','ん','ー'];
-    const specialBefore = ['っ'];
-
-    function getCharGroups(word){
+    // New grouping rule
+    function getCharGroups(word) {
       const groups = [];
-      let i = 0;
-      while(i<word.length){
-        let group = word[i];
+      const specialKana = ['っ', 'ゃ', 'ゅ', 'ょ', 'ぁ', 'ぃ', 'ぅ', 'ぇ', 'ぉ', 'ん', 'ー'];
+      let currentGroup = '';
 
-        // current char is normal, next char is specialAfter → join
-        while(i+1 < word.length && specialAfter.includes(word[i+1])){
-          group += word[i+1];
-          i++;
+      for (let i = 0; i < word.length; i++) {
+        const char = word[i];
+        
+        // Check if the character is a small kana
+        const isSpecial = specialKana.includes(char);
+        
+        // If the current group is empty or the current character is not a special one, start a new group
+        if (!isSpecial || currentGroup === '') {
+          if (currentGroup !== '') {
+            groups.push(currentGroup);
+          }
+          currentGroup = char;
+        } else {
+          // If it's a special character, add it to the current group
+          currentGroup += char;
         }
-
-        // previous char specialBefore → join
-        if(i>0 && specialBefore.includes(word[i-1])){
-          groups[groups.length-1] += group;
-          i++;
-          continue;
-        }
-
-        groups.push(group);
-        i++;
       }
+      
+      // Push the last group
+      if (currentGroup !== '') {
+        groups.push(currentGroup);
+      }
+      
       return groups;
     }
 
-    function makeCard(idx){
+    function makeCard(idx) {
       const w = vocab[idx];
       const jp = w.jp ?? w.japanese ?? '';
       const prnc = w.prnc ?? w.pronunciation ?? '';
       const bn = w.bn ?? w.meaning ?? '';
       const cmt = w.cmt ?? w.comment ?? '';
       const charGroups = getCharGroups(jp);
-      const jpHtml = charGroups.map((g,i)=>`<span class="char-wrapper" data-char-index="${i}">${g}</span>`).join('');
+      const jpHtml = charGroups.map((g, i) => `<span class="char-wrapper" data-char-index="${i}">${g}</span>`).join('');
       const el = document.createElement('div');
       el.className = 'card';
       el.dataset.index = idx;
@@ -231,13 +251,13 @@
       return el;
     }
 
-    function showCard(index){
+    function showCard(index) {
       const cards = root.querySelectorAll('.card');
-      cards.forEach(c=>c.className='card');
+      cards.forEach(c => c.className = 'card');
       const active = root.querySelector(`[data-index="${index}"]`);
       if(active) active.classList.add('active');
-      const prevIndex = (index-1+vocab.length)%vocab.length;
-      const nextIndex = (index+1)%vocab.length;
+      const prevIndex = (index - 1 + vocab.length) % vocab.length;
+      const nextIndex = (index + 1) % vocab.length;
       const prev = root.querySelector(`[data-index="${prevIndex}"]`);
       const next = root.querySelector(`[data-index="${nextIndex}"]`);
       if(prev) prev.classList.add('prev');
@@ -247,18 +267,18 @@
       resetCharHighlights();
     }
 
-    function resetCharHighlights(){
+    function resetCharHighlights() {
       const activeCard = root.querySelector('.card.active');
       if(!activeCard) return;
       activeCard.querySelectorAll('.char-wrapper').forEach(c=>c.classList.remove('highlight'));
     }
 
-    function highlightChar(){
+    function highlightChar() {
       const activeCard = root.querySelector('.card.active');
       if(!activeCard) return;
       const chars = activeCard.querySelectorAll('.char-wrapper');
       if(!chars || chars.length===0) return;
-      charIndex = (charIndex+1)%(chars.length+1);
+      charIndex = (charIndex + 1) % (chars.length + 1);
       resetCharHighlights();
       if(charIndex===chars.length) return;
       chars[charIndex].classList.add('highlight');
@@ -272,14 +292,14 @@
         const res = await fetch(JSON_URL);
         vocab = await res.json();
         initCarousel();
-      }catch{
-        root.innerHTML=`<div style="color:#ff8a80;">লোড ব্যর্থ</div>`;
+      } catch{
+        root.innerHTML = `<div style="color:#ff8a80; font-size:1.5rem; text-align:center;">ডেটা লোড করতে ব্যর্থ হয়েছে। অনুগ্রহ করে URL এবং ইন্টারনেট সংযোগ পরীক্ষা করুন।</div>`;
       }
     }
 
     function initCarousel(){
-      root.innerHTML='';
-      vocab.forEach((_,i)=>root.append(makeCard(i)));
+      root.innerHTML = '';
+      vocab.forEach((_, i) => root.append(makeCard(i)));
       if(vocab.length>0) showCard(0);
     }
 
