@@ -16,7 +16,7 @@
       --blur: 20px;
       --shadow: 0 18px 48px rgba(0,0,0,.45);
       --accent: #ffd54f;
-      --accent-soft: #ffe082;
+      --accent-soft: #fff9c4;
       --text-light: #e8f1ff;
       --text-bn: #9be7a1;
       --glass: rgba(255,255,255,.10);
@@ -119,6 +119,20 @@
       font-size: clamp(2.1rem, 4.6vw, 3.8rem);
     }
 
+    .jp-word span {
+      transition: all 300ms var(--fx);
+    }
+
+    .jp-word .highlight {
+      background: var(--accent-soft);
+      color: #d81b60;
+      border-radius: 50%;
+      padding: 6px 8px;
+      transform: scale(1.2);
+      display: inline-block;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
     .pronunciation { font-style: italic; font-size: 1.3rem; color: #cfe8ff; }
     .bengali-meaning { font-family: "Hind Siliguri", sans-serif; color: var(--text-bn); font-weight: 700; font-size: 1.8rem; }
     .comment { font-family: "Hind Siliguri", sans-serif; color: var(--text-light); opacity: .94; font-size: 1rem; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.08); max-width: 92%; }
@@ -136,6 +150,9 @@
 
     let vocab = [];
     let current = 0;
+    let highlightIndex = -1;
+
+    const special_list = ['っ', 'ゃ', 'ゅ', 'ょ', 'ぁ', 'ぃ', 'ぅ', 'ぇ', 'ぉ', 'ん', 'ー'];
 
     const synth = window.speechSynthesis;
     let voices = [];
@@ -166,6 +183,31 @@
       speak(jpWord, 'ja-JP');
     }
 
+    function getHighlightUnits(word) {
+      const units = [];
+      let i = 0;
+      while (i < word.length) {
+        let unit = word[i];
+        if (special_list.includes(word[i])) {
+          i++;
+          continue;
+        }
+        if (word[i] === 'っ' && i + 1 < word.length) {
+          unit = word[i] + word[i + 1];
+          i += 2;
+        } else {
+          let j = i + 1;
+          while (j < word.length && special_list.includes(word[j]) && word[j] !== 'っ') {
+            unit += word[j];
+            j++;
+          }
+          i = j;
+        }
+        units.push(unit);
+      }
+      return units;
+    }
+
     function makeCard(idx) {
       const w = vocab[idx];
       const jp = w.jp ?? w.japanese ?? '';
@@ -175,10 +217,14 @@
       const el = document.createElement('div');
       el.className = 'card';
       el.dataset.index = idx;
+
+      const units = getHighlightUnits(jp);
+      const jpHTML = units.map((unit, i) => `<span data-unit="${i}">${unit}</span>`).join('');
+
       el.innerHTML = `
         <div class="card-content">
           <div></div>
-          <h1 class="jp-word">${jp}</h1>
+          <h1 class="jp-word">${jpHTML}</h1>
           <p class="pronunciation">${prnc}</p>
           <p class="bengali-meaning">${bn}</p>
           <p class="comment">${cmt}</p>
@@ -188,22 +234,45 @@
       return el;
     }
 
+    function highlightCharacter() {
+      const activeCard = root.querySelector('.card.active');
+      if (!activeCard) return;
+
+      const spans = activeCard.querySelectorAll('.jp-word span');
+      if (spans.length === 0) return;
+
+      spans.forEach(span => span.classList.remove('highlight'));
+
+      highlightIndex = (highlightIndex + 1) % (spans.length + 1);
+
+      if (highlightIndex === spans.length) {
+        highlightIndex = -1;
+        return;
+      }
+
+      const currentSpan = spans[highlightIndex];
+      if (currentSpan) {
+        currentSpan.classList.add('highlight');
+      }
+    }
+
     function showCard(index) {
       const cards = root.querySelectorAll('.card');
-      cards.forEach(c=>c.className='card');
+      cards.forEach(c => c.className = 'card');
       const active = root.querySelector(`[data-index="${index}"]`);
       if (active) active.classList.add('active');
-      const prevIndex = (index-1+vocab.length)%vocab.length;
-      const nextIndex = (index+1)%vocab.length;
+      const prevIndex = (index - 1 + vocab.length) % vocab.length;
+      const nextIndex = (index + 1) % vocab.length;
       const prev = root.querySelector(`[data-index="${prevIndex}"]`);
       const next = root.querySelector(`[data-index="${nextIndex}"]`);
       if (prev) prev.classList.add('prev');
       if (next) next.classList.add('next');
       current = index;
+      highlightIndex = -1;
     }
 
-    function slideNext() { showCard((current+1)%vocab.length); }
-    function slidePrev() { showCard((current-1+vocab.length)%vocab.length); }
+    function slideNext() { showCard((current + 1) % vocab.length); }
+    function slidePrev() { showCard((current - 1 + vocab.length) % vocab.length); }
 
     async function loadData() {
       try {
@@ -217,14 +286,15 @@
 
     function initCarousel() {
       root.innerHTML = '';
-      vocab.forEach((_,i)=>root.append(makeCard(i)));
-      if (vocab.length>0) showCard(0);
+      vocab.forEach((_, i) => root.append(makeCard(i)));
+      if (vocab.length > 0) showCard(0);
     }
 
     document.addEventListener('keydown', e => {
-      if (e.key==='ArrowRight') slideNext();
-      else if (e.key==='ArrowLeft') slidePrev();
-      else if (e.key===' ') { e.preventDefault(); speakCurrentJpWord(); }
+      if (e.key === 'ArrowRight') slideNext();
+      else if (e.key === 'ArrowLeft') slidePrev();
+      else if (e.key === ' ') { e.preventDefault(); speakCurrentJpWord(); }
+      else if (e.key === 'p') { e.preventDefault(); highlightCharacter(); }
     });
 
     loadData();
