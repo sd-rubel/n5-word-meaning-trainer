@@ -173,26 +173,6 @@
       color: var(--accent-soft);
       text-shadow: 0 0 12px rgba(255, 213, 79, 0.8);
     }
-
-    .char-badge {
-      position: absolute;
-      bottom: -28px;
-      left: 50%;
-      transform: translateX(-50%) scale(0);
-      background: var(--accent);
-      color: #1a1a1a;
-      font-size: 0.9rem;
-      padding: 4px 8px;
-      border-radius: 8px;
-      white-space: nowrap;
-      opacity: 0;
-      transition: opacity 300ms var(--fx), transform 300ms var(--fx);
-    }
-
-    .char-wrapper.highlight .char-badge {
-      opacity: 1;
-      transform: translateX(-50%) scale(1);
-    }
   </style>
 </head>
 <body>
@@ -234,43 +214,31 @@
       speak(jpWord, 'ja-JP');
     }
 
-    // New function: Split Japanese word into pronunciation groups
+    // Updated: Split Japanese word into pronunciation groups, ensuring ん is grouped with previous character
     function getCharGroups(word) {
       const groups = [];
       let i = 0;
       while (i < word.length) {
         let group = word[i];
-        if (i + 1 < word.length && ['ゃ', 'ゅ', 'ょ', 'っ'].includes(word[i + 1])) {
+        // Handle small kana (ゃ, ゅ, ょ, っ) or ん
+        if (i + 1 < word.length && ['ゃ', 'ゅ', 'ょ', 'っ', 'ん'].includes(word[i + 1])) {
           group += word[i + 1];
           i += 2;
+          // Check for ん following small kana (e.g., ちゃん)
           if (i < word.length && word[i] === 'ん') {
             group += word[i];
             i++;
           }
-        } else if (i > 0 && word[i] === 'ん' && !['ゃ', 'ゅ', 'ょ', 'っ'].includes(word[i - 1])) {
-          groups.push(group);
-          group = word[i];
-          i++;
+        } else if (i + 1 < word.length && word[i + 1] === 'ん') {
+          // ん following a regular kana
+          group += word[i + 1];
+          i += 2;
         } else {
           i++;
         }
         groups.push(group);
       }
       return groups;
-    }
-
-    // New function: Get pronunciation for a character group
-    function getGroupPronunciation(group, fullWord, fullPronunciation) {
-      const prncParts = fullPronunciation.replace(/-/g, ' ').split(' ');
-      const charGroups = getCharGroups(fullWord);
-      let charCount = 0;
-      for (let i = 0; i < charGroups.length; i++) {
-        if (charGroups[i] === group) {
-          return prncParts[charCount] || '';
-        }
-        charCount++;
-      }
-      return '';
     }
 
     function makeCard(idx) {
@@ -283,10 +251,7 @@
       // Split Japanese word into character groups
       const charGroups = getCharGroups(jp);
       const jpHtml = charGroups
-        .map((group, i) => `<span class="char-wrapper" data-char-index="${i}">
-                              ${group}
-                              <span class="char-badge">${getGroupPronunciation(group, jp, prnc)}</span>
-                            </span>`)
+        .map((group, i) => `<span class="char-wrapper" data-char-index="${i}">${group}</span>`)
         .join('');
 
       const el = document.createElement('div');
@@ -325,7 +290,7 @@
       resetCharHighlights(); // Reset highlights when card changes
     }
 
-    // New function: Reset character highlights
+    // New: Reset character highlights
     function resetCharHighlights() {
       const activeCard = root.querySelector('.card.active');
       if (activeCard) {
@@ -334,7 +299,7 @@
       }
     }
 
-    // New function: Highlight and pronounce character group
+    // New: Highlight and pronounce character group
     function highlightChar() {
       const activeCard = root.querySelector('.card.active');
       if (!activeCard) return;
