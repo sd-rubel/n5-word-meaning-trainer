@@ -4,20 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Japanese Vocabulary – Gallery Slide</title>
-
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
-
-  <!-- Font Awesome (মাইক আইকনের জন্য) -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"/>
-
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --card-w: clamp(360px, 40vw, 500px);
-      --card-h: clamp(360px, 55vh, 580px);
+      --card-w: clamp(380px, 42vw, 560px);
+      --card-h: clamp(380px, 60vh, 600px);
       --radius: 28px;
       --blur: 20px;
       --shadow: 0 18px 48px rgba(0,0,0,.45);
@@ -29,7 +23,6 @@
       --glass-border: rgba(255,255,255,.28);
       --fx: cubic-bezier(.4,0,.2,1);
       --anim-dur: 600ms;
-      --highlight-color: #00e5ff;
     }
 
     body {
@@ -95,7 +88,7 @@
       position: absolute;
       width: var(--card-w);
       height: var(--card-h);
-      padding: clamp(18px, 2.5vw, 28px);
+      padding: clamp(18px, 2.8vw, 32px);
       border-radius: var(--radius);
       background: var(--glass);
       border: 1px solid var(--glass-border);
@@ -119,112 +112,79 @@
       text-align: center;
     }
 
-    /* JP row: শব্দ + মাইক বাটন */
-    .jp-row {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-    }
-
     .jp-word {
       font-weight: 800;
       color: var(--accent);
       text-shadow: 0 4px 14px rgba(0,0,0,.38);
-      font-size: clamp(1.8rem, 4vw, 3rem);
-      transition: transform 400ms var(--fx), color 400ms var(--fx);
-      display: inline-block;
+      font-size: clamp(2.1rem, 4.6vw, 3.8rem);
     }
-
-    .speak-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 44px; height: 44px;
-      border-radius: 50%;
-      border: 1px solid var(--glass-border);
-      background: rgba(255,255,255,.10);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 6px 18px rgba(0,0,0,.35);
-      cursor: pointer;
-      transition: transform .2s var(--fx), border-color .2s var(--fx), background .2s var(--fx);
-      outline: none;
-    }
-    .speak-btn i { font-size: 1.05rem; color: #e3f2fd; }
-    .speak-btn:hover { transform: translateY(-1px) scale(1.04); background: rgba(255,255,255,.14); }
-    .speak-btn:active { transform: scale(.98); }
-    .speak-btn.speaking { border-color: var(--accent-soft); box-shadow: 0 0 0 4px rgba(255,213,79,.20), 0 8px 20px rgba(0,0,0,.45); }
 
     .pronunciation { font-style: italic; font-size: 1.3rem; color: #cfe8ff; }
     .bengali-meaning { font-family: "Hind Siliguri", sans-serif; color: var(--text-bn); font-weight: 700; font-size: 1.8rem; }
     .comment { font-family: "Hind Siliguri", sans-serif; color: var(--text-light); opacity: .94; font-size: 1rem; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.08); max-width: 92%; }
 
-    @media (max-width: 720px) {
-      :root { --card-w: min(94vw, 500px); --card-h: min(80vh, 580px); }
-      .speak-btn { width: 40px; height: 40px; }
-    }
+    @media (max-width: 720px) { :root { --card-w: min(94vw, 560px); --card-h: min(80vh, 600px); } }
+
+    /* Character highlighting */
+    .char-wrapper { position: relative; display: inline-block; transition: transform 300ms var(--fx), color 300ms var(--fx); }
+    .char-wrapper.highlight { transform: scale(1.3); color: var(--accent-soft); text-shadow: 0 0 12px rgba(255, 213, 79, 0.8); }
   </style>
 </head>
 <body>
   <div class="app-frame">
     <main class="carousel" id="carousel"></main>
   </div>
-
   <script>
     const JSON_URL = 'https://raw.githubusercontent.com/sd-rubel/n5-word-meaning-trainer/main/lesson-1.json';
     const root = document.getElementById('carousel');
 
     let vocab = [];
     let current = 0;
+    let charIndex = -1;
 
-    // -------- Speech Synthesis (জাপানি উচ্চারণ) ----------
     const synth = window.speechSynthesis;
     let voices = [];
 
     function loadVoices() {
       voices = synth.getVoices();
+      if (!voices || voices.length === 0) setTimeout(loadVoices, 100);
     }
-    // কিছু ব্রাউজারে ভয়েস অ্যাসিঙ্কে আসে
-    if (typeof synth !== 'undefined') {
-      synth.addEventListener?.('voiceschanged', loadVoices);
-      loadVoices();
-    }
+    loadVoices();
+    speechSynthesis.onvoiceschanged = loadVoices;
 
-    function pickJapaneseVoice() {
-      // সর্বোত্তম ম্যাচ: lang 'ja' দিয়ে শুরু
-      const byLang = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ja'));
-      if (byLang) return byLang;
-      // নামের মধ্যে 'ja' বা 'Japan' থাকলে
-      const byName = voices.find(v => /ja|japan/i.test(v.name || ''));
-      if (byName) return byName;
-      // না থাকলে ডিফল্ট
-      return voices[0] || null;
-    }
-
-    function speakJapanese(text, btnEl) {
+    function speak(text, lang = 'ja-JP') {
       if (!text) return;
-      // আগের স্পিচ থাকলে ক্যান্সেল
-      synth.cancel();
-
       const utter = new SpeechSynthesisUtterance(text);
-      const v = pickJapaneseVoice();
-      if (v) {
-        utter.voice = v;
-        utter.lang = v.lang || 'ja-JP';
-      } else {
-        // fallback: lang সেট করুন
-        utter.lang = 'ja-JP';
-      }
-      utter.rate = 1;   // গতি
-      utter.pitch = 1;  // পিচ
-      utter.volume = 1; // ভলিউম
-
-      if (btnEl) btnEl.classList.add('speaking');
-      utter.onend = () => { if (btnEl) btnEl.classList.remove('speaking'); };
-      utter.onerror = () => { if (btnEl) btnEl.classList.remove('speaking'); };
-
+      utter.lang = lang;
+      const voice = voices.find(v => v.lang.startsWith(lang));
+      if (voice) utter.voice = voice;
+      synth.cancel();
       synth.speak(utter);
     }
-    // -----------------------------------------------------
+
+    function speakCurrentJpWord() {
+      if (!vocab[current]) return;
+      const jpWord = vocab[current].jp ?? vocab[current].japanese;
+      speak(jpWord, 'ja-JP');
+    }
+
+    function getCharGroups(word) {
+      const groups = [];
+      for (let i = 0; i < word.length; i++) {
+        let group = word[i];
+        if (i + 1 < word.length && ['ゃ','ゅ','ょ','っ'].includes(word[i + 1])) {
+          group += word[i + 1];
+          i++;
+        }
+        // ん should stay with previous kana
+        if (i + 1 < word.length && word[i + 1] === 'ん') {
+          group += word[i + 1];
+          i++;
+        }
+        groups.push(group);
+      }
+      return groups;
+    }
 
     function makeCard(idx) {
       const w = vocab[idx];
@@ -232,19 +192,17 @@
       const prnc = w.prnc ?? w.pronunciation ?? '';
       const bn = w.bn ?? w.meaning ?? '';
       const cmt = w.cmt ?? w.comment ?? '';
+
+      const charGroups = getCharGroups(jp);
+      const jpHtml = charGroups.map((g,i)=>`<span class="char-wrapper" data-char-index="${i}">${g}</span>`).join('');
+
       const el = document.createElement('div');
       el.className = 'card';
       el.dataset.index = idx;
       el.innerHTML = `
         <div class="card-content">
           <div></div>
-
-          <!-- শব্দ + মাইক -->
-          <div class="jp-row">
-            <h1 class="jp-word">${jp}</h1>
-            <button class="speak-btn" title="উচ্চারণ শুনুন" aria-label="উচ্চারণ"><i class="fa-solid fa-microphone"></i></button>
-          </div>
-
+          <h1 class="jp-word">${jpHtml}</h1>
           <p class="pronunciation">${prnc}</p>
           <p class="bengali-meaning">${bn}</p>
           <p class="comment">${cmt}</p>
@@ -256,53 +214,67 @@
 
     function showCard(index) {
       const cards = root.querySelectorAll('.card');
-      cards.forEach(c => c.className = 'card');
+      cards.forEach(c=>c.className='card');
+
       const active = root.querySelector(`[data-index="${index}"]`);
       if (active) active.classList.add('active');
+
       const prevIndex = (index - 1 + vocab.length) % vocab.length;
       const nextIndex = (index + 1) % vocab.length;
+
       const prev = root.querySelector(`[data-index="${prevIndex}"]`);
       const next = root.querySelector(`[data-index="${nextIndex}"]`);
       if (prev) prev.classList.add('prev');
       if (next) next.classList.add('next');
+
       current = index;
+      charIndex = -1;
+      resetCharHighlights();
     }
 
-    function slideNext(){ showCard((current+1)%vocab.length); }
-    function slidePrev(){ showCard((current-1+vocab.length)%vocab.length); }
+    function resetCharHighlights() {
+      const activeCard = root.querySelector('.card.active');
+      if (!activeCard) return;
+      activeCard.querySelectorAll('.char-wrapper').forEach(c=>c.classList.remove('highlight'));
+    }
 
-    async function loadData(){
-      try{
+    function highlightChar() {
+      const activeCard = root.querySelector('.card.active');
+      if (!activeCard) return;
+      const chars = activeCard.querySelectorAll('.char-wrapper');
+      if (!chars || chars.length === 0) return;
+
+      charIndex = (charIndex + 1) % chars.length;
+      resetCharHighlights();
+      const currentChar = chars[charIndex];
+      currentChar.classList.add('highlight');
+      speak(currentChar.textContent, 'ja-JP');
+    }
+
+    function slideNext() { showCard((current+1)%vocab.length); }
+    function slidePrev() { showCard((current-1+vocab.length)%vocab.length); }
+
+    async function loadData() {
+      try {
         const res = await fetch(JSON_URL);
         vocab = await res.json();
         initCarousel();
-      } catch{
-        root.innerHTML = `<div style="color:#ff8a80; font-size:1.5rem; text-align:center;">ডেটা লোড করতে ব্যর্থ হয়েছে। অনুগ্রহ করে URL এবং ইন্টারনেট সংযোগ পরীক্ষা করুন।</div>`;
+      } catch {
+        root.innerHTML = `<div style="color:#ff8a80;">লোড ব্যর্থ</div>`;
       }
     }
 
-    function initCarousel(){
+    function initCarousel() {
       root.innerHTML = '';
-      vocab.forEach((_, i) => root.append(makeCard(i)));
-      if(vocab.length>0) showCard(0);
+      vocab.forEach((_,i)=>root.append(makeCard(i)));
+      if (vocab.length>0) showCard(0);
     }
 
-    document.addEventListener('keydown', e=>{
-      if(e.key==='ArrowRight') slideNext();
-      else if(e.key==='ArrowLeft') slidePrev();
-      // স্পেসবার দিয়ে স্পিক অন করা আপনি চাইলে এখানে যোগ করতে পারেন।
-    });
-
-    // ডেলিগেশন: যে কোন কার্ডের মাইক বাটনে ক্লিক করলে ওই কার্ডের জাপানি টেক্সট উচ্চারিত হবে
-    root.addEventListener('click', (e) => {
-      const btn = e.target.closest('.speak-btn');
-      if (!btn) return;
-      const card = btn.closest('.card');
-      const idx = Number(card?.dataset.index ?? current);
-      const word = (vocab[idx]?.jp ?? vocab[idx]?.japanese ?? '').trim()
-                 || card.querySelector('.jp-word')?.textContent?.trim()
-                 || '';
-      speakJapanese(word, btn);
+    document.addEventListener('keydown', e => {
+      if (e.key==='ArrowRight') slideNext();
+      else if (e.key==='ArrowLeft') slidePrev();
+      else if (e.key===' ') { e.preventDefault(); speakCurrentJpWord(); }
+      else if (e.key==='p') { e.preventDefault(); highlightChar(); }
     });
 
     loadData();
