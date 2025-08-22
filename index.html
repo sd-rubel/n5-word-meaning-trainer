@@ -124,10 +124,6 @@
     .comment { font-family: "Hind Siliguri", sans-serif; color: var(--text-light); opacity: .94; font-size: 1rem; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.08); max-width: 92%; }
 
     @media (max-width: 720px) { :root { --card-w: min(94vw, 560px); --card-h: min(80vh, 600px); } }
-
-    /* Character highlighting */
-    .char-wrapper { position: relative; display: inline-block; transition: transform 300ms var(--fx), color 300ms var(--fx); }
-    .char-wrapper.highlight { transform: scale(1.3); color: var(--accent-soft); text-shadow: 0 0 12px rgba(255, 213, 79, 0.8); }
   </style>
 </head>
 <body>
@@ -140,7 +136,6 @@
 
     let vocab = [];
     let current = 0;
-    let charIndex = -1;
 
     const synth = window.speechSynthesis;
     let voices = [];
@@ -154,11 +149,14 @@
 
     function speak(text, lang = 'ja-JP') {
       if (!text) return;
+      if (!voices || voices.length === 0) { 
+        setTimeout(() => speak(text, lang), 50); 
+        return;
+      }
       const utter = new SpeechSynthesisUtterance(text);
       utter.lang = lang;
       const voice = voices.find(v => v.lang.startsWith(lang));
       if (voice) utter.voice = voice;
-      synth.cancel();
       synth.speak(utter);
     }
 
@@ -168,41 +166,19 @@
       speak(jpWord, 'ja-JP');
     }
 
-    function getCharGroups(word) {
-      const groups = [];
-      for (let i = 0; i < word.length; i++) {
-        let group = word[i];
-        if (i + 1 < word.length && ['ゃ','ゅ','ょ','っ'].includes(word[i + 1])) {
-          group += word[i + 1];
-          i++;
-        }
-        // ん should stay with previous kana
-        if (i + 1 < word.length && word[i + 1] === 'ん') {
-          group += word[i + 1];
-          i++;
-        }
-        groups.push(group);
-      }
-      return groups;
-    }
-
     function makeCard(idx) {
       const w = vocab[idx];
       const jp = w.jp ?? w.japanese ?? '';
       const prnc = w.prnc ?? w.pronunciation ?? '';
       const bn = w.bn ?? w.meaning ?? '';
       const cmt = w.cmt ?? w.comment ?? '';
-
-      const charGroups = getCharGroups(jp);
-      const jpHtml = charGroups.map((g,i)=>`<span class="char-wrapper" data-char-index="${i}">${g}</span>`).join('');
-
       const el = document.createElement('div');
       el.className = 'card';
       el.dataset.index = idx;
       el.innerHTML = `
         <div class="card-content">
           <div></div>
-          <h1 class="jp-word">${jpHtml}</h1>
+          <h1 class="jp-word">${jp}</h1>
           <p class="pronunciation">${prnc}</p>
           <p class="bengali-meaning">${bn}</p>
           <p class="comment">${cmt}</p>
@@ -215,40 +191,15 @@
     function showCard(index) {
       const cards = root.querySelectorAll('.card');
       cards.forEach(c=>c.className='card');
-
       const active = root.querySelector(`[data-index="${index}"]`);
       if (active) active.classList.add('active');
-
-      const prevIndex = (index - 1 + vocab.length) % vocab.length;
-      const nextIndex = (index + 1) % vocab.length;
-
+      const prevIndex = (index-1+vocab.length)%vocab.length;
+      const nextIndex = (index+1)%vocab.length;
       const prev = root.querySelector(`[data-index="${prevIndex}"]`);
       const next = root.querySelector(`[data-index="${nextIndex}"]`);
       if (prev) prev.classList.add('prev');
       if (next) next.classList.add('next');
-
       current = index;
-      charIndex = -1;
-      resetCharHighlights();
-    }
-
-    function resetCharHighlights() {
-      const activeCard = root.querySelector('.card.active');
-      if (!activeCard) return;
-      activeCard.querySelectorAll('.char-wrapper').forEach(c=>c.classList.remove('highlight'));
-    }
-
-    function highlightChar() {
-      const activeCard = root.querySelector('.card.active');
-      if (!activeCard) return;
-      const chars = activeCard.querySelectorAll('.char-wrapper');
-      if (!chars || chars.length === 0) return;
-
-      charIndex = (charIndex + 1) % chars.length;
-      resetCharHighlights();
-      const currentChar = chars[charIndex];
-      currentChar.classList.add('highlight');
-      speak(currentChar.textContent, 'ja-JP');
     }
 
     function slideNext() { showCard((current+1)%vocab.length); }
@@ -274,7 +225,6 @@
       if (e.key==='ArrowRight') slideNext();
       else if (e.key==='ArrowLeft') slidePrev();
       else if (e.key===' ') { e.preventDefault(); speakCurrentJpWord(); }
-      else if (e.key==='p') { e.preventDefault(); highlightChar(); }
     });
 
     loadData();
