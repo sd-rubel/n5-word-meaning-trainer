@@ -12,7 +12,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root{
-      --card-w: clamp(380px, 42vw, 560px); /* প্রশস্ততা বাড়ানো হয়েছে */
+      --card-w: clamp(380px, 42vw, 560px);
       --card-h: clamp(320px, 55vh, 520px);
       --radius: 28px;
       --blur: 20px;
@@ -154,6 +154,18 @@
     .enter{ animation: slideInFromRight var(--anim-dur) var(--fx) forwards; }
     .exit { animation: slideOutToLeft   var(--anim-dur) var(--fx) forwards; }
 
+    /* For broken pronunciation animation */
+    @keyframes scaleUp {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .jp-word span.active {
+      display: inline-block;
+      animation: scaleUp 0.6s ease-in-out forwards;
+    }
+
     /* ============== CONTENT ============== */
     .card-content{
       height: 100%;
@@ -171,10 +183,13 @@
       letter-spacing: .3px;
       color: var(--accent);
       text-shadow: 0 4px 14px rgba(0,0,0,.38);
-      /* বড় শব্দেও সুন্দর দেখাতে clamp */
       font-size: clamp(2.1rem, 4.6vw, 3.8rem);
-      white-space: nowrap; /* fitText JS দিয়ে সাইজ অ্যাডজাস্ট হবে */
+      white-space: nowrap;
       max-width: 100%;
+    }
+
+    .jp-word span {
+      transition: transform 0.3s ease-in-out;
     }
 
     .pronunciation{
@@ -253,7 +268,11 @@
     let isAnimating = false;
 
     // Elements for left, center, right
-    let cards = []; // Use an array to manage the cards
+    let cards = [];
+
+    // Use Web Speech API for pronunciation
+    const synth = window.speechSynthesis;
+    const voice = 'ja-JP';
 
     async function loadData(retries = 3){
       try{
@@ -275,7 +294,50 @@
       }
     }
 
-    /* ================== HELPERS ================== */
+    /* ================== SPEECH & ANIMATION ================== */
+    function speak(text, rate = 1.0, onEnd = null) {
+      if (!synth || !text) return;
+      
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'ja-JP';
+      utter.rate = rate;
+      utter.onend = onEnd;
+
+      const availableVoices = synth.getVoices();
+      const japaneseVoice = availableVoices.find(v => v.lang === 'ja-JP');
+      if (japaneseVoice) {
+        utter.voice = japaneseVoice;
+      }
+      
+      synth.speak(utter);
+    }
+    
+    // Break down and pronounce each character with animation
+    async function speakAndAnimate(text) {
+      if (!text) return;
+
+      const words = text.split('');
+      const wordEl = cards[1].querySelector('.jp-word');
+      wordEl.innerHTML = words.map(w => `<span>${w}</span>`).join('');
+      
+      const spans = wordEl.querySelectorAll('span');
+
+      for (let i = 0; i < words.length; i++) {
+        spans[i].classList.add('active');
+        speak(words[i], 1.2);
+        
+        await new Promise(resolve => {
+          setTimeout(() => {
+            spans[i].classList.remove('active');
+            resolve();
+          }, 600);
+        });
+        
+        await new Promise(resolve => setTimeout(resolve, 150));
+      }
+    }
+
+    /* ================== CAROUSEL LOGIC ================== */
     function makeCard(){
       const el = document.createElement('div');
       el.className = 'card';
@@ -293,7 +355,6 @@
 
     function fillCard(card, idx){
       const w = vocab[idx];
-      // graceful fallback for keys
       const jp   = w.jp ?? w.japanese ?? '';
       const prnc = w.prnc ?? w.pronunciation ?? '';
       const bn   = w.bn ?? w.meaning ?? '';
@@ -307,16 +368,13 @@
       fitHeading(card.querySelector('.jp-word'), card);
     }
 
-    // Reduce font-size if JP word overflows card width (simple fit)
     function fitHeading(headingEl, card){
-      // reset first
       headingEl.style.fontSize = '';
-      const maxPx = Math.min(card.clientWidth * 0.16 + 24, 64); // dynamic upper bound
-      const minPx = 24; // do not go below
+      const maxPx = Math.min(card.clientWidth * 0.16 + 24, 64);
+      const minPx = 24;
       let size = maxPx;
       headingEl.style.fontSize = size + 'px';
 
-      // decrease until fits horizontally
       const pad = 24;
       const maxWidth = card.clientWidth - pad * 2;
       let safety = 40;
@@ -327,7 +385,6 @@
     }
 
     function applyRoles(){
-      // Clear classes then assign roles
       cards.forEach(c => c.className = 'card');
       cards[0].classList.add('left');
       cards[1].classList.add('center');
@@ -337,63 +394,57 @@
     function nextIndex(i=1){ return (current + i) % vocab.length; }
     function prevIndex(i=1){ return (current - i + vocab.length) % vocab.length; }
 
-    /* ================== INIT ================== */
-    function initCarousel(){
-      root.innerHTML = '';
-      cards = [makeCard(), makeCard(), makeCard()];
+    async function processCurrentCard() {
+      if(isAnimating) return;
+      isAnimating = true;
+      stopAuto();
 
-      cards.forEach(card => root.append(card));
+      const jpWord = vocab[current].jp ?? vocab[current].japanese;
+      
+      // 1. Speak the full word
+      await new Promise(resolve => speak(jpWord, 1.0, () => resolve()));
+      await new Promise(resolve => setTimeout(resolve, 1500)); // 1.5s pause
 
-      // Initial content
-      fillCard(cards[0], prevIndex(1));
-      fillCard(cards[1], current);
-      fillCard(cards[2], nextIndex(1));
-
-      applyRoles();
+      // 2. Speak and animate character by character
+      await speakAndAnimate(jpWord);
+      
+      isAnimating = false;
       startAuto();
-      window.addEventListener('resize', () => {
-        cards.forEach(card => {
-          const h = card.querySelector('.jp-word');
-          if(h) fitHeading(h, card);
-        });
-      });
     }
 
-    /* ================== ANIMATION (NEXT) ================== */
     async function slideNext(){
       if(isAnimating || vocab.length < 3) return;
       isAnimating = true;
+      stopAuto(); // Stop timer to prevent multiple slides
 
-      // The new card needs to be preloaded off-screen
       const newCard = makeCard();
       const nextNextIdx = nextIndex(2);
       fillCard(newCard, nextNextIdx);
       root.append(newCard);
 
-      // We move all 3 cards at once.
-      // The old left becomes hidden, center moves to left, right moves to center, new card slides in from right.
       cards[0].classList.add('exit');
       cards[1].classList.add('left');
       cards[2].classList.add('center');
       newCard.classList.add('enter');
 
-      // Wait for the exit and enter animations to finish
       await Promise.all([
         waitAnimationEnd(cards[0]),
         waitAnimationEnd(newCard)
       ]);
 
-      // Remove the old card from the DOM and update the card array
       root.removeChild(cards[0]);
       cards.shift();
       cards.push(newCard);
 
-      // Clean up classes and re-apply roles
       cards.forEach(card => card.classList.remove('exit', 'enter', 'left', 'center', 'right'));
       applyRoles();
 
       current = nextIndex(1);
+      
       isAnimating = false;
+      
+      // Now that the new card is in place, process it
+      processCurrentCard();
     }
 
     function waitAnimationEnd(el){
@@ -406,14 +457,41 @@
       });
     }
 
-    /* ================== AUTO TIMER ================== */
     function startAuto(){
       stopAuto();
-      timer = setInterval(slideNext, 5000);
+      // Start the timer to slide to the next card after a delay.
+      // The delay should be long enough for the pronunciation to finish.
+      // This will be triggered after `processCurrentCard` completes.
+      timer = setTimeout(slideNext, 7000); 
     }
+
     function stopAuto(){
-      if(timer) clearInterval(timer);
+      if(timer) clearTimeout(timer);
       timer = null;
+    }
+
+    // Initial setup
+    function initCarousel(){
+      root.innerHTML = '';
+      cards = [makeCard(), makeCard(), makeCard()];
+
+      cards.forEach(card => root.append(card));
+
+      fillCard(cards[0], prevIndex(1));
+      fillCard(cards[1], current);
+      fillCard(cards[2], nextIndex(1));
+
+      applyRoles();
+      
+      // Process the first card immediately
+      processCurrentCard();
+
+      window.addEventListener('resize', () => {
+        cards.forEach(card => {
+          const h = card.querySelector('.jp-word');
+          if(h) fitHeading(h, card);
+        });
+      });
     }
 
     // Kickoff
