@@ -127,7 +127,7 @@
 
     /* Character highlighting */
     .char-wrapper { position: relative; display: inline-block; transition: transform 300ms var(--fx), color 300ms var(--fx); }
-    .char-wrapper.highlight { transform: scale(1.3); color: var(--accent-soft); text-shadow: 0 0 12px rgba(255, 213, 79, 0.8); }
+    .char-wrapper.highlight { transform: scale(1.3); color: #ff5252; text-shadow: 0 0 18px rgba(255,82,82,0.85); }
   </style>
 </head>
 <body>
@@ -142,43 +142,13 @@
     let current = 0;
     let charIndex = -1;
 
-    const synth = window.speechSynthesis;
-    let voices = [];
-
-    function loadVoices() {
-      voices = synth.getVoices();
-      if (!voices || voices.length === 0) setTimeout(loadVoices, 100); // Retry if empty
-    }
-    loadVoices();
-    speechSynthesis.onvoiceschanged = loadVoices;
-
-    // ============ OPTIMIZED SPEAK FUNCTION =============
-    function speak(text, lang = 'ja-JP') {
-      if (!text) return;
-      if (!voices || voices.length === 0) { 
-        setTimeout(() => speak(text, lang), 50); 
-        return;
-      }
-      const utter = new SpeechSynthesisUtterance(text);
-      utter.lang = lang;
-      const voice = voices.find(v => v.lang.startsWith(lang));
-      if (voice) utter.voice = voice;
-      synth.speak(utter); // cancel() বাদ দিয়ে queue-তে পাঠানো
-    }
-    // ==================================================
-
-    function speakCurrentJpWord() {
-      if (!vocab[current]) return;
-      const jpWord = vocab[current].jp ?? vocab[current].japanese;
-      speak(jpWord, 'ja-JP');
-    }
-
     function getCharGroups(word) {
       const groups = [];
       for (let i = 0; i < word.length; i++) {
         let group = word[i];
-        if (i + 1 < word.length && ['ゃ','ゅ','ょ','っ'].includes(word[i + 1])) { group += word[i+1]; i++; }
-        if (i + 1 < word.length && word[i+1] === 'ん') { group += word[i+1]; i++; }
+        if (i + 1 < word.length && ['ゃ','ゅ','ょ','っ','ぅ'].includes(word[i+1])) { 
+          group += word[i+1]; i++; 
+        }
         groups.push(group);
       }
       return groups;
@@ -191,7 +161,9 @@
       const bn = w.bn ?? w.meaning ?? '';
       const cmt = w.cmt ?? w.comment ?? '';
       const charGroups = getCharGroups(jp);
+
       const jpHtml = charGroups.map((g,i)=>`<span class="char-wrapper" data-char-index="${i}">${g}</span>`).join('');
+
       const el = document.createElement('div');
       el.className = 'card';
       el.dataset.index = idx;
@@ -230,16 +202,29 @@
       activeCard.querySelectorAll('.char-wrapper').forEach(c=>c.classList.remove('highlight'));
     }
 
+    // Highlight only logic with rules
     function highlightChar() {
       const activeCard = root.querySelector('.card.active');
       if (!activeCard) return;
-      const chars = activeCard.querySelectorAll('.char-wrapper');
-      if (!chars || chars.length===0) return;
+      const chars = Array.from(activeCard.querySelectorAll('.char-wrapper'));
+      if (chars.length === 0) return;
+
       charIndex = (charIndex + 1) % chars.length;
       resetCharHighlights();
-      const currentChar = chars[charIndex];
-      currentChar.classList.add('highlight');
-      speak(currentChar.textContent, 'ja-JP');
+
+      // Determine group to highlight based on rules
+      let start = charIndex;
+      let end = charIndex;
+
+      // Rule 1: 'ぅ' joins with previous
+      if (chars[charIndex].textContent.includes('ぅ') && charIndex>0) start = charIndex-1;
+
+      // Rule 2: 'い' or 'す' at the end joins with previous
+      if (['い','す'].includes(chars[charIndex].textContent) && charIndex>0) start = charIndex-1;
+
+      for (let i=start;i<=end;i++) {
+        chars[i].classList.add('highlight');
+      }
     }
 
     function slideNext() { showCard((current+1)%vocab.length); }
@@ -264,7 +249,6 @@
     document.addEventListener('keydown', e => {
       if (e.key==='ArrowRight') slideNext();
       else if (e.key==='ArrowLeft') slidePrev();
-      else if (e.key===' ') { e.preventDefault(); speakCurrentJpWord(); }
       else if (e.key==='p') { e.preventDefault(); highlightChar(); }
     });
 
