@@ -98,23 +98,9 @@
       opacity: 0;
     }
 
-    .card.active {
-      opacity: 1;
-      z-index: 2;
-      transform: translateX(0) scale(1);
-    }
-
-    .card.next {
-      opacity: 0.8;
-      z-index: 1;
-      transform: translateX(calc(var(--card-w) + 60px)) scale(0.9);
-    }
-
-    .card.prev {
-      opacity: 0.8;
-      z-index: 1;
-      transform: translateX(calc(-1 * (var(--card-w) + 60px))) scale(0.9);
-    }
+    .card.active { opacity: 1; z-index: 2; transform: translateX(0) scale(1); }
+    .card.next   { opacity: 0.8; z-index: 1; transform: translateX(calc(var(--card-w) + 60px)) scale(0.9); }
+    .card.prev   { opacity: 0.8; z-index: 1; transform: translateX(calc(-1 * (var(--card-w) + 60px))) scale(0.9); }
 
     .card-content {
       height: 100%;
@@ -133,46 +119,15 @@
       font-size: clamp(2.1rem, 4.6vw, 3.8rem);
     }
 
-    .pronunciation {
-      font-style: italic;
-      font-size: 1.3rem;
-      color: #cfe8ff;
-    }
+    .pronunciation { font-style: italic; font-size: 1.3rem; color: #cfe8ff; }
+    .bengali-meaning { font-family: "Hind Siliguri", sans-serif; color: var(--text-bn); font-weight: 700; font-size: 1.8rem; }
+    .comment { font-family: "Hind Siliguri", sans-serif; color: var(--text-light); opacity: .94; font-size: 1rem; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.08); max-width: 92%; }
 
-    .bengali-meaning {
-      font-family: "Hind Siliguri", sans-serif;
-      color: var(--text-bn);
-      font-weight: 700;
-      font-size: 1.8rem;
-    }
+    @media (max-width: 720px) { :root { --card-w: min(94vw, 560px); --card-h: min(80vh, 600px); } }
 
-    .comment {
-      font-family: "Hind Siliguri", sans-serif;
-      color: var(--text-light);
-      opacity: .94;
-      font-size: 1rem;
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: rgba(255,255,255,.08);
-      max-width: 92%;
-    }
-
-    @media (max-width: 720px) {
-      :root { --card-w: min(94vw, 560px); --card-h: min(80vh, 600px); }
-    }
-
-    /* New styles for character highlighting */
-    .char-wrapper {
-      position: relative;
-      display: inline-block;
-      transition: transform 300ms var(--fx), color 300ms var(--fx);
-    }
-
-    .char-wrapper.highlight {
-      transform: scale(1.3);
-      color: var(--accent-soft);
-      text-shadow: 0 0 12px rgba(255, 213, 79, 0.8);
-    }
+    /* Character highlighting */
+    .char-wrapper { position: relative; display: inline-block; transition: transform 300ms var(--fx), color 300ms var(--fx); }
+    .char-wrapper.highlight { transform: scale(1.3); color: var(--accent-soft); text-shadow: 0 0 12px rgba(255, 213, 79, 0.8); }
   </style>
 </head>
 <body>
@@ -185,21 +140,20 @@
 
     let vocab = [];
     let current = 0;
-    let charIndex = -1; // Tracks current character or group
+    let charIndex = -1;
 
     const synth = window.speechSynthesis;
     let voices = [];
 
     function loadVoices() {
       voices = synth.getVoices();
+      if (!voices || voices.length === 0) setTimeout(loadVoices, 100);
     }
     loadVoices();
-    if (speechSynthesis.onvoiceschanged !== undefined) {
-      speechSynthesis.onvoiceschanged = loadVoices;
-    }
+    speechSynthesis.onvoiceschanged = loadVoices;
 
     function speak(text, lang = 'ja-JP') {
-      if (!synth || !text) return;
+      if (!text) return;
       const utter = new SpeechSynthesisUtterance(text);
       utter.lang = lang;
       const voice = voices.find(v => v.lang.startsWith(lang));
@@ -209,31 +163,22 @@
     }
 
     function speakCurrentJpWord() {
-      if (vocab.length === 0) return;
+      if (!vocab[current]) return;
       const jpWord = vocab[current].jp ?? vocab[current].japanese;
       speak(jpWord, 'ja-JP');
     }
 
-    // Updated: Split Japanese word into pronunciation groups, ensuring ん is grouped with previous character
     function getCharGroups(word) {
       const groups = [];
-      let i = 0;
-      while (i < word.length) {
+      for (let i = 0; i < word.length; i++) {
         let group = word[i];
-        // Handle small kana (ゃ, ゅ, ょ, っ) or ん
-        if (i + 1 < word.length && ['ゃ', 'ゅ', 'ょ', 'っ', 'ん'].includes(word[i + 1])) {
+        if (i + 1 < word.length && ['ゃ','ゅ','ょ','っ'].includes(word[i + 1])) {
           group += word[i + 1];
-          i += 2;
-          // Check for ん following small kana (e.g., ちゃん)
-          if (i < word.length && word[i] === 'ん') {
-            group += word[i];
-            i++;
-          }
-        } else if (i + 1 < word.length && word[i + 1] === 'ん') {
-          // ん following a regular kana
+          i++;
+        }
+        // ん should stay with previous kana
+        if (i + 1 < word.length && word[i + 1] === 'ん') {
           group += word[i + 1];
-          i += 2;
-        } else {
           i++;
         }
         groups.push(group);
@@ -248,15 +193,12 @@
       const bn = w.bn ?? w.meaning ?? '';
       const cmt = w.cmt ?? w.comment ?? '';
 
-      // Split Japanese word into character groups
       const charGroups = getCharGroups(jp);
-      const jpHtml = charGroups
-        .map((group, i) => `<span class="char-wrapper" data-char-index="${i}">${group}</span>`)
-        .join('');
+      const jpHtml = charGroups.map((g,i)=>`<span class="char-wrapper" data-char-index="${i}">${g}</span>`).join('');
 
       const el = document.createElement('div');
       el.className = 'card';
-      el.setAttribute('data-index', idx);
+      el.dataset.index = idx;
       el.innerHTML = `
         <div class="card-content">
           <div></div>
@@ -272,7 +214,7 @@
 
     function showCard(index) {
       const cards = root.querySelectorAll('.card');
-      cards.forEach(c => c.className = 'card');
+      cards.forEach(c=>c.className='card');
 
       const active = root.querySelector(`[data-index="${index}"]`);
       if (active) active.classList.add('active');
@@ -286,84 +228,53 @@
       if (next) next.classList.add('next');
 
       current = index;
-      charIndex = -1; // Reset character index
-      resetCharHighlights(); // Reset highlights when card changes
+      charIndex = -1;
+      resetCharHighlights();
     }
 
-    // New: Reset character highlights
     function resetCharHighlights() {
       const activeCard = root.querySelector('.card.active');
-      if (activeCard) {
-        const chars = activeCard.querySelectorAll('.char-wrapper');
-        chars.forEach(char => char.classList.remove('highlight'));
-      }
+      if (!activeCard) return;
+      activeCard.querySelectorAll('.char-wrapper').forEach(c=>c.classList.remove('highlight'));
     }
 
-    // New: Highlight and pronounce character group
     function highlightChar() {
       const activeCard = root.querySelector('.card.active');
       if (!activeCard) return;
-
       const chars = activeCard.querySelectorAll('.char-wrapper');
-      if (chars.length === 0) return;
+      if (!chars || chars.length === 0) return;
 
+      charIndex = (charIndex + 1) % chars.length;
       resetCharHighlights();
-
-      charIndex = (charIndex + 1) % (chars.length + 1);
-      if (charIndex === chars.length) {
-        return; // No highlight after last character
-      }
-
       const currentChar = chars[charIndex];
       currentChar.classList.add('highlight');
-      const textToSpeak = currentChar.textContent.trim();
-      speak(textToSpeak, 'ja-JP');
+      speak(currentChar.textContent, 'ja-JP');
     }
 
-    function slideNext() {
-      const nextIndex = (current + 1) % vocab.length;
-      showCard(nextIndex);
-    }
-
-    function slidePrev() {
-      const prevIndex = (current - 1 + vocab.length) % vocab.length;
-      showCard(prevIndex);
-    }
+    function slideNext() { showCard((current+1)%vocab.length); }
+    function slidePrev() { showCard((current-1+vocab.length)%vocab.length); }
 
     async function loadData() {
       try {
         const res = await fetch(JSON_URL);
-        const data = await res.json();
-        vocab = data;
+        vocab = await res.json();
         initCarousel();
-      } catch (e) {
+      } catch {
         root.innerHTML = `<div style="color:#ff8a80;">লোড ব্যর্থ</div>`;
       }
     }
 
     function initCarousel() {
       root.innerHTML = '';
-      for (let i = 0; i < vocab.length; i++) {
-        const card = makeCard(i);
-        root.append(card);
-      }
-      if (vocab.length > 0) {
-        showCard(0);
-      }
+      vocab.forEach((_,i)=>root.append(makeCard(i)));
+      if (vocab.length>0) showCard(0);
     }
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') {
-        slideNext();
-      } else if (e.key === 'ArrowLeft') {
-        slidePrev();
-      } else if (e.key === ' ') {
-        e.preventDefault();
-        speakCurrentJpWord();
-      } else if (e.key === 'p') {
-        e.preventDefault();
-        highlightChar();
-      }
+    document.addEventListener('keydown', e => {
+      if (e.key==='ArrowRight') slideNext();
+      else if (e.key==='ArrowLeft') slidePrev();
+      else if (e.key===' ') { e.preventDefault(); speakCurrentJpWord(); }
+      else if (e.key==='p') { e.preventDefault(); highlightChar(); }
     });
 
     loadData();
