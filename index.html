@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premium Japanese Vocabulary Carousel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&family=Noto+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;700&family=Noto+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
@@ -18,14 +18,14 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            background: linear-gradient(45deg, #0f172a, #1e293b);
-            animation: bgAnimation 10s infinite alternate;
+            background: linear-gradient(45deg, #1e1b4b, #4a2c6f);
+            animation: bgPulse 15s infinite alternate;
         }
 
-        @keyframes bgAnimation {
-            0% { background-position: 0% 0%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 100%; }
+        @keyframes bgPulse {
+            0% { background-position: 0% 0%; filter: brightness(0.9); }
+            50% { background-position: 50% 50%; filter: brightness(1.1); }
+            100% { background-position: 100% 100%; filter: brightness(0.9); }
         }
 
         .carousel-container {
@@ -43,7 +43,7 @@
             position: absolute;
             width: 400px;
             height: 450px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.12);
             border-radius: 25px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             padding: 30px;
@@ -51,10 +51,9 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            transition: all 0.8s ease-out;
-            transform: translateX(0) scale(1) rotateY(0deg);
+            transform-style: preserve-3d;
             z-index: 2;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
@@ -84,7 +83,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.2), transparent);
+            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.15), transparent);
             border-radius: 25px;
             z-index: -1;
         }
@@ -95,70 +94,71 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            align-items: center;
         }
 
         .jp-word {
-            font-size: 3em;
+            font-size: 3.2em;
             font-weight: 700;
-            color: #f9a825;
-            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-            font-family: 'Noto Sans Devanagari', sans-serif;
+            color: #ffd700;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            font-family: 'Noto Sans', sans-serif;
         }
 
         .pronunciation {
-            font-size: 1.4em;
+            font-size: 1.5em;
             font-style: italic;
-            color: #a3bffa;
+            color: #b3e5fc;
             margin: 15px 0;
             font-family: 'Noto Sans', sans-serif;
         }
 
         .bengali-meaning {
-            font-size: 1.8em;
+            font-size: 2em;
             font-weight: 700;
-            color: #34d399;
+            color: #81c784;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            font-family: 'Noto Sans Devanagari', sans-serif;
+            font-family: 'Noto Sans Bengali', sans-serif;
         }
 
         .comment {
-            font-size: 1.1em;
-            color: #e5e7eb;
+            font-size: 1.2em;
+            color: #e0e0e0;
             margin-top: 20px;
             line-height: 1.8;
-            font-family: 'Noto Sans Devanagari', sans-serif;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.05);
+            font-family: 'Noto Sans Bengali', sans-serif;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 10px;
         }
 
         .error {
-            font-size: 1.4em;
+            font-size: 1.5em;
             color: #ef4444;
             text-align: center;
-            font-family: 'Noto Sans Devanagari', sans-serif;
+            font-family: 'Noto Sans Bengali', sans-serif;
             padding: 20px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
         }
 
-        @keyframes slideIn {
-            0% { transform: translateX(-1000px) scale(0.7); opacity: 0; }
-            70% { transform: translateX(50px) scale(1.1); opacity: 0.8; }
-            100% { transform: translateX(0) scale(1); opacity: 1; }
+        @keyframes slideInPremium {
+            0% { transform: translateX(-1200px) scale(0.6) rotateY(-20deg); opacity: 0; }
+            50% { transform: translateX(50px) scale(1.1) rotateY(5deg); opacity: 0.9; }
+            100% { transform: translateX(0) scale(1) rotateY(0deg); opacity: 1; }
         }
 
-        @keyframes slideOut {
-            0% { transform: translateX(0) scale(1); opacity: 1; }
-            100% { transform: translateX(-1000px) scale(0.7); opacity: 0; }
+        @keyframes slideOutPremium {
+            0% { transform: translateX(0) scale(1) rotateY(0deg); opacity: 1; }
+            100% { transform: translateX(-1200px) scale(0.6) rotateY(20deg); opacity: 0; }
         }
 
         .card.center.enter {
-            animation: slideIn 0.8s forwards;
+            animation: slideInPremium 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         .card.left.exit {
-            animation: slideOut 0.8s forwards;
+            animation: slideOutPremium 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         @media (max-width: 1100px) {
@@ -181,15 +181,15 @@
             }
 
             .jp-word {
-                font-size: 2.6em;
+                font-size: 2.8em;
             }
 
             .bengali-meaning {
-                font-size: 1.6em;
+                font-size: 1.8em;
             }
 
             .comment {
-                font-size: 1em;
+                font-size: 1.1em;
             }
         }
 
@@ -233,8 +233,8 @@
         let currentIndex = 0;
         let intervalId = null;
 
-        // Fetch JSON data
-        async function fetchVocabData() {
+        // Fetch JSON data with retry mechanism
+        async function fetchVocabData(retries = 3) {
             try {
                 const response = await fetch(jsonUrl, { cache: 'no-store' });
                 if (!response.ok) throw new Error('Failed to load JSON data');
@@ -242,7 +242,12 @@
                 if (vocabData.length === 0) throw new Error('No vocabulary data found');
                 initializeCarousel();
             } catch (error) {
-                container.innerHTML = `<p class="error">ত্রুটি: শব্দভাণ্ডার লোড করতে ব্যর্থ হয়েছে: ${error.message}</p>`;
+                if (retries > 0) {
+                    console.warn(`Retry attempt ${4 - retries} due to: ${error.message}`);
+                    await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2s before retry
+                    return fetchVocabData(retries - 1);
+                }
+                container.innerHTML = `<p class="error">ত্রুটি: শব্দভাণ্ডার লোড করতে ব্যর্থ হয়েছে: ${error.message}. পুনরায় চেষ্টা করুন।</p>`;
                 console.error('Error fetching data:', error);
             }
         }
@@ -270,7 +275,7 @@
             const currentCardIndex = currentIndex;
             const nextIndex = (currentIndex + 1) % vocabData.length;
 
-            // Create and position cards
+            // Create and position cards with animation classes
             const leftCard = createCard(prevIndex, 'card left');
             const centerCard = createCard(currentCardIndex, 'card center enter');
             const rightCard = createCard(nextIndex, 'card right');
@@ -283,7 +288,7 @@
             setTimeout(() => {
                 const center = container.querySelector('.center');
                 if (center) center.classList.remove('enter');
-            }, 800);
+            }, 1000); // Match animation duration
 
             // Increment index for next cycle
             currentIndex = (currentIndex + 1) % vocabData.length;
