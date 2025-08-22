@@ -133,6 +133,36 @@
       font-size: clamp(2.1rem, 4.6vw, 3.8rem);
     }
 
+    .jp-char {
+      display: inline-block;
+      transition: transform 0.4s ease, background-color 0.4s ease, color 0.4s ease;
+      padding: 2px 6px;
+      border-radius: 50%;
+    }
+
+    .jp-char.active {
+      transform: scale(1.6);
+      background-color: var(--accent);
+      color: black;
+      font-weight: 700;
+      position: relative;
+    }
+
+    .jp-char.active::after {
+      content: attr(data-pron);
+      position: absolute;
+      top: -2.2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      font-size: 0.9rem;
+      padding: 2px 6px;
+      border-radius: 6px;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
     .pronunciation{
       font-style: italic;
       font-size: 1.3rem;
@@ -194,7 +224,7 @@
       synth.cancel();
       synth.speak(utter);
     }
-    
+
     function speakCurrentJpWord() {
         if(vocab.length === 0) return;
         const jpWord = vocab[current].jp ?? vocab[current].japanese;
@@ -214,7 +244,7 @@
         el.innerHTML = `
             <div class="card-content">
                 <div></div>
-                <h1 class="jp-word">${jp}</h1>
+                <h1 class="jp-word" id="jp-word"></h1>
                 <p class="pronunciation">${prnc}</p>
                 <p class="bengali-meaning">${bn}</p>
                 <p class="comment">${cmt}</p>
@@ -240,13 +270,15 @@
         if (next) next.classList.add('next');
 
         current = index;
+        splitJpWord(vocab[current]); // নতুন শব্দে জাপানি বর্ণ ভাগ
+        charIndex = -1;
     }
 
     function slideNext() {
         const nextIndex = (current + 1) % vocab.length;
         showCard(nextIndex);
     }
-    
+
     function slidePrev() {
         const prevIndex = (current - 1 + vocab.length) % vocab.length;
         showCard(prevIndex);
@@ -274,6 +306,61 @@
         }
     }
 
+    // --------------- নতুন p কী ফাংশন ---------------
+    let charIndex = -1; // কোন বর্ণ active
+    let charElements = [];
+    let highlightQueue = [];
+
+    function splitJpWord(wordObj) {
+        const jpWord = wordObj.jp ?? wordObj.japanese ?? '';
+        const prnc = wordObj.prnc ?? wordObj.pronunciation ?? '';
+        const container = document.getElementById('jp-word');
+        container.innerHTML = '';
+
+        charElements = [];
+        const chars = [...jpWord];
+
+        for(let i=0; i<chars.length; i++){
+            const span = document.createElement('span');
+            span.className = 'jp-char';
+            span.textContent = chars[i];
+            span.setAttribute('data-pron', prnc);
+            container.appendChild(span);
+            charElements.push(span);
+        }
+    }
+
+    function isCombineNext(char, nextChar){
+        const smallChars = ['ゃ','ゅ','ょ','ぁ','ぃ','ぅ','ぇ','ぉ','っ','ー'];
+        return nextChar && (smallChars.includes(nextChar) || nextChar === 'ん');
+    }
+
+    function highlightNextChar() {
+        if(charElements.length === 0) return;
+
+        charElements.forEach(c => c.classList.remove('active'));
+
+        charIndex++;
+        if(charIndex >= charElements.length){
+            charIndex = -1;
+            return;
+        }
+
+        highlightQueue = [charElements[charIndex]];
+        let i = charIndex;
+        while(isCombineNext(charElements[i].textContent, charElements[i+1]?.textContent)){
+            i++;
+            highlightQueue.push(charElements[i]);
+        }
+
+        highlightQueue.forEach(c => c.classList.add('active'));
+
+        const pron = charElements[charIndex].getAttribute('data-pron');
+        speak(pron, 'ja-JP');
+
+        charIndex = i;
+    }
+
     document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight') {
             slideNext();
@@ -282,6 +369,8 @@
         } else if (e.key === ' ') {
             e.preventDefault();
             speakCurrentJpWord();
+        } else if (e.key === 'p') {
+            highlightNextChar();
         }
     });
 
