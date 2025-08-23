@@ -270,22 +270,33 @@
         max-width: 92%;
       }
 
+      /* নতুন কন্টেইনার */
+      .bottom-container {
+          position: fixed;
+          bottom: 24px;
+          left: 24px;
+          right: 24px;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          gap: 24px;
+          z-index: 10;
+      }
+
+      /* বাম প্যানেলের CSS পরিবর্তন */
       .bottom-left-panel {
-        position: fixed;
-        bottom: 24px;
-        left: 24px;
-        width: 280px;
-        padding: 18px;
-        border-radius: var(--radius);
-        background: var(--glass);
-        border: 1px solid var(--glass-border);
-        backdrop-filter: blur(var(--blur));
-        box-shadow: var(--shadow);
-        z-index: 10;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        color: var(--text-light);
+          width: 280px;
+          padding: 18px;
+          border-radius: var(--radius);
+          background: var(--glass);
+          border: 1px solid var(--glass-border);
+          backdrop-filter: blur(var(--blur));
+          box-shadow: var(--shadow);
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          color: var(--text-light);
+          position: static; /* ফিক্সড সরানো হয়েছে */
       }
 
       .bottom-left-panel h3 {
@@ -323,15 +334,15 @@
         transition: width 0.3s ease-out;
       }
 
+      /* ডান প্যানেলের CSS পরিবর্তন */
       .bottom-right-panel {
-        position: fixed;
-        bottom: 24px;
-        right: -80px;
-        z-index: 10;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        transition: right 0.6s ease-in-out;
+          z-index: 10;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          position: static; /* ফিক্সড সরানো হয়েছে */
+          transform: translateX(100%); /* এনিমেশনের জন্য প্রাথমিক অবস্থান */
+          animation: none; /* প্রাথমিক এনিমেশন বন্ধ করা হয়েছে */
       }
 
       .social-link {
@@ -357,16 +368,16 @@
 
       @keyframes slide-in-out {
         0% {
-          right: -80px;
+          transform: translateX(100%);
         }
         10% {
-          right: 24px;
+          transform: translateX(0);
         }
         80% {
-          right: 24px;
+          transform: translateX(0);
         }
         100% {
-          right: -80px;
+          transform: translateX(100%);
         }
       }
 
@@ -375,21 +386,23 @@
       }
 
       @media screen and (max-width: 768px) {
-        .bottom-left-panel {
-          width: 220px;
-          padding: 12px;
+        .bottom-container {
+          flex-direction: column;
+          align-items: center;
           bottom: 16px;
           left: 16px;
+          right: 16px;
         }
-
+        .bottom-left-panel {
+          width: 100%;
+          margin-bottom: 16px;
+        }
         .bottom-right-panel {
-          bottom: 16px;
-          right: -60px;
-        }
-
-        .social-link {
-          width: 36px;
-          height: 36px;
+          width: 100%;
+          flex-direction: row;
+          justify-content: center;
+          transform: none;
+          animation: none;
         }
       }
     </style>
@@ -399,12 +412,14 @@
       <main class="carousel" id="carousel"></main>
     </div>
 
-    <div class="bottom-left-panel" id="progress-panel">
-      <h3>শব্দের প্রকারভেদ (Word Types)</h3>
-      <div id="progress-container"></div>
-    </div>
+    <div class="bottom-container">
+        <div class="bottom-left-panel" id="progress-panel">
+            <h3>শব্দের প্রকারভেদ (Word Types)</h3>
+            <div id="progress-container"></div>
+        </div>
 
-    <div class="bottom-right-panel" id="social-panel"></div>
+        <div class="bottom-right-panel" id="social-panel"></div>
+    </div>
 
     <script>
       const JSON_URL =
@@ -434,11 +449,12 @@
         'ュ',
         'ョ',
         'ア',
-        'イ',
-        'ウ',
-        'エ',
-        'オ',
-        'ン',
+        'ই',
+        'উ',
+        'এ',
+        'ও',
+        'ন',
+        'ণ',
       ];
 
       const socialLinks = [
@@ -533,7 +549,7 @@
           i++;
           if (
             i < word.length &&
-            ['あ', 'い', 'উ', 'え', 'お', 'আ', 'ই', 'উ', 'এ', 'ও'].includes(
+            ['あ', 'ই', 'উ', 'এ', 'ও'].includes(
               word[i]
             )
           ) {
@@ -670,12 +686,6 @@
         }
       }
 
-      function initCarousel() {
-        root.innerHTML = '';
-        vocab.forEach((_, i) => root.append(makeCard(i)));
-        if (vocab.length > 0) showCard(0);
-      }
-
       function countWordTypes() {
         typeCounts = {};
         vocab.forEach(word => {
@@ -702,7 +712,7 @@
           const progressItem = document.createElement('div');
           progressItem.className = 'progress-item';
           progressItem.innerHTML = `
-              <div class="progress-label">
+               <div class="progress-label">
                   <span>${type}</span>
                   <span>${completed}/${total}</span>
               </div>
@@ -756,4 +766,3 @@
     </script>
   </body>
 </html>
- 
