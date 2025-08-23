@@ -82,6 +82,61 @@
       padding-bottom: 120px;
     }
 
+    .top-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      z-index: 3;
+    }
+
+    .top-bar-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      color: var(--text-light);
+      font-size: 0.9rem;
+      font-weight: 600;
+      gap: 5px;
+    }
+
+    .top-bar-item img {
+      width: clamp(60px, 8vw, 100px);
+      height: clamp(60px, 8vw, 100px);
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(255, 255, 255, 0.5);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .main-title {
+      font-family: 'Hind Siliguri', sans-serif;
+      text-align: center;
+      font-size: clamp(1.8rem, 4vw, 3.5rem);
+      font-weight: 700;
+      color: var(--text-light);
+      text-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+      flex-grow: 1;
+      margin: 0 20px;
+    }
+    
+    .main-title-jp {
+      color: var(--accent);
+      text-shadow: 0 0 8px rgba(255, 213, 79, 0.6);
+    }
+
+    .main-title-highlight {
+      color: #00ff88;
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.7),
+                   0 0 20px rgba(0, 255, 136, 0.6),
+                   0 0 30px rgba(0, 255, 136, 0.5);
+    }
+
     .carousel {
       position: relative;
       width: 100%;
@@ -90,6 +145,7 @@
       place-items: center;
       perspective: 1200px;
       overflow: hidden;
+      padding-top: 120px;
     }
 
     .card {
@@ -298,6 +354,21 @@
 </head>
 <body>
   <div class="app-frame">
+    <header class="top-bar">
+      <div class="top-bar-item profile-item">
+        <img src="https://raw.githubusercontent.com/sd-rubel/n5-word-meaning-trainer/main/profile.jpg" alt="Sd Rubel">
+        <span>Sd Rubel</span>
+      </div>
+      <div class="main-title">
+        <span class="main-title-jp">Nihongo | JLPT N5: Vocabulary</span>
+        <br>
+        <span class="main-title-highlight">Lesson 1</span>
+      </div>
+      <div class="top-bar-item logo-item">
+        <img src="https://raw.githubusercontent.com/sd-rubel/n5-word-meaning-trainer/main/logo.jpg" alt="NihonGoBD Academy">
+        <span>NihonGoBD<br>Academy</span>
+      </div>
+    </header>
     <main class="carousel" id="carousel"></main>
     <div class="stats-panel" id="stats-panel"></div>
     <div class="footer-links">
@@ -373,7 +444,7 @@
         }
         unit = word[i];
         i++;
-        if (i < word.length && ['あ', 'い', 'う', 'え', 'お', 'ア', 'ই', 'উ', 'এ', 'ও'].includes(word[i])) {
+        if (i < word.length && ['あ', 'ই', 'উ', 'এ', 'ও'].includes(word[i])) {
           unit += word[i];
           i++;
         }
@@ -381,7 +452,7 @@
           unit += word[i];
           i++;
         }
-        if (i < word.length && (word[i] === 'ー' || ['う', 'উ'].includes(word[i]))) {
+        if (i < word.length && (word[i] === 'ー' || ['উ', 'উ'].includes(word[i]))) {
           unit += word[i];
           i++;
         }
@@ -399,11 +470,11 @@
               unit += word[i];
               i++;
             }
-            if (i < word.length && (word[i] === 'ー' || ['う', 'উ'].includes(word[i]))) {
+            if (i < word.length && (word[i] === 'ー' || ['উ', 'উ'].includes(word[i]))) {
               unit += word[i];
               i++;
             }
-            if (i < word.length && ['ん', 'ন'].includes(word[i])) {
+            if (i < word.length && ['ন', 'ন'].includes(word[i])) {
               unit += word[i];
               i++;
             }
@@ -537,7 +608,7 @@
         initCarousel();
         updateStats();
       } catch {
-        root.innerHTML = `<div style="color:#ff8a80;">লোড ব্যর্থ</div>`;
+        root.innerHTML = `<div style="color:#ff8a80; text-align: center; margin-top: 50px;">লোড ব্যর্থ</div>`;
       }
     }
 
