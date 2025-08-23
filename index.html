@@ -124,15 +124,22 @@
     }
 
     .jp-word .highlight {
-  background: linear-gradient(135deg, #4caf50, #81c784); /* প্রিমিয়াম সবুজ গ্রেডিয়েন্ট */
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  transform: scale(1.25); /* একটু বড় করে */
-  text-shadow: 0 0 12px rgba(76, 175, 80, 0.6), 0 0 24px rgba(129, 199, 132, 0.5);
+  color: #00ff88; /* নিয়ন সবুজ */
+  transform: scale(1.3); /* বড় করে ফোকাস আনবে */
   font-weight: 900;
   display: inline-block;
-  border-radius: 6px;
-  padding: 2px 4px;
+  
+  /* গ্লো এফেক্ট */
+  text-shadow: 
+    0 0 6px rgba(0, 255, 136, 0.8),
+    0 0 14px rgba(0, 255, 136, 0.7),
+    0 0 26px rgba(0, 255, 136, 0.6),
+    0 0 40px rgba(0, 255, 136, 0.5);
+
+  /* নরম ব্যাকগ্রাউন্ড আভা */
+  background: radial-gradient(circle at center, rgba(0,255,136,0.25) 0%, transparent 70%);
+  border-radius: 8px;
+  padding: 2px 6px;
 }
 
     .pronunciation { font-style: italic; font-size: 1.3rem; color: #cfe8ff; }
