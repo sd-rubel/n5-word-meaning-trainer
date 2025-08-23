@@ -112,6 +112,8 @@
       box-shadow: var(--shadow);
       transition: transform var(--anim-dur) var(--fx), opacity var(--anim-dur) var(--fx);
       opacity: 0;
+      display: flex;
+      flex-direction: column;
     }
 
     .card.active {
@@ -132,14 +134,40 @@
       transform: translateX(calc(-1 * (var(--card-w) + 60px))) scale(0.9);
     }
 
+    /* New CSS for card header */
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin-bottom: 12px;
+      opacity: 0.8;
+    }
+
+    .card-header span {
+      background: rgba(255, 255, 255, .08);
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+
     .card-content {
       height: 100%;
-      display: grid;
-      grid-template-rows: 1fr auto auto auto 1fr;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-items: center;
+      justify-content: center;
       gap: 12px;
       text-align: center;
+    }
+
+    /* New CSS for large emoji */
+    .card-emoji {
+      font-size: clamp(3rem, 7vw, 6rem);
+      margin-bottom: 24px;
+      display: inline-block;
+      transition: transform 300ms var(--fx), text-shadow 300ms var(--fx);
     }
 
     .jp-word {
@@ -147,11 +175,10 @@
       color: var(--accent);
       text-shadow: 0 4px 14px rgba(0, 0, 0, .38);
       font-size: clamp(1.8rem, 3.8vw, 3.2rem);
-      /* Reduced font size */
       transition: transform 300ms var(--fx), text-shadow 300ms var(--fx);
     }
 
-    /* New CSS for spacebar effect */
+    /* New CSS for spacebar effect on the word */
     .jp-word.highlight-word {
       transform: scale(1.03);
       text-shadow: 0 0 6px rgba(255, 213, 79, 0.8),
@@ -350,6 +377,9 @@
       const prnc = w.prnc ?? w.pronunciation ?? '';
       const bn = w.bn ?? w.meaning ?? '';
       const cmt = w.cmt ?? w.comment ?? '';
+      const no = w['Phrase No'] ?? '';
+      const type = w.type ?? '';
+      const emoji = w.emoji ?? '';
       const el = document.createElement('div');
       el.className = 'card';
       el.dataset.index = idx;
@@ -358,13 +388,16 @@
       const jpHTML = units.map((unit, i) => `<span data-unit="${i}">${unit}</span>`).join('');
 
       el.innerHTML = `
+        <div class="card-header">
+            <span>Word/Phrase No: ${no}</span>
+            <span>Type: ${type}</span>
+        </div>
         <div class="card-content">
-          <div></div>
+          <span class="card-emoji">${emoji}</span>
           <h1 class="jp-word">${jpHTML}</h1>
           <p class="pronunciation">${prnc}</p>
           <p class="bengali-meaning">${bn}</p>
           <p class="comment">${cmt}</p>
-          <div></div>
         </div>
       `;
       return el;
