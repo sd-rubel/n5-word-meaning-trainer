@@ -134,7 +134,6 @@
       transform: translateX(calc(-1 * (var(--card-w) + 60px))) scale(0.9);
     }
 
-    /* New CSS for card header */
     .card-header {
       display: flex;
       justify-content: space-between;
@@ -151,6 +150,15 @@
       border-radius: 8px;
     }
 
+    /* New CSS for highlight on number and type */
+    .card-header .highlight-text {
+      color: #00ff88;
+      font-weight: 700;
+      text-shadow:
+        0 0 4px rgba(0, 255, 136, 0.8),
+        0 0 8px rgba(0, 255, 136, 0.7);
+    }
+
     .card-content {
       height: 100%;
       flex-grow: 1;
@@ -162,10 +170,14 @@
       text-align: center;
     }
 
-    /* New CSS for large emoji */
+    /* Reduced gap between elements */
+    .card-content {
+      gap: 0;
+    }
+
     .card-emoji {
       font-size: clamp(3rem, 7vw, 6rem);
-      margin-bottom: 24px;
+      margin-bottom: 1rem; /* Reduced margin */
       display: inline-block;
       transition: transform 300ms var(--fx), text-shadow 300ms var(--fx);
     }
@@ -174,11 +186,11 @@
       font-weight: 800;
       color: var(--accent);
       text-shadow: 0 4px 14px rgba(0, 0, 0, .38);
-      font-size: clamp(1.8rem, 3.8vw, 3.2rem);
+      font-size: clamp(1.6rem, 3.5vw, 2.8rem); /* Slightly smaller font size */
+      margin-bottom: 0.5rem; /* Reduced margin */
       transition: transform 300ms var(--fx), text-shadow 300ms var(--fx);
     }
 
-    /* New CSS for spacebar effect on the word */
     .jp-word.highlight-word {
       transform: scale(1.03);
       text-shadow: 0 0 6px rgba(255, 213, 79, 0.8),
@@ -190,7 +202,6 @@
       transition: all 300ms var(--fx);
     }
 
-    /* Updated CSS for 'p' key effect to prevent layout shift */
     .jp-word .highlight {
       position: relative;
       color: #00ff88;
@@ -217,6 +228,7 @@
       font-style: italic;
       font-size: 1.3rem;
       color: #cfe8ff;
+      margin-bottom: 0.5rem; /* Reduced margin */
     }
 
     .bengali-meaning {
@@ -224,6 +236,7 @@
       color: var(--text-bn);
       font-weight: 700;
       font-size: 1.8rem;
+      margin-bottom: 0.5rem; /* Reduced margin */
     }
 
     .comment {
@@ -240,7 +253,7 @@
     @media (max-width: 720px) {
       :root {
         --card-w: min(94vw, 560px);
-        --card-h: min(80vh, 600px);
+        --card-h: min(85vh, 650px); /* Increased card height slightly */
       }
     }
   </style>
@@ -289,7 +302,7 @@
         jpWordEl.classList.add('highlight-word');
         setTimeout(() => {
           jpWordEl.classList.remove('highlight-word');
-        }, 500); // Highlight for 500ms
+        }, 500);
       }
       const jpWord = vocab[current].jp ?? vocab[current].japanese;
       speak(jpWord, 'ja-JP');
@@ -301,17 +314,13 @@
       while (i < word.length) {
         let unit = '';
 
-        // Handle standalone vowels (あ, い, う, え, お / ア, イ, ウ, エ, オ)
         if (['あ', 'い', 'う', 'え', 'お', 'ア', 'イ', 'ウ', 'エ', 'オ'].includes(word[i])) {
           unit = word[i];
           i++;
-          // If followed by ん or ン, include it
           if (i < word.length && ['ん', 'ン'].includes(word[i])) {
             unit += word[i];
             i++;
-          }
-          // If followed by long vowel ー or う/ウ, include it
-          else if (i < word.length && (word[i] === 'ー' || ['う', 'ウ'].includes(word[i]))) {
+          } else if (i < word.length && (word[i] === 'ー' || ['う', 'ウ'].includes(word[i]))) {
             unit += word[i];
             i++;
           }
@@ -319,47 +328,38 @@
           continue;
         }
 
-        // Handle consonant-based units
         unit = word[i];
         i++;
-        // Add vowel if present
         if (i < word.length && ['あ', 'い', 'う', 'え', 'お', 'ア', 'イ', 'ウ', 'エ', 'オ'].includes(word[i])) {
           unit += word[i];
           i++;
         }
-        // Add small ゃ, ゅ, ょ / ャ, ュ, ョ if present
         if (i < word.length && ['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ョ'].includes(word[i])) {
           unit += word[i];
           i++;
         }
-        // Add long vowel ー or う/ウ if present
         if (i < word.length && (word[i] === 'ー' || ['う', 'ウ'].includes(word[i]))) {
           unit += word[i];
           i++;
         }
-        // Add ん/ン if present
         if (i < word.length && ['ん', 'ン'].includes(word[i])) {
           unit += word[i];
           i++;
         }
-        // Handle っ/ッ followed by a consonant or vowel
         if (i < word.length && ['っ', 'ッ'].includes(word[i])) {
           unit += word[i];
           i++;
           if (i < word.length) {
             unit += word[i];
             i++;
-            // Add small ゃ, ゅ, ょ / ャ, ュ, ョ if present
             if (i < word.length && ['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ョ'].includes(word[i])) {
               unit += word[i];
               i++;
             }
-            // Add long vowel ー or う/ウ if present
             if (i < word.length && (word[i] === 'ー' || ['う', 'ウ'].includes(word[i]))) {
               unit += word[i];
               i++;
             }
-            // Add ん/ン if present
             if (i < word.length && ['ん', 'ン'].includes(word[i])) {
               unit += word[i];
               i++;
@@ -389,15 +389,15 @@
 
       el.innerHTML = `
         <div class="card-header">
-            <span>Word/Phrase No: ${no}</span>
-            <span>Type: ${type}</span>
+            <span>Word/Phrase No: <b class="highlight-text">${no}</b></span>
+            <span>Type: <b class="highlight-text">${type}</b></span>
         </div>
         <div class="card-content">
           <span class="card-emoji">${emoji}</span>
           <h1 class="jp-word">${jpHTML}</h1>
           <p class="pronunciation">${prnc}</p>
           <p class="bengali-meaning">${bn}</p>
-          <p class="comment">${cmt}</p>
+          <p class="comment">${cmt}</b></p>
         </div>
       `;
       return el;
