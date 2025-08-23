@@ -9,15 +9,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root{
+    :root {
       --card-w: clamp(380px, 42vw, 560px);
       --card-h: clamp(380px, 60vh, 600px);
       --radius: 28px;
       --blur: 20px;
       --shadow: 0 18px 48px rgba(0,0,0,.45);
       --accent: #ffd54f;
-      --accent-soft: #ffe082;
+      --accent-soft: #fff9c4;
       --text-light: #e8f1ff;
       --text-bn: #9be7a1;
       --glass: rgba(255,255,255,.10);
@@ -26,7 +25,7 @@
       --anim-dur: 600ms;
     }
 
-    body{
+    body {
       min-height: 100svh;
       display: grid;
       place-items: center;
@@ -40,14 +39,14 @@
       user-select: none;
     }
 
-    body::before{
+    body::before {
       content: '';
       position: absolute; inset: 0;
       background: linear-gradient(120deg, rgba(4,8,20,.70), rgba(4,8,20,.50));
       z-index: 0;
     }
 
-    body::after{
+    body::after {
       content:'';
       position: absolute; inset: -20%;
       background:
@@ -61,12 +60,13 @@
       z-index: 0;
       pointer-events: none;
     }
+
     @keyframes floaty {
       0%   { transform: translateY(0) translateX(0) scale(1); opacity: .95; }
       100% { transform: translateY(-2%) translateX(1%) scale(1.03); opacity: 1; }
     }
 
-    .app-frame{
+    .app-frame {
       position: relative;
       width: min(96vw, 1480px);
       height: min(78vh, 680px);
@@ -74,7 +74,7 @@
       z-index: 1;
     }
 
-    .carousel{
+    .carousel {
       position: relative;
       width: 100%;
       height: 100%;
@@ -84,7 +84,7 @@
       overflow: hidden;
     }
 
-    .card{
+    .card {
       position: absolute;
       width: var(--card-w);
       height: var(--card-h);
@@ -98,25 +98,11 @@
       opacity: 0;
     }
 
-    .card.active{
-        opacity: 1;
-        z-index: 2;
-        transform: translateX(0) scale(1);
-    }
+    .card.active { opacity: 1; z-index: 2; transform: translateX(0) scale(1); }
+    .card.next   { opacity: 0.8; z-index: 1; transform: translateX(calc(var(--card-w) + 60px)) scale(0.9); }
+    .card.prev   { opacity: 0.8; z-index: 1; transform: translateX(calc(-1 * (var(--card-w) + 60px))) scale(0.9); }
 
-    .card.next {
-        opacity: 0.8;
-        z-index: 1;
-        transform: translateX(calc(var(--card-w) + 60px)) scale(0.9);
-    }
-    
-    .card.prev {
-        opacity: 0.8;
-        z-index: 1;
-        transform: translateX(calc(-1 * (var(--card-w) + 60px))) scale(0.9);
-    }
-
-    .card-content{
+    .card-content {
       height: 100%;
       display: grid;
       grid-template-rows: 1fr auto auto auto 1fr;
@@ -126,163 +112,249 @@
       text-align: center;
     }
 
-    .jp-word{
+    .jp-word {
       font-weight: 800;
       color: var(--accent);
       text-shadow: 0 4px 14px rgba(0,0,0,.38);
-      font-size: clamp(2.1rem, 4.6vw, 3.8rem);
+      font-size: clamp(1.8rem, 3.8vw, 3.2rem); /* Reduced font size */
     }
 
-    .pronunciation{
-      font-style: italic;
-      font-size: 1.3rem;
-      color: #cfe8ff;
+    .jp-word span {
+      transition: all 300ms var(--fx);
     }
 
-    .bengali-meaning{
-      font-family: "Hind Siliguri", sans-serif;
-      color: var(--text-bn);
-      font-weight: 700;
-      font-size: 1.8rem;
-    }
+    .jp-word .highlight {
+  color: #00ff88; /* নিয়ন সবুজ */
+  transform: scale(1.3); /* বড় করে ফোকাস আনবে */
+  font-weight: 900;
+  display: inline-block;
+  
+  /* গ্লো এফেক্ট */
+  text-shadow: 
+    0 0 6px rgba(0, 255, 136, 0.8),
+    0 0 14px rgba(0, 255, 136, 0.7),
+    0 0 26px rgba(0, 255, 136, 0.6),
+    0 0 40px rgba(0, 255, 136, 0.5);
 
-    .comment{
-      font-family: "Hind Siliguri", sans-serif;
-      color: var(--text-light);
-      opacity: .94;
-      font-size: 1rem;
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: rgba(255,255,255,.08);
-      max-width: 92%;
-    }
-    
-    @media (max-width: 720px){
-      :root{ --card-w: min(94vw, 560px); --card-h: min(80vh, 600px); }
-    }
+  /* নরম ব্যাকগ্রাউন্ড আভা */
+  background: radial-gradient(circle at center, rgba(0,255,136,0.25) 0%, transparent 70%);
+  border-radius: 8px;
+  padding: 2px 6px;
+}
+
+    .pronunciation { font-style: italic; font-size: 1.3rem; color: #cfe8ff; }
+    .bengali-meaning { font-family: "Hind Siliguri", sans-serif; color: var(--text-bn); font-weight: 700; font-size: 1.8rem; }
+    .comment { font-family: "Hind Siliguri", sans-serif; color: var(--text-light); opacity: .94; font-size: 1rem; padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.08); max-width: 92%; }
+
+    @media (max-width: 720px) { :root { --card-w: min(94vw, 560px); --card-h: min(80vh, 600px); } }
   </style>
 </head>
 <body>
   <div class="app-frame">
     <main class="carousel" id="carousel"></main>
   </div>
-
   <script>
     const JSON_URL = 'https://raw.githubusercontent.com/sd-rubel/n5-word-meaning-trainer/main/lesson-1.json';
     const root = document.getElementById('carousel');
 
     let vocab = [];
     let current = 0;
+    let highlightIndex = -1;
+
+    const special_list = ['っ', 'ゃ', 'ゅ', 'ょ', 'あ', 'い', 'う', 'え', 'お', 'ん', 'ー', 'ッ', 'ャ', 'ュ', 'ョ', 'ア', 'イ', 'ウ', 'エ', 'オ', 'ン'];
 
     const synth = window.speechSynthesis;
     let voices = [];
 
     function loadVoices() {
       voices = synth.getVoices();
+      if (!voices || voices.length === 0) setTimeout(loadVoices, 100);
     }
     loadVoices();
-    if (speechSynthesis.onvoiceschanged !== undefined) {
-      speechSynthesis.onvoiceschanged = loadVoices;
-    }
+    speechSynthesis.onvoiceschanged = loadVoices;
 
     function speak(text, lang = 'ja-JP') {
-      if (!synth || !text) return;
+      if (!text) return;
+      if (!voices || voices.length === 0) { 
+        setTimeout(() => speak(text, lang), 50); 
+        return;
+      }
       const utter = new SpeechSynthesisUtterance(text);
       utter.lang = lang;
       const voice = voices.find(v => v.lang.startsWith(lang));
       if (voice) utter.voice = voice;
-      synth.cancel();
       synth.speak(utter);
     }
-    
+
     function speakCurrentJpWord() {
-        if(vocab.length === 0) return;
-        const jpWord = vocab[current].jp ?? vocab[current].japanese;
-        speak(jpWord, 'ja-JP');
+      if (!vocab[current]) return;
+      const jpWord = vocab[current].jp ?? vocab[current].japanese;
+      speak(jpWord, 'ja-JP');
     }
 
-    function makeCard(idx){
-        const w = vocab[idx];
-        const jp   = w.jp ?? w.japanese ?? '';
-        const prnc = w.prnc ?? w.pronunciation ?? '';
-        const bn   = w.bn ?? w.meaning ?? '';
-        const cmt  = w.cmt ?? w.comment ?? '';
+    function getHighlightUnits(word) {
+      const units = [];
+      let i = 0;
+      while (i < word.length) {
+        let unit = '';
 
-        const el = document.createElement('div');
-        el.className = 'card';
-        el.setAttribute('data-index', idx);
-        el.innerHTML = `
-            <div class="card-content">
-                <div></div>
-                <h1 class="jp-word">${jp}</h1>
-                <p class="pronunciation">${prnc}</p>
-                <p class="bengali-meaning">${bn}</p>
-                <p class="comment">${cmt}</p>
-                <div></div>
-            </div>
-        `;
-        return el;
+        // Handle standalone vowels (あ, い, う, え, お / ア, イ, ウ, エ, オ)
+        if (['あ', 'い', 'う', 'え', 'お', 'ア', 'イ', 'ウ', 'エ', 'オ'].includes(word[i])) {
+          unit = word[i];
+          i++;
+          // If followed by ん or ン, include it
+          if (i < word.length && ['ん', 'ン'].includes(word[i])) {
+            unit += word[i];
+            i++;
+          }
+          // If followed by long vowel ー or う/ウ, include it
+          else if (i < word.length && (word[i] === 'ー' || ['う', 'ウ'].includes(word[i]))) {
+            unit += word[i];
+            i++;
+          }
+          units.push(unit);
+          continue;
+        }
+
+        // Handle consonant-based units
+        unit = word[i];
+        i++;
+        // Add vowel if present
+        if (i < word.length && ['あ', 'い', 'う', 'え', 'お', 'ア', 'イ', 'ウ', 'エ', 'オ'].includes(word[i])) {
+          unit += word[i];
+          i++;
+        }
+        // Add small ゃ, ゅ, ょ / ャ, ュ, ョ if present
+        if (i < word.length && ['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ョ'].includes(word[i])) {
+          unit += word[i];
+          i++;
+        }
+        // Add long vowel ー or う/ウ if present
+        if (i < word.length && (word[i] === 'ー' || ['う', 'ウ'].includes(word[i]))) {
+          unit += word[i];
+          i++;
+        }
+        // Add ん/ン if present
+        if (i < word.length && ['ん', 'ン'].includes(word[i])) {
+          unit += word[i];
+          i++;
+        }
+        // Handle っ/ッ followed by a consonant or vowel
+        if (i < word.length && ['っ', 'ッ'].includes(word[i])) {
+          unit += word[i];
+          i++;
+          if (i < word.length) {
+            unit += word[i];
+            i++;
+            // Add small ゃ, ゅ, ょ / ャ, ュ, ョ if present
+            if (i < word.length && ['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ョ'].includes(word[i])) {
+              unit += word[i];
+              i++;
+            }
+            // Add long vowel ー or う/ウ if present
+            if (i < word.length && (word[i] === 'ー' || ['う', 'ウ'].includes(word[i]))) {
+              unit += word[i];
+              i++;
+            }
+            // Add ん/ン if present
+            if (i < word.length && ['ん', 'ン'].includes(word[i])) {
+              unit += word[i];
+              i++;
+            }
+          }
+        }
+        units.push(unit);
+      }
+      return units;
     }
 
-    function showCard(index){
-        const cards = root.querySelectorAll('.card');
-        cards.forEach(c => c.className = 'card');
+    function makeCard(idx) {
+      const w = vocab[idx];
+      const jp = w.jp ?? w.japanese ?? '';
+      const prnc = w.prnc ?? w.pronunciation ?? '';
+      const bn = w.bn ?? w.meaning ?? '';
+      const cmt = w.cmt ?? w.comment ?? '';
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.dataset.index = idx;
 
-        const active = root.querySelector(`[data-index="${index}"]`);
-        if (active) active.classList.add('active');
+      const units = getHighlightUnits(jp);
+      const jpHTML = units.map((unit, i) => `<span data-unit="${i}">${unit}</span>`).join('');
 
-        const prevIndex = (index - 1 + vocab.length) % vocab.length;
-        const nextIndex = (index + 1) % vocab.length;
-
-        const prev = root.querySelector(`[data-index="${prevIndex}"]`);
-        const next = root.querySelector(`[data-index="${nextIndex}"]`);
-        if (prev) prev.classList.add('prev');
-        if (next) next.classList.add('next');
-
-        current = index;
+      el.innerHTML = `
+        <div class="card-content">
+          <div></div>
+          <h1 class="jp-word">${jpHTML}</h1>
+          <p class="pronunciation">${prnc}</p>
+          <p class="bengali-meaning">${bn}</p>
+          <p class="comment">${cmt}</p>
+          <div></div>
+        </div>
+      `;
+      return el;
     }
 
-    function slideNext() {
-        const nextIndex = (current + 1) % vocab.length;
-        showCard(nextIndex);
-    }
-    
-    function slidePrev() {
-        const prevIndex = (current - 1 + vocab.length) % vocab.length;
-        showCard(prevIndex);
+    function highlightCharacter() {
+      const activeCard = root.querySelector('.card.active');
+      if (!activeCard) return;
+
+      const spans = activeCard.querySelectorAll('.jp-word span');
+      if (spans.length === 0) return;
+
+      spans.forEach(span => span.classList.remove('highlight'));
+
+      highlightIndex = (highlightIndex + 1) % (spans.length + 1);
+
+      if (highlightIndex === spans.length) {
+        highlightIndex = -1;
+        return;
+      }
+
+      const currentSpan = spans[highlightIndex];
+      if (currentSpan) {
+        currentSpan.classList.add('highlight');
+      }
     }
 
-    async function loadData(){
-      try{
+    function showCard(index) {
+      const cards = root.querySelectorAll('.card');
+      cards.forEach(c => c.className = 'card');
+      const active = root.querySelector(`[data-index="${index}"]`);
+      if (active) active.classList.add('active');
+      const prevIndex = (index - 1 + vocab.length) % vocab.length;
+      const nextIndex = (index + 1) % vocab.length;
+      const prev = root.querySelector(`[data-index="${prevIndex}"]`);
+      const next = root.querySelector(`[data-index="${nextIndex}"]`);
+      if (prev) prev.classList.add('prev');
+      if (next) next.classList.add('next');
+      current = index;
+      highlightIndex = -1;
+    }
+
+    function slideNext() { showCard((current + 1) % vocab.length); }
+    function slidePrev() { showCard((current - 1 + vocab.length) % vocab.length); }
+
+    async function loadData() {
+      try {
         const res = await fetch(JSON_URL);
-        const data = await res.json();
-        vocab = data;
+        vocab = await res.json();
         initCarousel();
-      }catch(e){
+      } catch {
         root.innerHTML = `<div style="color:#ff8a80;">লোড ব্যর্থ</div>`;
       }
     }
 
-    function initCarousel(){
-        root.innerHTML = '';
-        for (let i = 0; i < vocab.length; i++) {
-            const card = makeCard(i);
-            root.append(card);
-        }
-        if(vocab.length > 0) {
-            showCard(0);
-        }
+    function initCarousel() {
+      root.innerHTML = '';
+      vocab.forEach((_, i) => root.append(makeCard(i)));
+      if (vocab.length > 0) showCard(0);
     }
 
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowRight') {
-            slideNext();
-        } else if (e.key === 'ArrowLeft') {
-            slidePrev();
-        } else if (e.key === ' ') {
-            e.preventDefault();
-            speakCurrentJpWord();
-        }
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') slideNext();
+      else if (e.key === 'ArrowLeft') slidePrev();
+      else if (e.key === ' ') { e.preventDefault(); speakCurrentJpWord(); }
+      else if (e.key === 'p') { e.preventDefault(); highlightCharacter(); }
     });
 
     loadData();
