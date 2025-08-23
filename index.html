@@ -19,7 +19,7 @@
 
     :root {
       --card-w: clamp(380px, 42vw, 560px);
-      --card-h: clamp(380px, 60vh, 600px);
+      --card-h: clamp(420px, 65vh, 650px); /* Increased card height */
       --radius: 28px;
       --blur: 20px;
       --shadow: 0 18px 48px rgba(0, 0, 0, .45);
@@ -140,7 +140,7 @@
       width: 100%;
       font-size: 0.9rem;
       color: var(--text-light);
-      margin-bottom: 12px;
+      margin-bottom: 0.5rem; /* Reduced margin */
       opacity: 0.8;
     }
 
@@ -150,7 +150,6 @@
       border-radius: 8px;
     }
 
-    /* New CSS for highlight on number and type */
     .card-header .highlight-text {
       color: #00ff88;
       font-weight: 700;
@@ -166,28 +165,22 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 12px;
+      gap: 0.5rem; /* Minimal gap between elements */
       text-align: center;
     }
-
-    /* Reduced gap between elements */
-    .card-content {
-      gap: 0;
-    }
-
+    
     .card-emoji {
-      font-size: clamp(3rem, 7vw, 6rem);
-      margin-bottom: 1rem; /* Reduced margin */
+      font-size: clamp(2rem, 5vw, 4rem); /* Smaller emoji size */
       display: inline-block;
       transition: transform 300ms var(--fx), text-shadow 300ms var(--fx);
+      margin-top: -1.5rem; /* Move emoji up towards the header */
     }
 
     .jp-word {
       font-weight: 800;
       color: var(--accent);
       text-shadow: 0 4px 14px rgba(0, 0, 0, .38);
-      font-size: clamp(1.6rem, 3.5vw, 2.8rem); /* Slightly smaller font size */
-      margin-bottom: 0.5rem; /* Reduced margin */
+      font-size: clamp(1.4rem, 3.2vw, 2.4rem); /* Smaller font size */
       transition: transform 300ms var(--fx), text-shadow 300ms var(--fx);
     }
 
@@ -226,35 +219,28 @@
 
     .pronunciation {
       font-style: italic;
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       color: #cfe8ff;
-      margin-bottom: 0.5rem; /* Reduced margin */
+      margin-bottom: 0.5rem;
     }
 
     .bengali-meaning {
       font-family: "Hind Siliguri", sans-serif;
       color: var(--text-bn);
       font-weight: 700;
-      font-size: 1.8rem;
-      margin-bottom: 0.5rem; /* Reduced margin */
+      font-size: 1.6rem;
+      margin-bottom: 0.5rem;
     }
 
     .comment {
       font-family: "Hind Siliguri", sans-serif;
       color: var(--text-light);
       opacity: .94;
-      font-size: 1rem;
+      font-size: 0.9rem;
       padding: 10px 12px;
       border-radius: 12px;
       background: rgba(255, 255, 255, .08);
       max-width: 92%;
-    }
-
-    @media (max-width: 720px) {
-      :root {
-        --card-w: min(94vw, 560px);
-        --card-h: min(85vh, 650px); /* Increased card height slightly */
-      }
     }
   </style>
 </head>
@@ -314,7 +300,7 @@
       while (i < word.length) {
         let unit = '';
 
-        if (['あ', 'い', 'う', 'え', 'お', 'ア', 'イ', 'ウ', 'エ', 'オ'].includes(word[i])) {
+        if (['あ', 'い', 'う', 'え', 'お', 'ア', 'ই', 'উ', 'এ', 'ও'].includes(word[i])) {
           unit = word[i];
           i++;
           if (i < word.length && ['ん', 'ン'].includes(word[i])) {
@@ -330,7 +316,7 @@
 
         unit = word[i];
         i++;
-        if (i < word.length && ['あ', 'い', 'う', 'え', 'お', 'ア', 'イ', 'ウ', 'エ', 'オ'].includes(word[i])) {
+        if (i < word.length && ['あ', 'い', 'う', 'え', 'お', 'ア', 'ই', 'উ', 'এ', 'ও'].includes(word[i])) {
           unit += word[i];
           i++;
         }
@@ -338,7 +324,7 @@
           unit += word[i];
           i++;
         }
-        if (i < word.length && (word[i] === 'ー' || ['う', 'ウ'].includes(word[i]))) {
+        if (i < word.length && (word[i] === 'ー' || ['う', 'উ'].includes(word[i]))) {
           unit += word[i];
           i++;
         }
@@ -356,11 +342,11 @@
               unit += word[i];
               i++;
             }
-            if (i < word.length && (word[i] === 'ー' || ['う', 'ウ'].includes(word[i]))) {
+            if (i < word.length && (word[i] === 'ー' || ['う', 'উ'].includes(word[i]))) {
               unit += word[i];
               i++;
             }
-            if (i < word.length && ['ん', 'ン'].includes(word[i])) {
+            if (i < word.length && ['ん', 'ন'].includes(word[i])) {
               unit += word[i];
               i++;
             }
