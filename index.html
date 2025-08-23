@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
-  <!-- Add FontAwesome for social media icons -->
+  <!-- FontAwesome for social media icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     *, *::before, *::after {
@@ -229,27 +229,32 @@
       color: var(--text-light);
       font-family: "Hind Siliguri", sans-serif;
       z-index: 2;
-      width: 220px;
+      max-width: 400px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      font-size: 0.9rem;
     }
 
     .stats-panel h3 {
+      grid-column: 1 / -1;
       font-size: 1.2rem;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
       color: var(--accent);
       text-shadow: 0 0 6px rgba(255, 213, 79, 0.5);
     }
 
     .stats-item {
-      margin-bottom: 10px;
-      font-size: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
     .progress-container {
       background: var(--progress-bg);
       border-radius: 8px;
-      height: 8px;
+      height: 6px;
       overflow: hidden;
-      margin-top: 4px;
     }
 
     .progress-bar {
@@ -265,9 +270,6 @@
       bottom: 20px;
       right: 20px;
       z-index: 2;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
     }
 
     .social-link {
@@ -284,6 +286,11 @@
       opacity: 0;
       transform: translateX(100%);
       transition: transform 600ms var(--fx), opacity 600ms var(--fx);
+      margin-bottom: 8px;
+      max-width: 300px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .social-link.active {
@@ -302,49 +309,26 @@
   <div class="app-frame">
     <main class="carousel" id="carousel"></main>
     <!-- Statistics Panel -->
-    <div class="stats-panel">
+    <div class="stats-panel" id="stats-panel">
       <h3>শব্দের পরিসংখ্যান</h3>
-      <div class="stats-item">
-        Noun: <span id="noun-count">0</span>
-        <div class="progress-container">
-          <div class="progress-bar" id="noun-progress" style="width: 0%"></div>
-        </div>
-      </div>
-      <div class="stats-item">
-        Pronoun: <span id="pronoun-count">0</span>
-        <div class="progress-container">
-          <div class="progress-bar" id="pronoun-progress" style="width: 0%"></div>
-        </div>
-      </div>
-      <div class="stats-item">
-        Verb: <span id="verb-count">0</span>
-        <div class="progress-container">
-          <div class="progress-bar" id="verb-progress" style="width: 0%"></div>
-        </div>
-      </div>
-      <div class="stats-item">
-        Suffix: <span id="suffix-count">0</span>
-        <div class="progress-container">
-          <div class="progress-bar" id="suffix-progress" style="width: 0%"></div>
-        </div>
-      </div>
+      <!-- Dynamically populated -->
     </div>
     <!-- Social Media Links -->
     <div class="social-links" id="social-links">
       <a href="https://facebook.com/sdxrubel" class="social-link" target="_blank">
-        <i class="fab fa-facebook-f"></i> Profile
+        <i class="fab fa-facebook-f"></i> https://facebook.com/sdxrubel
       </a>
       <a href="https://facebook.com/NihonGoBDAcademy" class="social-link" target="_blank">
-        <i class="fab fa-facebook-f"></i> Page
+        <i class="fab fa-facebook-f"></i> https://facebook.com/NihonGoBDAcademy
       </a>
       <a href="https://youtube.com/@sdnrubel" class="social-link" target="_blank">
-        <i class="fab fa-youtube"></i> YouTube
+        <i class="fab fa-youtube"></i> https://youtube.com/@sdnrubel
       </a>
       <a href="https://www.tiktok.com/@nihongo_bd_academy" class="social-link" target="_blank">
-        <i class="fab fa-tiktok"></i> TikTok
+        <i class="fab fa-tiktok"></i> https://www.tiktok.com/@nihongo_bd_academy
       </a>
       <a href="https://t.me/NihonGoBD" class="social-link" target="_blank">
-        <i class="fab fa-telegram-plane"></i> Telegram
+        <i class="fab fa-telegram-plane"></i> https://t.me/NihonGoBD
       </a>
     </div>
   </div>
@@ -502,42 +486,55 @@
       }
     }
 
-    let stats = {
-      Noun: { total: 0, viewed: new Set() },
-      Pronoun: { total: 0, viewed: new Set() },
-      Verb: { total: 0, viewed: new Set() },
-      Suffix: { total: 0, viewed: new Set() }
-    };
+    let stats = {};
+    let totalWords = 0;
+    let viewedWords = new Set();
 
     function updateStats() {
-      // Count total words by type
-      stats = {
-        Noun: { total: 0, viewed: new Set(stats.Noun.viewed) },
-        Pronoun: { total: 0, viewed: new Set(stats.Pronoun.viewed) },
-        Verb: { total: 0, viewed: new Set(stats.Verb.viewed) },
-        Suffix: { total: 0, viewed: new Set(stats.Suffix.viewed) }
-      };
+      // Initialize stats based on unique types in vocab
+      stats = {};
       vocab.forEach((word, idx) => {
         const type = word.type || 'Unknown';
-        if (stats[type]) {
-          stats[type].total++;
-          if (idx <= current) {
-            stats[type].viewed.add(idx);
-          }
+        if (!stats[type]) {
+          stats[type] = { total: 0, viewed: new Set() };
+        }
+        stats[type].total++;
+        if (idx <= current) {
+          stats[type].viewed.add(idx);
+          viewedWords.add(idx);
         }
       });
 
-      // Update UI
-      document.getElementById('noun-count').textContent = stats.Noun.total;
-      document.getElementById('pronoun-count').textContent = stats.Pronoun.total;
-      document.getElementById('verb-count').textContent = stats.Verb.total;
-      document.getElementById('suffix-count').textContent = stats.Suffix.total;
+      // Update Total Words
+      totalWords = vocab.length;
+      document.getElementById('total-words-count').textContent = totalWords;
+      document.getElementById('total-words-progress').style.width = totalWords ? `${(viewedWords.size / totalWords) * 100}%` : '0%';
 
-      // Update progress bars
-      document.getElementById('noun-progress').style.width = stats.Noun.total ? `${(stats.Noun.viewed.size / stats.Noun.total) * 100}%` : '0%';
-      document.getElementById('pronoun-progress').style.width = stats.Pronoun.total ? `${(stats.Pronoun.viewed.size / stats.Pronoun.total) * 100}%` : '0%';
-      document.getElementById('verb-progress').style.width = stats.Verb.total ? `${(stats.Verb.viewed.size / stats.Verb.total) * 100}%` : '0%';
-      document.getElementById('suffix-progress').style.width = stats.Suffix.total ? `${(stats.Suffix.viewed.size / stats.Suffix.total) * 100}%` : '0%';
+      // Update Stats Panel
+      const statsPanel = document.getElementById('stats-panel');
+      statsPanel.innerHTML = '<h3>শব্দের পরিসংখ্যান</h3>';
+      Object.keys(stats).forEach(type => {
+        const item = document.createElement('div');
+        item.className = 'stats-item';
+        item.innerHTML = `
+          ${type}: <span>${stats[type].total}</span>
+          <div class="progress-container">
+            <div class="progress-bar" style="width: ${stats[type].total ? (stats[type].viewed.size / stats[type].total) * 100 : 0}%"></div>
+          </div>
+        `;
+        statsPanel.appendChild(item);
+      });
+
+      // Add Total Words to Stats Panel
+      const totalItem = document.createElement('div');
+      totalItem.className = 'stats-item';
+      totalItem.innerHTML = `
+        মোট শব্দ: <span id="total-words-count">${totalWords}</span>
+        <div class="progress-container">
+          <div class="progress-bar" id="total-words-progress" style="width: ${totalWords ? (viewedWords.size / totalWords) * 100}%"></div>
+        </div>
+      `;
+      statsPanel.appendChild(totalItem);
     }
 
     function showCard(index) {
@@ -594,7 +591,7 @@
           links[currentLink].classList.remove('active');
           currentLink = (currentLink + 1) % links.length;
           setTimeout(animateLink, 1000); // Delay before next link
-        }, 3000); // Link stays visible for 3 seconds
+        }, 10000); // Link stays visible for 10 seconds
       }
 
       animateLink();
