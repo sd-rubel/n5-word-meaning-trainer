@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="bn">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,10 +8,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
-  <!-- FontAwesome for social media icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
-    *, *::before, *::after {
+    *,
+    *::before,
+    *::after {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
@@ -30,8 +32,6 @@
       --glass-border: rgba(255, 255, 255, .28);
       --fx: cubic-bezier(.4, 0, .2, 1);
       --anim-dur: 600ms;
-      --progress-bg: rgba(255, 255, 255, 0.1);
-      --progress-fill: #00ff88;
     }
 
     body {
@@ -59,9 +59,9 @@
       position: absolute;
       inset: -20%;
       background: radial-gradient(60rem 40rem at 12% 18%, rgba(255, 193, 7, .28), transparent 55%),
-                  radial-gradient(48rem 48rem at 88% 78%, rgba(41, 182, 246, .24), transparent 60%),
-                  radial-gradient(42rem 30rem at 60% 30%, rgba(129, 199, 132, .20), transparent 60%),
-                  conic-gradient(from 210deg at 50% 50%, rgba(255, 255, 255, .05), transparent 30%, rgba(255, 255, 255, .06), transparent 70%, rgba(255, 255, 255, .05));
+        radial-gradient(48rem 48rem at 88% 78%, rgba(41, 182, 246, .24), transparent 60%),
+        radial-gradient(42rem 30rem at 60% 30%, rgba(129, 199, 132, .20), transparent 60%),
+        conic-gradient(from 210deg at 50% 50%, rgba(255, 255, 255, .05), transparent 30%, rgba(255, 255, 255, .06), transparent 70%, rgba(255, 255, 255, .05));
       filter: blur(36px);
       mix-blend-mode: screen;
       animation: floaty 12s ease-in-out infinite alternate;
@@ -70,8 +70,15 @@
     }
 
     @keyframes floaty {
-      0% { transform: translateY(0) translateX(0) scale(1); opacity: .95; }
-      100% { transform: translateY(-2%) translateX(1%) scale(1.03); opacity: 1; }
+      0% {
+        transform: translateY(0) translateX(0) scale(1);
+        opacity: .95;
+      }
+
+      100% {
+        transform: translateY(-2%) translateX(1%) scale(1.03);
+        opacity: 1;
+      }
     }
 
     .app-frame {
@@ -108,9 +115,23 @@
       flex-direction: column;
     }
 
-    .card.active { opacity: 1; z-index: 2; transform: translateX(0) scale(1); }
-    .card.next { opacity: 0.8; z-index: 1; transform: translateX(calc(var(--card-w) + 60px)) scale(0.9); }
-    .card.prev { opacity: 0.8; z-index: 1; transform: translateX(calc(-1 * (var(--card-w) + 60px))) scale(0.9); }
+    .card.active {
+      opacity: 1;
+      z-index: 2;
+      transform: translateX(0) scale(1);
+    }
+
+    .card.next {
+      opacity: 0.8;
+      z-index: 1;
+      transform: translateX(calc(var(--card-w) + 60px)) scale(0.9);
+    }
+
+    .card.prev {
+      opacity: 0.8;
+      z-index: 1;
+      transform: translateX(calc(-1 * (var(--card-w) + 60px))) scale(0.9);
+    }
 
     .card-header {
       display: flex;
@@ -131,7 +152,8 @@
     .card-header .highlight-text {
       color: #00ff88;
       font-weight: 700;
-      text-shadow: 0 0 4px rgba(0, 255, 136, 0.8), 0 0 8px rgba(0, 255, 136, 0.7);
+      text-shadow: 0 0 4px rgba(0, 255, 136, 0.8),
+        0 0 8px rgba(0, 255, 136, 0.7);
     }
 
     .card-content {
@@ -163,20 +185,22 @@
     .jp-word.highlight-word {
       transform: scale(1.03);
       text-shadow: 0 0 6px rgba(255, 213, 79, 0.8),
-                   0 0 14px rgba(255, 213, 79, 0.7),
-                   0 0 26px rgba(255, 213, 79, 0.6);
+        0 0 14px rgba(255, 213, 79, 0.7),
+        0 0 26px rgba(255, 213, 79, 0.6);
     }
 
-    .jp-word span { transition: all 300ms var(--fx); }
+    .jp-word span {
+      transition: all 300ms var(--fx);
+    }
 
     .jp-word .highlight {
       position: relative;
       color: #00ff88;
       font-weight: 900;
       text-shadow: 0 0 6px rgba(0, 255, 136, 0.8),
-                   0 0 14px rgba(0, 255, 136, 0.7),
-                   0 0 26px rgba(0, 255, 136, 0.6),
-                   0 0 40px rgba(0, 255, 136, 0.5);
+        0 0 14px rgba(0, 255, 136, 0.7),
+        0 0 26px rgba(0, 255, 136, 0.6),
+        0 0 40px rgba(0, 255, 136, 0.5);
     }
 
     .jp-word .highlight::after {
@@ -216,128 +240,155 @@
       max-width: 92%;
     }
 
-    /* Statistics Panel Styles */
-    .stats-panel {
+    .status-bar {
       position: absolute;
-      bottom: 20px;
-      left: 20px;
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
-      backdrop-filter: blur(var(--blur));
-      border-radius: 12px;
-      padding: 16px;
-      color: var(--text-light);
-      font-family: "Hind Siliguri", sans-serif;
-      z-index: 2;
-      max-width: 400px;
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      font-size: 0.9rem;
-    }
-
-    .stats-panel h3 {
-      grid-column: 1 / -1;
-      font-size: 1.2rem;
-      margin-bottom: 8px;
-      color: var(--accent);
-      text-shadow: 0 0 6px rgba(255, 213, 79, 0.5);
-    }
-
-    .stats-item {
+      bottom: 2rem;
+      left: 2rem;
+      width: 280px;
+      padding: 1rem;
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .15);
+      border: 1px solid rgba(255, 255, 255, .3);
+      backdrop-filter: blur(15px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .3);
+      color: #e8f1ff;
+      z-index: 10;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 0.8rem;
     }
 
-    .progress-container {
-      background: var(--progress-bg);
-      border-radius: 8px;
-      height: 6px;
-      overflow: hidden;
+    .status-bar h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: var(--accent);
+    }
+
+    .status-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .status-item span {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      font-weight: 600;
     }
 
     .progress-bar {
-      background: var(--progress-fill);
-      height: 100%;
-      transition: width 400ms var(--fx);
-      box-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
+      height: 8px;
+      background: rgba(255, 255, 255, .2);
+      border-radius: 4px;
+      overflow: hidden;
     }
 
-    /* Social Media Links Styles */
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #9be7a1, #00ff88);
+      transition: width 0.5s ease-out;
+    }
+
     .social-links {
       position: absolute;
-      bottom: 20px;
-      right: 20px;
-      z-index: 2;
+      bottom: 2rem;
+      right: 0;
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      z-index: 10;
+      pointer-events: none;
     }
 
-    .social-link {
+    .social-link-item {
+      position: absolute;
+      right: -250px;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, .15);
+      border: 1px solid rgba(255, 255, 255, .3);
+      backdrop-filter: blur(15px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .3);
+      transition: right 1s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       align-items: center;
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
-      backdrop-filter: blur(var(--blur));
-      border-radius: 8px;
-      padding: 8px 12px;
+      gap: 0.5rem;
+      opacity: 0;
+      pointer-events: all;
+    }
+
+    .social-link-item.active {
+      right: 2rem;
+      opacity: 1;
+    }
+
+    .social-link-item a {
       color: var(--text-light);
       text-decoration: none;
-      font-size: 0.9rem;
-      opacity: 0;
-      transform: translateX(100%);
-      transition: transform 600ms var(--fx), opacity 600ms var(--fx);
-      margin-bottom: 8px;
-      max-width: 300px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-weight: 600;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    .social-link.active {
-      opacity: 1;
-      transform: translateX(0);
-    }
-
-    .social-link i {
-      margin-right: 8px;
+    .social-link-item a:hover {
       color: var(--accent);
+    }
+
+    .social-link-item a i {
       font-size: 1.2rem;
     }
   </style>
 </head>
+
 <body>
   <div class="app-frame">
     <main class="carousel" id="carousel"></main>
-    <!-- Statistics Panel -->
-    <div class="stats-panel" id="stats-panel">
-      <h3>শব্দের পরিসংখ্যান</h3>
-      <!-- Dynamically populated -->
-    </div>
-    <!-- Social Media Links -->
-    <div class="social-links" id="social-links">
-      <a href="https://facebook.com/sdxrubel" class="social-link" target="_blank">
-        <i class="fab fa-facebook-f"></i> https://facebook.com/sdxrubel
-      </a>
-      <a href="https://facebook.com/NihonGoBDAcademy" class="social-link" target="_blank">
-        <i class="fab fa-facebook-f"></i> https://facebook.com/NihonGoBDAcademy
-      </a>
-      <a href="https://youtube.com/@sdnrubel" class="social-link" target="_blank">
-        <i class="fab fa-youtube"></i> https://youtube.com/@sdnrubel
-      </a>
-      <a href="https://www.tiktok.com/@nihongo_bd_academy" class="social-link" target="_blank">
-        <i class="fab fa-tiktok"></i> https://www.tiktok.com/@nihongo_bd_academy
-      </a>
-      <a href="https://t.me/NihonGoBD" class="social-link" target="_blank">
-        <i class="fab fa-telegram-plane"></i> https://t.me/NihonGoBD
-      </a>
-    </div>
   </div>
+
+  <div class="status-bar" id="statusBar">
+    <h3>শব্দের প্রকারভেদ</h3>
+    <div id="statusItems"></div>
+  </div>
+
+  <div class="social-links" id="socialLinks"></div>
   <script>
     const JSON_URL = 'https://raw.githubusercontent.com/sd-rubel/n5-word-meaning-trainer/main/lesson-1.json';
     const root = document.getElementById('carousel');
+    const statusBar = document.getElementById('statusBar');
+    const statusItemsContainer = document.getElementById('statusItems');
+    const socialLinksContainer = document.getElementById('socialLinks');
+
     let vocab = [];
     let current = 0;
     let highlightIndex = -1;
+    let stats = {};
+    let socialLinkIndex = 0;
+    let socialLinksData = [{
+      text: 'Profile: facebook.com/sdxrubel',
+      icon: 'fab fa-facebook-f',
+      url: 'https://www.facebook.com/sdxrubel'
+    }, {
+      text: 'Page: NihonGoBDAcademy',
+      icon: 'fab fa-facebook-f',
+      url: 'https://www.facebook.com/NihonGoBDAcademy'
+    }, {
+      text: 'YouTube: @sdnrubel',
+      icon: 'fab fa-youtube',
+      url: 'https://youtube.com/@sdnrubel'
+    }, {
+      text: 'TikTok: @nihongo_bd_academy',
+      icon: 'fab fa-tiktok',
+      url: 'https://www.tiktok.com/@nihongo_bd_academy'
+    }, {
+      text: 'Telegram: NihonGoBD',
+      icon: 'fab fa-telegram-plane',
+      url: 'https://t.me/NihonGoBD'
+    }, ];
+
     const special_list = ['っ', 'ゃ', 'ゅ', 'ょ', 'あ', 'い', 'う', 'え', 'お', 'ん', 'ー', 'ッ', 'ャ', 'ュ', 'ョ', 'ア', 'イ', 'ウ', 'エ', 'オ', 'ン'];
 
     const synth = window.speechSynthesis;
@@ -381,7 +432,7 @@
       let i = 0;
       while (i < word.length) {
         let unit = '';
-        if (['あ', 'い', 'う', 'え', 'お', 'ア', 'ই', 'উ', 'এ', 'ও'].includes(word[i])) {
+        if (['あ', 'い', 'う', 'え', 'お', 'ア', 'イ', 'ウ', 'エ', 'オ'].includes(word[i])) {
           unit = word[i];
           i++;
           if (i < word.length && ['ん', 'ン'].includes(word[i])) {
@@ -396,7 +447,7 @@
         }
         unit = word[i];
         i++;
-        if (i < word.length && ['あ', 'い', 'う', 'え', 'お', 'ア', 'ই', 'উ', 'এ', 'ও'].includes(word[i])) {
+        if (i < word.length && ['あ', 'い', 'う', 'え', 'お', 'ア', 'イ', 'উ', 'এ', 'ও'].includes(word[i])) {
           unit += word[i];
           i++;
         }
@@ -408,7 +459,7 @@
           unit += word[i];
           i++;
         }
-        if (i < word.length && ['ん', 'ン'].includes(word[i])) {
+        if (i < word.length && ['ん', 'ন'].includes(word[i])) {
           unit += word[i];
           i++;
         }
@@ -455,15 +506,15 @@
 
       el.innerHTML = `
         <div class="card-header">
-          <span>Word/Phrase No: <b class="highlight-text">${no}</b></span>
-          <span>Type: <b class="highlight-text">${type}</b></span>
+            <span>Word/Phrase No: <b class="highlight-text">${no}</b></span>
+            <span>Type: <b class="highlight-text">${type}</b></span>
         </div>
         <div class="card-content">
           <span class="card-emoji">${emoji}</span>
           <h1 class="jp-word">${jpHTML}</h1>
           <p class="pronunciation">${prnc}</p>
           <p class="bengali-meaning">${bn}</p>
-          <p class="comment">${cmt}</p>
+          <p class="comment">${cmt}</b></p>
         </div>
       `;
       return el;
@@ -486,57 +537,6 @@
       }
     }
 
-    let stats = {};
-    let totalWords = 0;
-    let viewedWords = new Set();
-
-    function updateStats() {
-      // Initialize stats based on unique types in vocab
-      stats = {};
-      vocab.forEach((word, idx) => {
-        const type = word.type || 'Unknown';
-        if (!stats[type]) {
-          stats[type] = { total: 0, viewed: new Set() };
-        }
-        stats[type].total++;
-        if (idx <= current) {
-          stats[type].viewed.add(idx);
-          viewedWords.add(idx);
-        }
-      });
-
-      // Update Total Words
-      totalWords = vocab.length;
-      document.getElementById('total-words-count').textContent = totalWords;
-      document.getElementById('total-words-progress').style.width = totalWords ? `${(viewedWords.size / totalWords) * 100}%` : '0%';
-
-      // Update Stats Panel
-      const statsPanel = document.getElementById('stats-panel');
-      statsPanel.innerHTML = '<h3>শব্দের পরিসংখ্যান</h3>';
-      Object.keys(stats).forEach(type => {
-        const item = document.createElement('div');
-        item.className = 'stats-item';
-        item.innerHTML = `
-          ${type}: <span>${stats[type].total}</span>
-          <div class="progress-container">
-            <div class="progress-bar" style="width: ${stats[type].total ? (stats[type].viewed.size / stats[type].total) * 100 : 0}%"></div>
-          </div>
-        `;
-        statsPanel.appendChild(item);
-      });
-
-      // Add Total Words to Stats Panel
-      const totalItem = document.createElement('div');
-      totalItem.className = 'stats-item';
-      totalItem.innerHTML = `
-        মোট শব্দ: <span id="total-words-count">${totalWords}</span>
-        <div class="progress-container">
-          <div class="progress-bar" id="total-words-progress" style="width: ${totalWords ? (viewedWords.size / totalWords) * 100}%"></div>
-        </div>
-      `;
-      statsPanel.appendChild(totalItem);
-    }
-
     function showCard(index) {
       const cards = root.querySelectorAll('.card');
       cards.forEach(c => c.className = 'card');
@@ -550,7 +550,6 @@
       if (next) next.classList.add('next');
       current = index;
       highlightIndex = -1;
-      updateStats();
     }
 
     function slideNext() {
@@ -561,15 +560,80 @@
       showCard((current - 1 + vocab.length) % vocab.length);
     }
 
+    function calculateStats() {
+      const typeCounts = {};
+      vocab.forEach(word => {
+        const type = word.type.toLowerCase();
+        typeCounts[type] = (typeCounts[type] || 0) + 1;
+      });
+      return typeCounts;
+    }
+
+    function updateStatusBar() {
+      statusItemsContainer.innerHTML = '';
+      const totalWords = vocab.length;
+      for (const type in stats) {
+        const count = stats[type];
+        const percentage = totalWords > 0 ? (count / totalWords) * 100 : 0;
+        const itemName = type.charAt(0).toUpperCase() + type.slice(1);
+        const itemHTML = `
+          <div class="status-item">
+            <span>${itemName}: ${count}</span>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${percentage.toFixed(0)}%;"></div>
+            </div>
+          </div>
+        `;
+        statusItemsContainer.innerHTML += itemHTML;
+      }
+    }
+
+    function createSocialLinks() {
+      socialLinksData.forEach((link, index) => {
+        const linkEl = document.createElement('div');
+        linkEl.className = 'social-link-item';
+        linkEl.dataset.index = index;
+        linkEl.innerHTML = `
+          <a href="${link.url}" target="_blank">
+            <i class="${link.icon}"></i>
+            <span>${link.text}</span>
+          </a>
+        `;
+        socialLinksContainer.appendChild(linkEl);
+      });
+    }
+
+    function animateSocialLinks() {
+      const links = document.querySelectorAll('.social-link-item');
+      if (links.length === 0) return;
+
+      let currentLink = links[socialLinkIndex];
+      currentLink.classList.remove('active');
+
+      socialLinkIndex = (socialLinkIndex + 1) % links.length;
+      let nextLink = links[socialLinkIndex];
+
+      nextLink.classList.add('active');
+
+      setTimeout(() => {
+        nextLink.classList.remove('active');
+      }, 5000);
+
+      setTimeout(animateSocialLinks, 6000);
+    }
+
     async function loadData() {
       try {
         const res = await fetch(JSON_URL);
         vocab = await res.json();
+        stats = calculateStats();
         initCarousel();
-        updateStats();
-        startSocialAnimation();
-      } catch {
-        root.innerHTML = `<div style="color:#ff8a80;">লোড ব্যর্থ</div>`;
+        updateStatusBar();
+        createSocialLinks();
+        animateSocialLinks();
+      } catch (error) {
+        console.error("Failed to load data:", error);
+        root.innerHTML = `<div style="color:#ff8a80; padding: 20px; font-size: 1.5rem; text-align: center;">ডাটা লোড করতে ব্যর্থ হয়েছে। অনুগ্রহ করে ইন্টারনেট সংযোগ পরীক্ষা করুন।</div>`;
       }
     }
 
@@ -577,24 +641,6 @@
       root.innerHTML = '';
       vocab.forEach((_, i) => root.append(makeCard(i)));
       if (vocab.length > 0) showCard(0);
-    }
-
-    // Social Media Animation
-    function startSocialAnimation() {
-      const links = document.querySelectorAll('.social-link');
-      let currentLink = 0;
-
-      function animateLink() {
-        links.forEach(link => link.classList.remove('active'));
-        links[currentLink].classList.add('active');
-        setTimeout(() => {
-          links[currentLink].classList.remove('active');
-          currentLink = (currentLink + 1) % links.length;
-          setTimeout(animateLink, 1000); // Delay before next link
-        }, 10000); // Link stays visible for 10 seconds
-      }
-
-      animateLink();
     }
 
     document.addEventListener('keydown', e => {
