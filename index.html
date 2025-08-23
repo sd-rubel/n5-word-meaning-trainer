@@ -17,7 +17,7 @@
 
     :root {
       --card-w: clamp(380px, 42vw, 560px);
-      --card-h: clamp(360px, 50vh, 500px); /* Reduced card height */
+      --card-h: clamp(360px, 50vh, 500px);
       --radius: 28px;
       --blur: 20px;
       --shadow: 0 18px 48px rgba(0, 0, 0, .45);
@@ -76,10 +76,10 @@
     .app-frame {
       position: relative;
       width: min(96vw, 1480px);
-      height: min(80vh, 720px); /* Increased height to accommodate spacing */
+      height: min(80vh, 720px);
       display: grid;
       z-index: 1;
-      padding-bottom: 120px; /* Added space for stats and social links */
+      padding-bottom: 120px;
     }
 
     .carousel {
@@ -216,7 +216,6 @@
       max-width: 92%;
     }
 
-    /* Statistics Panel Styles */
     .stats-panel {
       position: absolute;
       bottom: 20px;
@@ -261,69 +260,52 @@
       box-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
     }
 
-    /* Social Media Links Styles */
-    .social-links {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      z-index: 2;
+    .footer-links {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to right, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.7));
+      padding: 10px 20px;
       display: flex;
-      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
       gap: 10px;
+      z-index: 2;
+      font-family: "Hind Siliguri", sans-serif;
+      color: var(--text-light);
     }
 
-    .social-link {
-      display: flex;
-      align-items: center;
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
-      backdrop-filter: blur(var(--blur));
-      border-radius: 8px;
-      padding: 8px 12px;
+    .footer-links a {
       color: var(--text-light);
       text-decoration: none;
       font-size: 0.9rem;
-      opacity: 0;
-      transform: translateY(100%);
-      transition: transform 600ms var(--fx), opacity 600ms var(--fx);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .social-link.active {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .social-link i {
-      margin-right: 8px;
+    .footer-links a i {
       font-size: 1.2rem;
     }
 
-    .social-link.facebook i { color: #1877F2; }
-    .social-link.youtube i { color: #FF0000; }
-    .social-link.tiktok i { color: #000000; }
-    .social-link.telegram i { color: #0088cc; }
+    .footer-links a.facebook i { color: #1877F2; }
+    .footer-links a.youtube i { color: #FF0000; }
+    .footer-links a.tiktok i { color: #000000; }
+    .footer-links a.telegram i { color: #0088cc; }
   </style>
 </head>
 <body>
   <div class="app-frame">
     <main class="carousel" id="carousel"></main>
     <div class="stats-panel" id="stats-panel"></div>
-    <div class="social-links" id="social-links">
-      <a href="https://facebook.com/sdxrubel" class="social-link facebook" target="_blank">
-        <i class="fab fa-facebook-f"></i> https://facebook.com/sdxrubel
-      </a>
-      <a href="https://facebook.com/NihonGoBDAcademy" class="social-link facebook" target="_blank">
-        <i class="fab fa-facebook-f"></i> https://facebook.com/NihonGoBDAcademy
-      </a>
-      <a href="https://youtube.com/@sdnrubel" class="social-link youtube" target="_blank">
-        <i class="fab fa-youtube"></i> https://youtube.com/@sdnrubel
-      </a>
-      <a href="https://www.tiktok.com/@nihongo_bd_academy" class="social-link tiktok" target="_blank">
-        <i class="fab fa-tiktok"></i> https://www.tiktok.com/@nihongo_bd_academy
-      </a>
-      <a href="https://t.me/NihonGoBD" class="social-link telegram" target="_blank">
-        <i class="fab fa-telegram-plane"></i> https://t.me/NihonGoBD
-      </a>
+    <div class="footer-links">
+      <a href="https://facebook.com/sdxrubel" class="facebook" target="_blank"><i class="fab fa-facebook-f"></i>https://facebook.com/sdxrubel</a>
+      <a href="https://facebook.com/NihonGoBDAcademy" class="facebook" target="_blank"><i class="fab fa-facebook-f"></i>https://facebook.com/NihonGoBDAcademy</a>
+      <a href="https://youtube.com/@sdnrubel" class="youtube" target="_blank"><i class="fab fa-youtube"></i>https://youtube.com/@sdnrubel</a>
+      <a href="https://www.tiktok.com/@nihongo_bd_academy" class="tiktok" target="_blank"><i class="fab fa-tiktok"></i>https://www.tiktok.com/@nihongo_bd_academy</a>
+      <a href="https://t.me/NihonGoBD" class="telegram" target="_blank"><i class="fab fa-telegram-plane"></i>https://t.me/NihonGoBD</a>
     </div>
   </div>
   <script>
@@ -484,7 +466,6 @@
     let stats = {};
 
     function updateStats() {
-      // Reset stats
       stats = {};
       vocab.forEach((word, idx) => {
         const type = word.type || 'Unknown';
@@ -497,7 +478,6 @@
         }
       });
 
-      // Update stats panel
       statsPanel.innerHTML = '';
       Object.entries(stats).forEach(([type, data]) => {
         const bengaliType = {
@@ -556,7 +536,6 @@
         vocab = await res.json();
         initCarousel();
         updateStats();
-        startSocialAnimation();
       } catch {
         root.innerHTML = `<div style="color:#ff8a80;">লোড ব্যর্থ</div>`;
       }
@@ -566,25 +545,6 @@
       root.innerHTML = '';
       vocab.forEach((_, i) => root.append(makeCard(i)));
       if (vocab.length > 0) showCard(0);
-    }
-
-    function startSocialAnimation() {
-      const links = document.querySelectorAll('.social-link');
-      
-      function animateLink(index) {
-        if (index >= links.length) {
-          setTimeout(() => animateLink(0), 2000); // Restart after 2 seconds
-          return;
-        }
-        links.forEach(link => link.classList.remove('active'));
-        links[index].classList.add('active');
-        setTimeout(() => {
-          links[index].classList.remove('active');
-          animateLink(index + 1);
-        }, 10000); // Each link stays for 10 seconds
-      }
-
-      animateLink(0);
     }
 
     document.addEventListener('keydown', e => {
