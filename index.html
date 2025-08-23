@@ -124,12 +124,16 @@
     }
 
     .jp-word .highlight {
-      color: #4caf50; /* Light green for bright, distinct highlight */
-      transform: scale(1.2); /* Slightly larger for prominence */
-      text-shadow: 0 2px 6px rgba(0,0,0,0.4); /* Premium shadow */
-      text-decoration: underline; /* Underline for highlight */
-      display: inline-block;
-    }
+  background: linear-gradient(135deg, #4caf50, #81c784); /* প্রিমিয়াম সবুজ গ্রেডিয়েন্ট */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transform: scale(1.25); /* একটু বড় করে */
+  text-shadow: 0 0 12px rgba(76, 175, 80, 0.6), 0 0 24px rgba(129, 199, 132, 0.5);
+  font-weight: 900;
+  display: inline-block;
+  border-radius: 6px;
+  padding: 2px 4px;
+}
 
     .pronunciation { font-style: italic; font-size: 1.3rem; color: #cfe8ff; }
     .bengali-meaning { font-family: "Hind Siliguri", sans-serif; color: var(--text-bn); font-weight: 700; font-size: 1.8rem; }
@@ -241,7 +245,7 @@
               i++;
             }
             // Add long vowel ー or う/ウ if present
-            if (i < word.length && (word[i] === 'ー' || ['う', 'ウ'].includes(word[i])) {
+            if (i < word.length && (word[i] === 'ー' || ['う', 'ウ'].includes(word[i]))) {
               unit += word[i];
               i++;
             }
