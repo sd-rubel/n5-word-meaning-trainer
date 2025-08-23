@@ -1,637 +1,1249 @@
 <!DOCTYPE html>
+
 <html lang="bn">
+
 <head>
+
   <meta charset="UTF-8" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Japanese Vocabulary – Gallery Slide</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
+
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
   <style>
+
     *, *::before, *::after {
+
       box-sizing: border-box;
+
       margin: 0;
+
       padding: 0;
+
     }
+
+
 
     :root {
+
       --card-w: clamp(380px, 42vw, 560px);
-      --card-h: clamp(380px, 55vh, 550px);
+
+      --card-h: clamp(400px, 55vh, 540px);
+
       --radius: 28px;
+
       --blur: 20px;
+
       --shadow: 0 18px 48px rgba(0, 0, 0, .45);
+
       --accent: #ffd54f;
+
       --accent-soft: #fff9c4;
+
       --text-light: #e8f1ff;
+
       --text-bn: #9be7a1;
+
       --glass: rgba(255, 255, 255, .10);
+
       --glass-border: rgba(255, 255, 255, .28);
+
       --fx: cubic-bezier(.4, 0, .2, 1);
+
       --anim-dur: 600ms;
+
       --progress-bg: rgba(255, 255, 255, 0.1);
+
       --progress-fill: #00ff88;
+
     }
+
+
 
     body {
+
       min-height: 100svh;
+
       display: grid;
+
       place-items: center;
+
       font-family: 'Noto Sans', "Hind Siliguri", sans-serif;
+
       color: white;
+
       background: url('https://raw.githubusercontent.com/sd-rubel/n5-word-meaning-trainer/main/background-img.jpg') no-repeat center/cover;
+
       position: relative;
+
       overflow: hidden;
+
       user-select: none;
+
     }
+
+
 
     body::before {
+
       content: '';
+
       position: absolute;
+
       inset: 0;
+
       background: linear-gradient(120deg, rgba(4, 8, 20, .70), rgba(4, 8, 20, .50));
+
       z-index: 0;
+
     }
+
+
 
     body::after {
+
       content: '';
+
       position: absolute;
+
       inset: -20%;
+
       background: radial-gradient(60rem 40rem at 12% 18%, rgba(255, 193, 7, .28), transparent 55%),
+
                   radial-gradient(48rem 48rem at 88% 78%, rgba(41, 182, 246, .24), transparent 60%),
+
                   radial-gradient(42rem 30rem at 60% 30%, rgba(129, 199, 132, .20), transparent 60%),
+
                   conic-gradient(from 210deg at 50% 50%, rgba(255, 255, 255, .05), transparent 30%, rgba(255, 255, 255, .06), transparent 70%, rgba(255, 255, 255, .05));
+
       filter: blur(36px);
+
       mix-blend-mode: screen;
+
       animation: floaty 12s ease-in-out infinite alternate;
+
       z-index: 0;
+
       pointer-events: none;
+
     }
+
+
 
     @keyframes floaty {
+
       0% { transform: translateY(0) translateX(0) scale(1); opacity: .95; }
+
       100% { transform: translateY(-2%) translateX(1%) scale(1.03); opacity: 1; }
+
     }
+
+
 
     .app-frame {
+
       position: relative;
+
       width: min(96vw, 1480px);
-      min-height: 100svh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+
+      height: min(80vh, 720px);
+
+      display: grid;
+
       z-index: 1;
+
       padding-bottom: 120px;
+
+      padding-top: 20px;
+
+      padding-left: 20px;
+
+      padding-right: 20px;
+
     }
 
-    .top-bar {
-      width: 100%;
+
+
+    .header {
+
       display: flex;
+
       justify-content: space-between;
-      align-items: flex-end;
-      padding: 20px;
-      padding-top: 40px;
-      z-index: 3;
-    }
 
-    .top-bar-item {
-      display: flex;
-      flex-direction: column;
       align-items: center;
-      text-align: center;
-      color: var(--text-light);
-      font-size: 0.9rem;
-      font-weight: 600;
-      gap: 5px;
+
+      margin-bottom: 60px;
+
     }
 
-    .top-bar-item img {
-      width: clamp(60px, 8vw, 100px);
-      height: clamp(60px, 8vw, 100px);
+
+
+    .profile, .logo {
+
+      display: flex;
+
+      flex-direction: column;
+
+      align-items: center;
+
+      text-align: center;
+
+    }
+
+
+
+    .circle-img {
+
+      width: clamp(60px, 8vw, 80px);
+
+      height: clamp(60px, 8vw, 80px);
+
       border-radius: 50%;
+
       object-fit: cover;
-      border: 3px solid rgba(255, 255, 255, 0.5);
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+
+      margin-bottom: 8px;
+
     }
 
-    .main-title {
-      font-family: 'Hind Siliguri', sans-serif;
-      text-align: center;
-      font-size: clamp(1.8rem, 4vw, 3.5rem);
-      font-weight: 700;
+
+
+    .profile p, .logo p {
+
+      font-size: 1rem;
+
       color: var(--text-light);
-      text-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
-      flex-grow: 1;
-      margin: 0 20px;
-    }
-    
-    .main-title-jp {
-      color: var(--accent);
-      text-shadow: 0 0 8px rgba(255, 213, 79, 0.6);
+
+      font-weight: 600;
+
     }
 
-    .main-title-highlight {
-      color: #00ff88;
-      text-shadow: 0 0 10px rgba(0, 255, 136, 0.7),
-                   0 0 20px rgba(0, 255, 136, 0.6),
-                   0 0 30px rgba(0, 255, 136, 0.5);
+
+
+    .title {
+
+      text-align: center;
+
+      flex-grow: 1;
+
     }
+
+
+
+    .title h1 {
+
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+
+      color: var(--accent);
+
+      text-shadow: 0 0 6px rgba(255, 213, 79, 0.5);
+
+    }
+
+
+
+    .title .highlight {
+
+      color: #00ff88;
+
+      text-shadow: 0 0 6px rgba(0, 255, 136, 0.8), 0 0 12px rgba(0, 255, 136, 0.7), 0 0 20px rgba(0, 255, 136, 0.6);
+
+    }
+
+
 
     .carousel {
+
       position: relative;
+
       width: 100%;
+
       height: 100%;
-      flex-grow: 1;
+
       display: grid;
+
       place-items: center;
+
       perspective: 1200px;
+
       overflow: hidden;
-      margin-top: 40px; /* Added margin to push it down */
+
     }
+
+
 
     .card {
+
       position: absolute;
+
       width: var(--card-w);
+
       height: var(--card-h);
+
       padding: clamp(18px, 2.8vw, 32px);
+
       border-radius: var(--radius);
+
       background: var(--glass);
+
       border: 1px solid var(--glass-border);
+
       backdrop-filter: blur(var(--blur));
+
       box-shadow: var(--shadow);
+
       transition: transform var(--anim-dur) var(--fx), opacity var(--anim-dur) var(--fx);
+
       opacity: 0;
+
       display: flex;
+
       flex-direction: column;
+
     }
+
+
 
     .card.active { opacity: 1; z-index: 2; transform: translateX(0) scale(1); }
+
     .card.next { opacity: 0.8; z-index: 1; transform: translateX(calc(var(--card-w) + 60px)) scale(0.9); }
+
     .card.prev { opacity: 0.8; z-index: 1; transform: translateX(calc(-1 * (var(--card-w) + 60px))) scale(0.9); }
 
+
+
     .card-header {
+
       display: flex;
+
       justify-content: space-between;
+
       width: 100%;
+
       font-size: 0.9rem;
+
       color: var(--text-light);
+
       margin-bottom: 0.5rem;
+
       opacity: 0.8;
+
     }
+
+
 
     .card-header span {
+
       background: rgba(255, 255, 255, .08);
+
       padding: 6px 10px;
+
       border-radius: 8px;
+
     }
+
+
 
     .card-header .highlight-text {
+
       color: #00ff88;
+
       font-weight: 700;
+
       text-shadow: 0 0 4px rgba(0, 255, 136, 0.8), 0 0 8px rgba(0, 255, 136, 0.7);
+
     }
+
+
 
     .card-content {
+
       height: 100%;
+
       flex-grow: 1;
+
       display: flex;
+
       flex-direction: column;
+
       align-items: center;
+
       justify-content: center;
+
       gap: 0.5rem;
+
       text-align: center;
+
     }
+
+
 
     .card-emoji {
-      font-size: clamp(2.4rem, 5vw, 4rem);
+
+      font-size: clamp(2rem, 5vw, 4rem);
+
       display: inline-block;
+
       transition: transform 300ms var(--fx), text-shadow 300ms var(--fx);
+
       margin-top: -1.5rem;
+
     }
+
+
 
     .jp-word {
+
       font-weight: 800;
+
       color: var(--accent);
+
       text-shadow: 0 4px 14px rgba(0, 0, 0, .38);
-      font-size: clamp(1.6rem, 3.2vw, 2.8rem);
+
+      font-size: clamp(1.4rem, 3.2vw, 2.4rem);
+
       transition: transform 300ms var(--fx), text-shadow 300ms var(--fx);
+
     }
 
+
+
     .jp-word.highlight-word {
+
       transform: scale(1.03);
+
       text-shadow: 0 0 6px rgba(255, 213, 79, 0.8),
+
                    0 0 14px rgba(255, 213, 79, 0.7),
+
                    0 0 26px rgba(255, 213, 79, 0.6);
+
     }
+
+
 
     .jp-word span { transition: all 300ms var(--fx); }
 
+
+
     .jp-word .highlight {
+
       position: relative;
+
       color: #00ff88;
+
       font-weight: 900;
+
       text-shadow: 0 0 6px rgba(0, 255, 136, 0.8),
-                   0 0 14px rgba(0, 255, 136, 0.7),
-                   0 0 26px rgba(0, 255, 136, 0.6),
-                   0 0 40px rgba(0, 255, 136, 0.5);
+
+                  0 0 14px rgba(0, 255, 136, 0.7),
+
+                  0 0 26px rgba(0, 255, 136, 0.6),
+
+                  0 0 40px rgba(0, 255, 136, 0.5);
+
     }
+
+
 
     .jp-word .highlight::after {
+
       content: '';
+
       position: absolute;
+
       inset: 0;
+
       z-index: -1;
+
       border-radius: 8px;
+
       padding: 2px 6px;
+
       background: radial-gradient(circle at center, rgba(0, 255, 136, 0.25) 0%, transparent 70%);
+
       transform: scale(1.3);
+
     }
+
+
 
     .pronunciation {
+
       font-style: italic;
+
       font-size: 1.2rem;
+
       color: #cfe8ff;
+
       margin-bottom: 0.5rem;
+
     }
+
+
 
     .bengali-meaning {
+
       font-family: "Hind Siliguri", sans-serif;
+
       color: var(--text-bn);
+
       font-weight: 700;
-      font-size: 1.8rem;
+
+      font-size: 1.6rem;
+
       margin-bottom: 0.5rem;
+
     }
+
+
 
     .comment {
+
       font-family: "Hind Siliguri", sans-serif;
+
       color: var(--text-light);
+
       opacity: .94;
+
       font-size: 1rem;
+
       padding: 10px 12px;
+
       border-radius: 12px;
+
       background: rgba(255, 255, 255, .08);
+
       max-width: 92%;
+
     }
+
+
 
     .stats-panel {
+
       position: absolute;
+
       bottom: 20px;
+
       left: 20px;
+
       display: flex;
+
       flex-wrap: wrap;
+
       gap: 20px;
+
       z-index: 2;
+
       font-family: "Hind Siliguri", sans-serif;
+
       color: var(--text-light);
+
       max-width: 80%;
+
     }
+
+
 
     .stats-item {
+
       display: flex;
+
       flex-direction: column;
+
       align-items: flex-start;
+
       font-size: 0.9rem;
+
       min-width: 120px;
+
     }
+
+
 
     .stats-item h3 {
+
       font-size: 1rem;
+
       color: var(--accent);
+
       text-shadow: 0 0 6px rgba(255, 213, 79, 0.5);
+
       margin-bottom: 4px;
+
     }
+
+
 
     .progress-container {
+
       background: var(--progress-bg);
+
       border-radius: 8px;
+
       height: 6px;
+
       width: 100px;
+
       overflow: hidden;
+
       margin-top: 4px;
+
     }
+
+
 
     .progress-bar {
+
       background: var(--progress-fill);
+
       height: 100%;
+
       transition: width 400ms var(--fx);
+
       box-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
+
     }
+
+
 
     .footer-links {
+
       position: fixed;
+
       bottom: 0;
+
       left: 0;
+
       right: 0;
+
       background: linear-gradient(to right, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.7));
+
       padding: 10px 20px;
+
       display: flex;
+
       justify-content: space-between;
+
       align-items: center;
+
       flex-wrap: wrap;
+
       gap: 10px;
+
       z-index: 2;
+
       font-family: "Hind Siliguri", sans-serif;
+
       color: var(--text-light);
+
     }
+
+
 
     .footer-links a {
+
       color: var(--text-light);
+
       text-decoration: none;
+
       font-size: 0.9rem;
+
       display: flex;
+
       align-items: center;
+
       gap: 8px;
+
     }
+
+
 
     .footer-links a i {
+
       font-size: 1.2rem;
+
     }
+
+
 
     .footer-links a.facebook i { color: #1877F2; }
+
     .footer-links a.youtube i { color: #FF0000; }
+
     .footer-links a.tiktok i { color: #000000; }
+
     .footer-links a.telegram i { color: #0088cc; }
+
   </style>
+
 </head>
+
 <body>
+
   <div class="app-frame">
-    <header class="top-bar">
-      <div class="top-bar-item profile-item">
-        <img src="https://raw.githubusercontent.com/sd-rubel/n5-word-meaning-trainer/main/profile.jpg" alt="Sd Rubel">
-        <span>Sd Rubel</span>
+
+    <div class="header">
+
+      <div class="profile">
+
+        <img src="https://github.com/sd-rubel/n5-word-meaning-trainer/blob/main/profile.jpg?raw=true" alt="Profile" class="circle-img">
+
+        <p>Sd Rubel</p>
+
       </div>
-      <div class="main-title">
-        <span class="main-title-jp">Nihongo | JLPT N5: Vocabulary</span>
-        <br>
-        <span class="main-title-highlight">Lesson 1</span>
+
+      <div class="title">
+
+        <h1>Nihongo | JLPT N5: Vocabulary - <span class="highlight">Lesson 1</span></h1>
+
       </div>
-      <div class="top-bar-item logo-item">
-        <img src="https://raw.githubusercontent.com/sd-rubel/n5-word-meaning-trainer/main/logo.jpg" alt="NihonGoBD Academy">
-        <span>NihonGoBD<br>Academy</span>
+
+      <div class="logo">
+
+        <img src="https://github.com/sd-rubel/n5-word-meaning-trainer/blob/main/logo.jpg?raw=true" alt="Logo" class="circle-img">
+
+        <p>NihonGoBD<br>Academy</p>
+
       </div>
-    </header>
-    <main class="carousel" id="carousel"></main>
-    <div class="stats-panel" id="stats-panel"></div>
-    <div class="footer-links">
-      <a href="https://facebook.com/sdxrubel" class="facebook" target="_blank"><i class="fab fa-facebook-f"></i>https://facebook.com/sdxrubel</a>
-      <a href="https://facebook.com/NihonGoBDAcademy" class="facebook" target="_blank"><i class="fab fa-facebook-f"></i>https://facebook.com/NihonGoBDAcademy</a>
-      <a href="https://youtube.com/@sdnrubel" class="youtube" target="_blank"><i class="fab fa-youtube"></i>https://youtube.com/@sdnrubel</a>
-      <a href="https://www.tiktok.com/@nihongo_bd_academy" class="tiktok" target="_blank"><i class="fab fa-tiktok"></i>https://www.tiktok.com/@nihongo_bd_academy</a>
-      <a href="https://t.me/NihonGoBD" class="telegram" target="_blank"><i class="fab fa-telegram-plane"></i>https://t.me/NihonGoBD</a>
+
     </div>
+
+    <main class="carousel" id="carousel"></main>
+
+    <div class="stats-panel" id="stats-panel"></div>
+
+    <div class="footer-links">
+
+      <a href="https://facebook.com/sdxrubel" class="facebook" target="_blank"><i class="fab fa-facebook-f"></i>https://facebook.com/sdxrubel</a>
+
+      <a href="https://facebook.com/NihonGoBDAcademy" class="facebook" target="_blank"><i class="fab fa-facebook-f"></i>https://facebook.com/NihonGoBDAcademy</a>
+
+      <a href="https://youtube.com/@sdnrubel" class="youtube" target="_blank"><i class="fab fa-youtube"></i>https://youtube.com/@sdnrubel</a>
+
+      <a href="https://www.tiktok.com/@nihongo_bd_academy" class="tiktok" target="_blank"><i class="fab fa-tiktok"></i>https://www.tiktok.com/@nihongo_bd_academy</a>
+
+      <a href="https://t.me/NihonGoBD" class="telegram" target="_blank"><i class="fab fa-telegram-plane"></i>https://t.me/NihonGoBD</a>
+
+    </div>
+
   </div>
+
   <script>
+
     const JSON_URL = 'https://raw.githubusercontent.com/sd-rubel/n5-word-meaning-trainer/main/lesson-1.json';
+
     const root = document.getElementById('carousel');
+
     const statsPanel = document.getElementById('stats-panel');
+
     let vocab = [];
+
     let current = 0;
+
     let highlightIndex = -1;
+
     const special_list = ['っ', 'ゃ', 'ゅ', 'ょ', 'あ', 'い', 'う', 'え', 'お', 'ん', 'ー', 'ッ', 'ャ', 'ュ', 'ョ', 'ア', 'イ', 'ウ', 'エ', 'オ', 'ン'];
 
+
+
     const synth = window.speechSynthesis;
+
     let voices = [];
 
+
+
     function loadVoices() {
+
       voices = synth.getVoices();
+
       if (!voices || voices.length === 0) setTimeout(loadVoices, 100);
+
     }
+
     loadVoices();
+
     speechSynthesis.onvoiceschanged = loadVoices;
 
+
+
     function speak(text, lang = 'ja-JP') {
+
       if (!text) return;
+
       if (!voices || voices.length === 0) {
+
         setTimeout(() => speak(text, lang), 50);
+
         return;
+
       }
+
       const utter = new SpeechSynthesisUtterance(text);
+
       utter.lang = lang;
+
       const voice = voices.find(v => v.lang.startsWith(lang));
+
       if (voice) utter.voice = voice;
+
       synth.speak(utter);
+
     }
+
+
 
     function speakCurrentJpWord() {
+
       if (!vocab[current]) return;
+
       const jpWordEl = document.querySelector('.card.active .jp-word');
+
       if (jpWordEl) {
+
         jpWordEl.classList.add('highlight-word');
+
         setTimeout(() => {
+
           jpWordEl.classList.remove('highlight-word');
+
         }, 500);
+
       }
+
       const jpWord = vocab[current].jp ?? vocab[current].japanese;
+
       speak(jpWord, 'ja-JP');
+
     }
+
+
 
     function getHighlightUnits(word) {
+
       const units = [];
+
       let i = 0;
+
       while (i < word.length) {
+
         let unit = '';
-        if (['あ', 'い', 'উ', 'এ', 'ও', 'আ', 'ই', 'উ', 'এ', 'ও'].includes(word[i])) {
+
+        if (['あ', 'い', 'う', 'え', 'お', 'ア', 'ই', 'উ', 'এ', 'ও'].includes(word[i])) {
+
           unit = word[i];
+
           i++;
-          if (i < word.length && ['ন', 'ন'].includes(word[i])) {
+
+          if (i < word.length && ['ん', 'ン'].includes(word[i])) {
+
             unit += word[i];
+
             i++;
-          } else if (i < word.length && (word[i] === 'ー' || ['উ', 'উ'].includes(word[i]))) {
+
+          } else if (i < word.length && (word[i] === 'ー' || ['う', 'ウ'].includes(word[i]))) {
+
               unit += word[i];
+
               i++;
+
           }
+
           units.push(unit);
+
           continue;
+
         }
+
         unit = word[i];
+
         i++;
-        if (i < word.length && ['আ', 'ই', 'উ', 'এ', 'ও'].includes(word[i])) {
+
+        if (i < word.length && ['あ', 'い', 'う', 'え', 'お', 'ア', 'ই', 'উ', 'এ', 'ও'].includes(word[i])) {
+
           unit += word[i];
+
           i++;
+
         }
-        if (i < word.length && ['য়', 'য়', 'য়', 'য়', 'য়', 'য়'].includes(word[i])) {
+
+        if (i < word.length && ['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ョ'].includes(word[i])) {
+
           unit += word[i];
+
           i++;
+
         }
-        if (i < word.length && (word[i] === 'ー' || ['উ', 'উ'].includes(word[i]))) {
+
+        if (i < word.length && (word[i] === 'ー' || ['う', 'উ'].includes(word[i]))) {
+
           unit += word[i];
+
           i++;
+
         }
-        if (i < word.length && ['ন', 'ন'].includes(word[i])) {
+
+        if (i < word.length && ['ん', 'ン'].includes(word[i])) {
+
           unit += word[i];
+
           i++;
+
         }
-        if (i < word.length && ['ট', 'ট'].includes(word[i])) {
+
+        if (i < word.length && ['っ', 'ッ'].includes(word[i])) {
+
           unit += word[i];
+
           i++;
+
           if (i < word.length) {
+
             unit += word[i];
+
             i++;
-            if (i < word.length && ['য়', 'য়', 'য়', 'য়', 'য়', 'য়'].includes(word[i])) {
+
+            if (i < word.length && ['ゃ', 'ゅ', 'ょ', 'ャ', 'ュ', 'ョ'].includes(word[i])) {
+
               unit += word[i];
+
               i++;
+
             }
-            if (i < word.length && (word[i] === 'ー' || ['উ', 'উ'].includes(word[i]))) {
+
+            if (i < word.length && (word[i] === 'ー' || ['う', 'উ'].includes(word[i]))) {
+
               unit += word[i];
+
               i++;
+
             }
-            if (i < word.length && ['ন', 'ন'].includes(word[i])) {
+
+            if (i < word.length && ['ん', 'ン'].includes(word[i])) {
+
               unit += word[i];
+
               i++;
+
             }
+
           }
+
         }
+
         units.push(unit);
+
       }
+
       return units;
+
     }
+
+
 
     function makeCard(idx) {
+
       const w = vocab[idx];
+
       const jp = w.jp ?? w.japanese ?? '';
+
       const prnc = w.prnc ?? w.pronunciation ?? '';
+
       const bn = w.bn ?? w.meaning ?? '';
+
       const cmt = w.cmt ?? w.comment ?? '';
+
       const no = w['Phrase No'] ?? '';
+
       const type = w.type ?? '';
+
       const emoji = w.emoji ?? '';
+
       const el = document.createElement('div');
+
       el.className = 'card';
+
       el.dataset.index = idx;
 
+
+
       const units = getHighlightUnits(jp);
+
       const jpHTML = units.map((unit, i) => `<span data-unit="${i}">${unit}</span>`).join('');
 
+
+
       el.innerHTML = `
+
         <div class="card-header">
+
           <span>Word/Phrase No: <b class="highlight-text">${no}</b></span>
+
           <span>Type: <b class="highlight-text">${type}</b></span>
+
         </div>
+
         <div class="card-content">
+
           <span class="card-emoji">${emoji}</span>
+
           <h1 class="jp-word">${jpHTML}</h1>
+
           <p class="pronunciation">${prnc}</p>
+
           <p class="bengali-meaning">${bn}</p>
+
           <p class="comment">${cmt}</p>
+
         </div>
+
       `;
+
       return el;
+
     }
 
+
+
     function highlightCharacter() {
+
       const activeCard = root.querySelector('.card.active');
+
       if (!activeCard) return;
+
       const spans = activeCard.querySelectorAll('.jp-word span');
+
       if (spans.length === 0) return;
+
       spans.forEach(span => span.classList.remove('highlight'));
+
       highlightIndex = (highlightIndex + 1) % (spans.length + 1);
+
       if (highlightIndex === spans.length) {
+
         highlightIndex = -1;
+
         return;
+
       }
+
       const currentSpan = spans[highlightIndex];
+
       if (currentSpan) {
+
         currentSpan.classList.add('highlight');
+
       }
+
     }
+
+
 
     let stats = {};
 
+
+
     function updateStats() {
+
       stats = {};
+
       vocab.forEach((word, idx) => {
+
         const type = word.type || 'Unknown';
+
         if (!stats[type]) {
+
           stats[type] = { total: 0, viewed: new Set(), bengali: type };
+
         }
+
         stats[type].total++;
+
         if (idx <= current) {
+
           stats[type].viewed.add(idx);
+
         }
+
       });
+
+
 
       statsPanel.innerHTML = '';
+
       Object.entries(stats).forEach(([type, data]) => {
+
         const bengaliType = {
+
           'Noun': 'বিশেষ্য',
+
           'Pronoun': 'সর্বনাম',
+
           'Verb': 'ক্রিয়া',
+
           'Suffix': 'প্রত্যয়',
+
           'Adjective': 'বিশেষণ',
+
           'Adverb': 'ক্রিয়া বিশেষণ',
+
           'Particle': 'কণা',
+
           'Conjunction': 'সংযোজক',
+
           'Interjection': 'বিস্ময়সূচক',
+
           'Unknown': 'অজানা'
+
         }[type] || type;
 
+
+
         const statsItem = document.createElement('div');
+
         statsItem.className = 'stats-item';
+
         statsItem.innerHTML = `
+
           <h3>${bengaliType}</h3>
+
           <span>${type}: <span id="${type.toLowerCase()}-count">${data.total}</span></span>
+
           <div class="progress-container">
+
             <div class="progress-bar" id="${type.toLowerCase()}-progress" style="width: ${data.total ? (data.viewed.size / data.total) * 100 : 0}%"></div>
+
           </div>
+
         `;
+
         statsPanel.appendChild(statsItem);
+
       });
+
     }
+
+
 
     function showCard(index) {
+
       const cards = root.querySelectorAll('.card');
+
       cards.forEach(c => c.className = 'card');
+
       const active = root.querySelector(`[data-index="${index}"]`);
+
       if (active) active.classList.add('active');
+
       const prevIndex = (index - 1 + vocab.length) % vocab.length;
+
       const nextIndex = (index + 1) % vocab.length;
+
       const prev = root.querySelector(`[data-index="${prevIndex}"]`);
+
       const next = root.querySelector(`[data-index="${nextIndex}"]`);
+
       if (prev) prev.classList.add('prev');
+
       if (next) next.classList.add('next');
+
       current = index;
+
       highlightIndex = -1;
+
       updateStats();
+
     }
+
+
 
     function slideNext() {
+
       showCard((current + 1) % vocab.length);
+
     }
+
+
 
     function slidePrev() {
+
       showCard((current - 1 + vocab.length) % vocab.length);
+
     }
+
+
 
     async function loadData() {
+
       try {
+
         const res = await fetch(JSON_URL);
+
         vocab = await res.json();
+
         initCarousel();
+
         updateStats();
+
       } catch {
-        root.innerHTML = `<div style="color:#ff8a80; text-align: center; margin-top: 50px;">লোড ব্যর্থ</div>`;
+
+        root.innerHTML = `<div style="color:#ff8a80;">লোড ব্যর্থ</div>`;
+
       }
+
     }
+
+
 
     function initCarousel() {
+
       root.innerHTML = '';
+
       vocab.forEach((_, i) => root.append(makeCard(i)));
+
       if (vocab.length > 0) showCard(0);
+
     }
 
+
+
     document.addEventListener('keydown', e => {
+
       if (e.key === 'ArrowRight') slideNext();
+
       else if (e.key === 'ArrowLeft') slidePrev();
+
       else if (e.key === ' ') {
+
         e.preventDefault();
+
         speakCurrentJpWord();
+
       } else if (e.key === 'p') {
+
         e.preventDefault();
+
         highlightCharacter();
+
       }
+
     });
 
+
+
     loadData();
+
   </script>
+
 </body>
+
 </html>
