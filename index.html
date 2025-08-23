@@ -31,6 +31,7 @@
             --anim-dur: 600ms;
             --progress-bg: rgba(255, 255, 255, 0.1);
             --progress-fill: #00ff88;
+            --card-gap: 20px;
         }
 
         body {
@@ -140,6 +141,7 @@
         .slides {
             display: flex;
             transition: transform var(--anim-dur) var(--fx);
+            gap: var(--card-gap);
         }
 
         .card {
@@ -155,8 +157,14 @@
             display: flex;
             flex-direction: column;
             flex: 0 0 var(--card-w);
+            opacity: 0.3;
+            transform: scale(0.85);
+            transition: opacity var(--anim-dur) var(--fx), transform var(--anim-dur) var(--fx);
+        }
+
+        .card.active {
             opacity: 1;
-            transform: none;
+            transform: scale(1);
         }
 
         .card-header {
@@ -262,7 +270,7 @@
 
         .stats-container {
             position: absolute;
-            bottom: -35px;
+            bottom: -55px;
             left: 20px;
             z-index: 2;
             display: flex;
@@ -276,7 +284,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
-            max-width: 80%;
+            max-width: 100%;
         }
 
         .stats-item {
@@ -310,7 +318,6 @@
             box-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
         }
 
-        /* Circular Progress Bar */
         .total-progress-container {
             display: flex;
             align-items: center;
@@ -534,7 +541,7 @@
                             unit += word[i];
                             i++;
                         }
-                        if (i < word.length && ['ん', 'ン'].includes(word[i])) {
+                        if (i < word.length && ['ん', 'ন্'].includes(word[i])) {
                             unit += word[i];
                             i++;
                         }
@@ -609,7 +616,6 @@
                 }
             });
             statsPanel.innerHTML = '';
-            // Add the new total progress bar at the beginning
             const totalProgressPercentage = totalWords > 0 ? ((wordsViewed.size / totalWords) * 100).toFixed(0) : 0;
             const totalProgressItem = document.createElement('div');
             totalProgressItem.className = 'total-progress-item';
@@ -656,10 +662,19 @@
             const slides = root.querySelector('.slides');
             if (!slides.children.length) return;
             const cardWidth = slides.children[0].offsetWidth;
+            const gap = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--card-gap'));
             const offset = (root.offsetWidth - cardWidth) / 2;
-            const trans = offset - current * cardWidth;
+            const trans = offset - current * (cardWidth + gap);
             slides.style.transform = `translateX(${trans}px)`;
             prevTranslate = trans;
+
+            const cards = slides.querySelectorAll('.card');
+            cards.forEach((card, idx) => {
+                card.classList.remove('active');
+                if (idx === current) {
+                    card.classList.add('active');
+                }
+            });
         }
 
         function slideNext() {
@@ -707,7 +722,6 @@
                 updateTransform();
             }
 
-            // Add swipe support
             const threshold = 100;
             slides.addEventListener('touchstart', (e) => {
                 startX = e.touches[0].clientX;
