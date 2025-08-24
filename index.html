@@ -566,6 +566,145 @@
             opacity: 0.8;
             margin-top: 20px;
         }
+
+        /* Social Modal Styles */
+        .social-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(4, 8, 20, .85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 11;
+            transition: opacity var(--anim-dur) var(--fx);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .social-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .social-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: min(96vw, 1480px);
+            padding: 0 20px;
+            position: absolute;
+            top: 20px;
+        }
+
+        .social-content {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            font-family: "Hind Siliguri", sans-serif;
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+            line-height: 1.6;
+            color: var(--text-light);
+        }
+
+        .social-content .highlight {
+            font-weight: 700;
+            text-shadow: 0 0 6px currentColor;
+        }
+
+        .social-content .youtube-highlight {
+            color: #FF0000;
+        }
+
+        .social-content .facebook-highlight {
+            color: #1877F2;
+        }
+
+        .social-content .share-highlight {
+            color: #64ffda;
+        }
+
+        .social-links {
+            position: absolute;
+            bottom: 100px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            font-family: "Hind Siliguri", sans-serif;
+            color: var(--text-light);
+        }
+
+        .social-link-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 8px 15px;
+            box-shadow: var(--shadow);
+        }
+
+        .social-link-item i {
+            font-size: 1.2rem;
+        }
+
+        .social-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .social-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: "Hind Siliguri", sans-serif;
+            color: var(--text-light);
+            border: 1px solid var(--glass-border);
+            background: var(--glass);
+            box-shadow: var(--shadow);
+            transition: transform 300ms var(--fx), box-shadow 300ms var(--fx);
+        }
+
+        .social-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .social-button.subscribe {
+            background: #FF0000;
+            border-color: #cc0000;
+        }
+
+        .social-button.like {
+            background: #1877F2;
+            border-color: #0a5dc2;
+        }
+
+        .social-button.follow {
+            background: #00ff88;
+            border-color: #00cc6a;
+        }
+
+        .social-button.share {
+            background: #64ffda;
+            border-color: #4cccb0;
+        }
+
+        .social-button.comment {
+            background: #bb86fc;
+            border-color: #9b6dde;
+        }
     </style>
 </head>
 <body>
@@ -591,6 +730,38 @@
         <div class="intro-preview" id="intro-preview">
             <div class="intro-total-words" id="intro-total-words">মোট শব্দ: লোড হচ্ছে...</div>
             <div class="intro-type-list" id="intro-type-list"></div>
+            <p class="intro-instruction">লেসন সিলেক্ট করে Enter চাপুন শুরু করতে।</p>
+        </div>
+    </div>
+    <div class="social-modal" id="social-modal">
+        <div class="social-header">
+            <div class="profile">
+                <img src="https://github.com/sd-rubel/n5-word-meaning-trainer/blob/main/profile.jpg?raw=true" alt="Profile" class="circle-img">
+                <p>Sd Rubel</p>
+            </div>
+            <div class="logo">
+                <img src="https://github.com/sd-rubel/n5-word-meaning-trainer/blob/main/logo.jpg?raw=true" alt="Logo" class="circle-img">
+                <p>NihonGoBD<br>Academy</p>
+            </div>
+        </div>
+        <div class="social-content">
+            <p>যারা <span class="highlight youtube-highlight">ইউটিউব</span> থেকে দেখছেন অবশ্যই <span class="highlight youtube-highlight">চ্যানেল সাবস্ক্রাইব</span> করবেন, <span class="highlight youtube-highlight">বেল আইকন প্রেস</span> করে নোটিফিকেশন চালু করবেন, যাতে পরবর্তী ভিডিও <span class="highlight youtube-highlight">মিস না করেন</span>.</p>
+            <p>যারা <span class="highlight facebook-highlight">ফেসবুক</span> থেকে দেখছেন, ভিডিওটি দেখতে <span class="highlight facebook-highlight">লাইক</span> দিবেন এবং এই <span class="highlight facebook-highlight">চ্যানেলটি ফলো</span> দিয়ে রাখবেন।</p>
+            <p>আপনার <span class="highlight share-highlight">বন্ধুদের সাথে শেয়ার</span> করবেন।</p>
+            <div class="social-buttons">
+                <div class="social-button subscribe"><i class="fas fa-bell"></i> Subscribe</div>
+                <div class="social-button like"><i class="fas fa-thumbs-up"></i> Like</div>
+                <div class="social-button follow"><i class="fas fa-user-plus"></i> Follow</div>
+                <div class="social-button share"><i class="fas fa-share"></i> Share</div>
+                <div class="social-button comment"><i class="fas fa-comment"></i> Comment</div>
+            </div>
+        </div>
+        <div class="social-links">
+            <div class="social-link-item"><i class="fab fa-facebook-f"></i> https://facebook.com/sdxrubel</div>
+            <div class="social-link-item"><i class="fab fa-facebook-f"></i> https://facebook.com/NihonGoBDAcademy</div>
+            <div class="social-link-item"><i class="fab fa-youtube"></i> https://youtube.com/@sdnrubel</div>
+            <div class="social-link-item"><i class="fab fa-tiktok"></i> https://www.tiktok.com/@nihongo_bd_academy</div>
+            <div class="social-link-item"><i class="fab fa-telegram-plane"></i> https://t.me/NihonGoBD</div>
         </div>
     </div>
     <div class="app-frame">
@@ -629,6 +800,7 @@
         const introTotalWords = document.getElementById('intro-total-words');
         const introTypeList = document.getElementById('intro-type-list');
         const mainLessonTitle = document.getElementById('main-lesson-title');
+        const socialModal = document.getElementById('social-modal');
         let vocab = [];
         let current = 0;
         let highlightIndex = -1;
@@ -722,7 +894,7 @@
                             unit += word[i];
                             i++;
                         }
-                        if (i < word.length && ['ん', 'ン'].includes(word[i])) {
+                        if (i < word.length && ['ん', 'ন্'].includes(word[i])) {
                             unit += word[i];
                             i++;
                         }
@@ -802,7 +974,7 @@
             totalProgressItem.className = 'total-progress-item';
             totalProgressItem.innerHTML = `
                 <div class="total-progress-container">
-                    <div class="total-progress-circle" style="--total-progress-fill: #00ff88; background: conic-gradient(#00ff88 ${totalProgressPercentage}%, transparent ${totalProgressPercentage}%);">
+                    <div class="total-progress-circle" style="--total-progress-fill: #64ffda; background: conic-gradient(#64ffda ${totalProgressPercentage}%, transparent ${totalProgressPercentage}%);">
                         <span class="total-progress-text">${totalProgressPercentage}%</span>
                     </div>
                     <div class="total-progress-info">
@@ -982,11 +1154,21 @@
             });
         }
 
+        function toggleSocialModal() {
+            socialModal.classList.toggle('active');
+        }
+
         lessonCurrent.addEventListener('click', () => {
             lessonDropdown.classList.toggle('open');
         });
 
         document.addEventListener('keydown', e => {
+            if (socialModal.classList.contains('active')) {
+                if (e.key === 'e') {
+                    toggleSocialModal();
+                }
+                return;
+            }
             if (introOverlay.classList.contains('hidden')) {
                 // Main page key events
                 if (e.key === 'ArrowRight') slideNext();
@@ -997,6 +1179,8 @@
                 } else if (e.key === 'p') {
                     e.preventDefault();
                     highlightCharacter();
+                } else if (e.key === 'e') {
+                    toggleSocialModal();
                 }
             } else {
                 // Intro page: Enter to start
