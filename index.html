@@ -270,7 +270,7 @@
 
         .stats-container {
             position: absolute;
-            bottom: -55px;
+            bottom: -35px;
             left: 20px;
             z-index: 2;
             display: flex;
@@ -284,7 +284,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
-            max-width: 100%;
+            max-width: 80%;
         }
 
         .stats-item {
@@ -416,9 +416,183 @@
         .footer-links a.telegram i {
             color: #0088cc;
         }
+
+        /* Intro Page Styles */
+        .intro-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(4, 8, 20, .85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            transition: opacity var(--anim-dur) var(--fx);
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .intro-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .intro-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: min(96vw, 1480px);
+            padding: 0 20px;
+            position: absolute;
+            top: 20px;
+        }
+
+        .intro-title {
+            text-align: center;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            color: var(--accent);
+            text-shadow: 0 0 8px rgba(255, 213, 79, 0.6);
+            margin-bottom: 20px;
+        }
+
+        .intro-subtitle {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            color: var(--text-light);
+            text-align: center;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .lesson-selector {
+            position: relative;
+            display: inline-block;
+        }
+
+        .lesson-current {
+            color: #00ff88;
+            cursor: pointer;
+            text-shadow: 0 0 6px rgba(0, 255, 136, 0.8);
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: rgba(0, 255, 136, 0.1);
+            transition: background 300ms var(--fx);
+        }
+
+        .lesson-current:hover {
+            background: rgba(0, 255, 136, 0.2);
+        }
+
+        .lesson-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            backdrop-filter: blur(var(--blur));
+            box-shadow: var(--shadow);
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height var(--anim-dur) var(--fx);
+            z-index: 5;
+            width: 200px;
+        }
+
+        .lesson-dropdown.open {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .lesson-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background 300ms var(--fx);
+            font-size: 1rem;
+            color: var(--text-light);
+        }
+
+        .lesson-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .intro-preview {
+            text-align: center;
+            margin-bottom: 40px;
+            font-family: "Hind Siliguri", sans-serif;
+        }
+
+        .intro-total-words {
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        .intro-type-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .intro-type-item {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 10px 20px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .intro-type-name {
+            font-weight: 700;
+            color: #00ff88;
+        }
+
+        .intro-type-count {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .intro-instruction {
+            font-size: 1rem;
+            color: var(--text-light);
+            opacity: 0.8;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
+    <div class="intro-overlay" id="intro-overlay">
+        <div class="intro-header">
+            <div class="profile">
+                <img src="https://github.com/sd-rubel/n5-word-meaning-trainer/blob/main/profile.jpg?raw=true" alt="Profile" class="circle-img">
+                <p>Sd Rubel</p>
+            </div>
+            <div class="logo">
+                <img src="https://github.com/sd-rubel/n5-word-meaning-trainer/blob/main/logo.jpg?raw=true" alt="Logo" class="circle-img">
+                <p>NihonGoBD<br>Academy</p>
+            </div>
+        </div>
+        <h1 class="intro-title">N5 JLPT ভোকাবুলারি</h1>
+        <div class="intro-subtitle">
+            আজকে আমরা শিখতে চলেছি:
+            <div class="lesson-selector">
+                <span class="lesson-current" id="lesson-current">Lesson 1</span>
+                <div class="lesson-dropdown" id="lesson-dropdown"></div>
+            </div>
+        </div>
+        <div class="intro-preview" id="intro-preview">
+            <div class="intro-total-words" id="intro-total-words">মোট শব্দ: লোড হচ্ছে...</div>
+            <div class="intro-type-list" id="intro-type-list"></div>
+        </div>
+    </div>
     <div class="app-frame">
         <div class="header">
             <div class="profile">
@@ -426,7 +600,7 @@
                 <p>Sd Rubel</p>
             </div>
             <div class="title">
-                <h1>Nihongo | JLPT N5: Vocabulary - <span class="highlight">Lesson 1</span></h1>
+                <h1>Nihongo | JLPT N5: Vocabulary - <span class="highlight" id="main-lesson-title">Lesson 1</span></h1>
             </div>
             <div class="logo">
                 <img src="https://github.com/sd-rubel/n5-word-meaning-trainer/blob/main/logo.jpg?raw=true" alt="Logo" class="circle-img">
@@ -446,9 +620,15 @@
         </div>
     </div>
     <script>
-        const JSON_URL = 'https://raw.githubusercontent.com/sd-rubel/n5-word-meaning-trainer/main/lesson-1.json';
+        let JSON_URL = 'https://raw.githubusercontent.com/sd-rubel/n5-word-meaning-trainer/main/lesson-1.json';
         const root = document.getElementById('carousel');
         const statsPanel = document.getElementById('stats-panel');
+        const introOverlay = document.getElementById('intro-overlay');
+        const lessonCurrent = document.getElementById('lesson-current');
+        const lessonDropdown = document.getElementById('lesson-dropdown');
+        const introTotalWords = document.getElementById('intro-total-words');
+        const introTypeList = document.getElementById('intro-type-list');
+        const mainLessonTitle = document.getElementById('main-lesson-title');
         let vocab = [];
         let current = 0;
         let highlightIndex = -1;
@@ -457,6 +637,7 @@
         let voices = [];
         let prevTranslate = 0;
         let startX = 0;
+        let selectedLesson = 1;
 
         function loadVoices() {
             voices = synth.getVoices();
@@ -541,7 +722,7 @@
                             unit += word[i];
                             i++;
                         }
-                        if (i < word.length && ['ん', 'ন্'].includes(word[i])) {
+                        if (i < word.length && ['ん', 'ン'].includes(word[i])) {
                             unit += word[i];
                             i++;
                         }
@@ -697,12 +878,16 @@
             highlightIndex = -1;
         }
 
-        async function loadData() {
+        async function loadData(updateIntro = false) {
             try {
                 const res = await fetch(JSON_URL);
                 vocab = await res.json();
-                initCarousel();
-                updateStats();
+                if (updateIntro) {
+                    updateIntroPreview();
+                } else {
+                    initCarousel();
+                    updateStats();
+                }
             } catch {
                 root.innerHTML = `<div style="color:#ff8a80;">লোড ব্যর্থ</div>`;
             }
@@ -746,19 +931,86 @@
             });
         }
 
+        function initDropdown() {
+            lessonDropdown.innerHTML = '';
+            for (let i = 1; i <= 25; i++) {
+                const item = document.createElement('div');
+                item.className = 'lesson-item';
+                item.textContent = `Lesson ${i}`;
+                item.addEventListener('click', () => {
+                    selectedLesson = i;
+                    lessonCurrent.textContent = `Lesson ${i}`;
+                    JSON_URL = `https://raw.githubusercontent.com/sd-rubel/n5-word-meaning-trainer/main/lesson-${i}.json`;
+                    loadData(true); // Update intro preview
+                    lessonDropdown.classList.remove('open');
+                });
+                lessonDropdown.appendChild(item);
+            }
+        }
+
+        function updateIntroPreview() {
+            let typeStats = {};
+            vocab.forEach(word => {
+                const type = word.type || 'Unknown';
+                if (!typeStats[type]) {
+                    typeStats[type] = 0;
+                }
+                typeStats[type]++;
+            });
+            introTotalWords.textContent = `মোট শব্দ: ${vocab.length}`;
+            introTypeList.innerHTML = '';
+            Object.entries(typeStats).forEach(([type, count]) => {
+                const bengaliType = {
+                    'Noun': 'বিশেষ্য',
+                    'Pronoun': 'সর্বনাম',
+                    'Verb': 'ক্রিয়া',
+                    'Suffix': 'প্রত্যয়',
+                    'Adjective': 'বিশেষণ',
+                    'Adverb': 'ক্রিয়া বিশেষণ',
+                    'Particle': 'কণা',
+                    'Conjunction': 'সংযোজক',
+                    'Interjection': 'বিস্ময়সূচক',
+                    'Unknown': 'অজানা'
+                }[type] || type;
+                const item = document.createElement('div');
+                item.className = 'intro-type-item';
+                item.innerHTML = `
+                    <div class="intro-type-name">${bengaliType}</div>
+                    <div class="intro-type-count">${count} টি</div>
+                `;
+                introTypeList.appendChild(item);
+            });
+        }
+
+        lessonCurrent.addEventListener('click', () => {
+            lessonDropdown.classList.toggle('open');
+        });
+
         document.addEventListener('keydown', e => {
-            if (e.key === 'ArrowRight') slideNext();
-            else if (e.key === 'ArrowLeft') slidePrev();
-            else if (e.key === ' ') {
-                e.preventDefault();
-                speakCurrentJpWord();
-            } else if (e.key === 'p') {
-                e.preventDefault();
-                highlightCharacter();
+            if (introOverlay.classList.contains('hidden')) {
+                // Main page key events
+                if (e.key === 'ArrowRight') slideNext();
+                else if (e.key === 'ArrowLeft') slidePrev();
+                else if (e.key === ' ') {
+                    e.preventDefault();
+                    speakCurrentJpWord();
+                } else if (e.key === 'p') {
+                    e.preventDefault();
+                    highlightCharacter();
+                }
+            } else {
+                // Intro page: Enter to start
+                if (e.key === 'Enter') {
+                    introOverlay.classList.add('hidden');
+                    mainLessonTitle.textContent = `Lesson ${selectedLesson}`;
+                    loadData();
+                }
             }
         });
 
-        loadData();
+        // Initialize
+        initDropdown();
+        loadData(true); // Load default Lesson 1 for intro preview
     </script>
 </body>
 </html>
