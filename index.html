@@ -588,6 +588,37 @@
             pointer-events: all;
         }
 
+        .social-modal::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 20% 80%, rgba(255, 193, 7, .15), transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(41, 182, 246, .12), transparent 50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .bubble {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            animation: floatBubble 10s infinite ease-in-out;
+            z-index: -1;
+        }
+
+        .bubble:nth-child(1) { width: 40px; height: 40px; left: 10%; bottom: -40px; animation-duration: 8s; }
+        .bubble:nth-child(2) { width: 60px; height: 60px; left: 30%; bottom: -60px; animation-duration: 12s; animation-delay: 2s; }
+        .bubble:nth-child(3) { width: 30px; height: 30px; left: 50%; bottom: -30px; animation-duration: 10s; animation-delay: 4s; }
+        .bubble:nth-child(4) { width: 50px; height: 50px; left: 70%; bottom: -50px; animation-duration: 9s; animation-delay: 1s; }
+        .bubble:nth-child(5) { width: 35px; height: 35px; left: 90%; bottom: -35px; animation-duration: 11s; animation-delay: 3s; }
+
+        @keyframes floatBubble {
+            0% { transform: translateY(0) translateX(0); opacity: 0.6; }
+            50% { transform: translateY(-100vh) translateX(20px); opacity: 0.8; }
+            100% { transform: translateY(-200vh) translateX(-20px); opacity: 0; }
+        }
+
         .social-header {
             display: flex;
             justify-content: space-between;
@@ -653,11 +684,13 @@
         }
 
         .social-buttons {
+            position: absolute;
+            bottom: 20px;
             display: flex;
             justify-content: center;
             gap: 15px;
-            margin-top: 30px;
             flex-wrap: wrap;
+            width: min(96vw, 1480px);
         }
 
         .social-button {
@@ -734,6 +767,11 @@
         </div>
     </div>
     <div class="social-modal" id="social-modal">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
         <div class="social-header">
             <div class="profile">
                 <img src="https://github.com/sd-rubel/n5-word-meaning-trainer/blob/main/profile.jpg?raw=true" alt="Profile" class="circle-img">
@@ -745,16 +783,9 @@
             </div>
         </div>
         <div class="social-content">
-            <p>যারা <span class="highlight youtube-highlight">ইউটিউব</span> থেকে দেখছেন অবশ্যই <span class="highlight youtube-highlight">চ্যানেল সাবস্ক্রাইব</span> করবেন, <span class="highlight youtube-highlight">বেল আইকন প্রেস</span> করে নোটিফিকেশন চালু করবেন, যাতে পরবর্তী ভিডিও <span class="highlight youtube-highlight">মিস না করেন</span>.</p>
-            <p>যারা <span class="highlight facebook-highlight">ফেসবুক</span> থেকে দেখছেন, ভিডিওটি দেখতে <span class="highlight facebook-highlight">লাইক</span> দিবেন এবং এই <span class="highlight facebook-highlight">চ্যানেলটি ফলো</span> দিয়ে রাখবেন।</p>
-            <p>আপনার <span class="highlight share-highlight">বন্ধুদের সাথে শেয়ার</span> করবেন।</p>
-            <div class="social-buttons">
-                <div class="social-button subscribe"><i class="fas fa-bell"></i> Subscribe</div>
-                <div class="social-button like"><i class="fas fa-thumbs-up"></i> Like</div>
-                <div class="social-button follow"><i class="fas fa-user-plus"></i> Follow</div>
-                <div class="social-button share"><i class="fas fa-share"></i> Share</div>
-                <div class="social-button comment"><i class="fas fa-comment"></i> Comment</div>
-            </div>
+            <p>আমাদের <span class="highlight youtube-highlight">ইউটিউব</span> চ্যানেলে <span class="highlight youtube-highlight">সাবস্ক্রাইব</span> করুন এবং <span class="highlight youtube-highlight">বেল আইকন</span> চাপুন, যাতে নতুন ভিডিওর <span class="highlight youtube-highlight">নোটিফিকেশন</span> পান এবং কোনো আপডেট মিস না করেন।</p>
+            <p><span class="highlight facebook-highlight">ফেসবুক</span> থেকে আমাদের ভিডিও দেখলে, অনুগ্রহ করে <span class="highlight facebook-highlight">লাইক</span> দিন এবং আমাদের <span class="highlight facebook-highlight">পেজ ফলো</span> করুন।</p>
+            <p>আপনার বন্ধুদের সাথে আমাদের কনটেন্ট <span class="highlight share-highlight">শেয়ার</span> করে আমাদের উৎসাহিত করুন।</p>
         </div>
         <div class="social-links">
             <div class="social-link-item"><i class="fab fa-facebook-f"></i> https://facebook.com/sdxrubel</div>
@@ -762,6 +793,13 @@
             <div class="social-link-item"><i class="fab fa-youtube"></i> https://youtube.com/@sdnrubel</div>
             <div class="social-link-item"><i class="fab fa-tiktok"></i> https://www.tiktok.com/@nihongo_bd_academy</div>
             <div class="social-link-item"><i class="fab fa-telegram-plane"></i> https://t.me/NihonGoBD</div>
+        </div>
+        <div class="social-buttons">
+            <div class="social-button subscribe"><i class="fas fa-bell"></i> Subscribe</div>
+            <div class="social-button like"><i class="fas fa-thumbs-up"></i> Like</div>
+            <div class="social-button follow"><i class="fas fa-user-plus"></i> Follow</div>
+            <div class="social-button share"><i class="fas fa-share"></i> Share</div>
+            <div class="social-button comment"><i class="fas fa-comment"></i> Comment</div>
         </div>
     </div>
     <div class="app-frame">
