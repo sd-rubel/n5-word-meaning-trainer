@@ -45,6 +45,26 @@
             position: relative;
             overflow: hidden;
             user-select: none;
+            cursor: none; /* Hide default cursor */
+        }
+
+        /* Custom Neon Cursor */
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #00ff88 20%, transparent 70%);
+            box-shadow: 0 0 10px #00ff88, 0 0 20px #00ff88, 0 0 30px rgba(0, 255, 136, 0.5);
+            pointer-events: none;
+            z-index: 1000;
+            transition: transform 0.1s ease;
+        }
+
+        .custom-cursor.click {
+            transform: scale(1.5);
+            background: radial-gradient(circle, #ffd54f 20%, transparent 70%);
+            box-shadow: 0 0 12px #ffd54f, 0 0 24px #ffd54f, 0 0 36px rgba(255, 213, 79, 0.5);
         }
 
         body::before {
@@ -270,12 +290,12 @@
 
         .stats-container {
             position: absolute;
-            bottom: -65px;
+            bottom: -35px;
             left: 20px;
             z-index: 2;
             display: flex;
-            flex-direction: column;
-            gap: 20px;
+            flex-direction: row;
+            gap: 40px;
             font-family: "Hind Siliguri", sans-serif;
             color: var(--text-light);
         }
@@ -284,7 +304,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
-            max-width: 100%;
+            max-width: 80%;
         }
 
         .stats-item {
@@ -323,7 +343,6 @@
             align-items: center;
             gap: 15px;
             margin-top: 10px;
-            margin-left: -5px;
         }
 
         .total-progress-circle {
@@ -631,17 +650,16 @@
 
         .social-content {
             text-align: center;
-            max-width: 750px;
+            max-width: 800px;
             margin: 0 auto;
             font-family: "Hind Siliguri", sans-serif;
             font-size: clamp(1.2rem, 2.5vw, 1.8rem);
             line-height: 1.6;
             color: var(--text-light);
-            margin-top: -170px;
         }
 
         .social-content .highlight {
-            font-weight: 700;
+            font-weight: .googleusercontent: 700;
             text-shadow: 0 0 6px currentColor;
         }
 
@@ -739,9 +757,87 @@
             background: #bb86fc;
             border-color: #9b6dde;
         }
+
+        /* YouTube Modal Styles */
+        .youtube-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(4, 8, 20, .85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 12;
+            transition: opacity var(--anim-dur) var(--fx);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .youtube-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .youtube-modal::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 20% 80%, rgba(255, 193, 7, .15), transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(41, 182, 246, .12), transparent 50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .youtube-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: min(96vw, 1480px);
+            padding: 0 20px;
+            position: absolute;
+            top: 20px;
+        }
+
+        .youtube-content {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            font-family: "Hind Siliguri", sans-serif;
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+            line-height: 1.6;
+            color: var(--text-light);
+        }
+
+        .youtube-content a {
+            color: #FF0000;
+            text-decoration: none;
+            font-weight: 700;
+            text-shadow: 0 0 6px rgba(255, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 12px 24px;
+            box-shadow: var(--shadow);
+            transition: transform 300ms var(--fx), box-shadow 300ms var(--fx);
+        }
+
+        .youtube-content a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .youtube-content a i {
+            font-size: 1.4rem;
+        }
     </style>
 </head>
 <body>
+    <div class="custom-cursor" id="custom-cursor"></div>
     <div class="intro-overlay" id="intro-overlay">
         <div class="intro-header">
             <div class="profile">
@@ -764,6 +860,7 @@
         <div class="intro-preview" id="intro-preview">
             <div class="intro-total-words" id="intro-total-words">মোট শব্দ: লোড হচ্ছে...</div>
             <div class="intro-type-list" id="intro-type-list"></div>
+            <p class="intro-instruction">লেসন সিলেক্ট করে Enter চাপুন শুরু করতে।</p>
         </div>
     </div>
     <div class="social-modal" id="social-modal">
@@ -800,6 +897,22 @@
             <div class="social-button follow"><i class="fas fa-user-plus"></i> Follow</div>
             <div class="social-button share"><i class="fas fa-share"></i> Share</div>
             <div class="social-button comment"><i class="fas fa-comment"></i> Comment</div>
+        </div>
+    </div>
+    <div class="youtube-modal" id="youtube-modal">
+        <div class="youtube-header">
+            <div class="profile">
+                <img src="https://github.com/sd-rubel/n5-word-meaning-trainer/blob/main/profile.jpg?raw=true" alt="Profile" class="circle-img">
+                <p>Sd Rubel</p>
+            </div>
+            <div class="logo">
+                <img src="https://github.com/sd-rubel/n5-word-meaning-trainer/blob/main/logo.jpg?raw=true" alt="Logo" class="circle-img">
+                <p>NihonGoBD<br>Academy</p>
+            </div>
+        </div>
+        <div class="youtube-content">
+            <p>আমাদের ইউটিউব চ্যানেলে আরও শিক্ষামূলক কনটেন্ট দেখতে ভিজিট করুন:</p>
+            <a href="https://youtube.com/@sdnrubel" target="_blank"><i class="fab fa-youtube"></i> https://youtube.com/@sdnrubel</a>
         </div>
     </div>
     <div class="app-frame">
@@ -839,6 +952,7 @@
         const introTypeList = document.getElementById('intro-type-list');
         const mainLessonTitle = document.getElementById('main-lesson-title');
         const socialModal = document.getElementById('social-modal');
+        const youtubeModal = document.getElementById('youtube-modal');
         let vocab = [];
         let current = 0;
         let highlightIndex = -1;
@@ -848,6 +962,19 @@
         let prevTranslate = 0;
         let startX = 0;
         let selectedLesson = 1;
+
+        // Custom Cursor Logic
+        const cursor = document.getElementById('custom-cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = `${e.clientX - 10}px`;
+            cursor.style.top = `${e.clientY - 10}px`;
+        });
+        document.addEventListener('mousedown', () => {
+            cursor.classList.add('click');
+        });
+        document.addEventListener('mouseup', () => {
+            cursor.classList.remove('click');
+        });
 
         function loadVoices() {
             voices = synth.getVoices();
@@ -910,7 +1037,7 @@
                     unit += word[i];
                     i++;
                 }
-                if (i < word.length && (word[i] === 'ー' || ['う', 'উ'].includes(word[i]))) {
+                if (i < word.length && (word[i] === 'ー' || ['う', 'উ'].includes(word[i])) {
                     unit += word[i];
                     i++;
                 }
@@ -928,7 +1055,7 @@
                             unit += word[i];
                             i++;
                         }
-                        if (i < word.length && (word[i] === 'ー' || ['う', 'উ'].includes(word[i]))) {
+                        if (i < word.length && (word[i] === 'ー' || ['う', 'উ'].includes(word[i])) {
                             unit += word[i];
                             i++;
                         }
@@ -1016,7 +1143,7 @@
                         <span class="total-progress-text">${totalProgressPercentage}%</span>
                     </div>
                     <div class="total-progress-info">
-                        <h3>মোট শব্দ</h3>
+                        <h3>Total Words</h3>
                         <p>${wordsViewed.size} / ${totalWords}</p>
                     </div>
                 </div>
@@ -1024,22 +1151,10 @@
             statsPanel.appendChild(totalProgressItem);
 
             Object.entries(stats).forEach(([type, data]) => {
-                const bengaliType = {
-                    'Noun': 'বিশেষ্য',
-                    'Pronoun': 'সর্বনাম',
-                    'Verb': 'ক্রিয়া',
-                    'Suffix': 'প্রত্যয়',
-                    'Adjective': 'বিশেষণ',
-                    'Adverb': 'ক্রিয়া বিশেষণ',
-                    'Particle': 'কণা',
-                    'Conjunction': 'সংযোজক',
-                    'Interjection': 'বিস্ময়সূচক',
-                    'Unknown': 'অজানা'
-                }[type] || type;
                 const statsItem = document.createElement('div');
                 statsItem.className = 'stats-item';
                 statsItem.innerHTML = `
-                    <h3>${bengaliType}</h3>
+                    <h3>${type}</h3>
                     <p>${data.viewed.size} / ${data.total}</p>
                     <div class="progress-container">
                         <div class="progress-bar" style="width: ${data.total ? (data.viewed.size / data.total) * 100 : 0}%"></div>
@@ -1170,22 +1285,10 @@
             introTotalWords.textContent = `মোট শব্দ: ${vocab.length}`;
             introTypeList.innerHTML = '';
             Object.entries(typeStats).forEach(([type, count]) => {
-                const bengaliType = {
-                    'Noun': 'বিশেষ্য',
-                    'Pronoun': 'সর্বনাম',
-                    'Verb': 'ক্রিয়া',
-                    'Suffix': 'প্রত্যয়',
-                    'Adjective': 'বিশেষণ',
-                    'Adverb': 'ক্রিয়া বিশেষণ',
-                    'Particle': 'কণা',
-                    'Conjunction': 'সংযোজক',
-                    'Interjection': 'বিস্ময়সূচক',
-                    'Unknown': 'অজানা'
-                }[type] || type;
                 const item = document.createElement('div');
                 item.className = 'intro-type-item';
                 item.innerHTML = `
-                    <div class="intro-type-name">${bengaliType}</div>
+                    <div class="intro-type-name">${type}</div>
                     <div class="intro-type-count">${count} টি</div>
                 `;
                 introTypeList.appendChild(item);
@@ -1196,11 +1299,21 @@
             socialModal.classList.toggle('active');
         }
 
+        function toggleYouTubeModal() {
+            youtubeModal.classList.toggle('active');
+        }
+
         lessonCurrent.addEventListener('click', () => {
             lessonDropdown.classList.toggle('open');
         });
 
         document.addEventListener('keydown', e => {
+            if (youtubeModal.classList.contains('active')) {
+                if (e.key === 'l') {
+                    toggleYouTubeModal();
+                }
+                return;
+            }
             if (socialModal.classList.contains('active')) {
                 if (e.key === 'e') {
                     toggleSocialModal();
@@ -1219,6 +1332,8 @@
                     highlightCharacter();
                 } else if (e.key === 'e') {
                     toggleSocialModal();
+                } else if (e.key === 'l') {
+                    toggleYouTubeModal();
                 }
             } else {
                 // Intro page: Enter to start
