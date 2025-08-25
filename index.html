@@ -45,26 +45,6 @@
             position: relative;
             overflow: hidden;
             user-select: none;
-            cursor: none; /* Hide default cursor */
-        }
-
-        /* Custom Neon Cursor */
-        .custom-cursor {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: radial-gradient(circle, #00ff88 20%, transparent 70%);
-            box-shadow: 0 0 10px #00ff88, 0 0 20px #00ff88, 0 0 30px rgba(0, 255, 136, 0.5);
-            pointer-events: none;
-            z-index: 1000;
-            transition: transform 0.1s ease;
-        }
-
-        .custom-cursor.click {
-            transform: scale(1.5);
-            background: radial-gradient(circle, #ffd54f 20%, transparent 70%);
-            box-shadow: 0 0 12px #ffd54f, 0 0 24px #ffd54f, 0 0 36px rgba(255, 213, 79, 0.5);
         }
 
         body::before {
@@ -294,8 +274,8 @@
             left: 20px;
             z-index: 2;
             display: flex;
-            flex-direction: row;
-            gap: 40px;
+            flex-direction: column;
+            gap: 20px;
             font-family: "Hind Siliguri", sans-serif;
             color: var(--text-light);
         }
@@ -313,6 +293,15 @@
             align-items: flex-start;
             font-size: 0.9rem;
             min-width: 120px;
+        }
+
+        .total-progress-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+            margin-left: -5px;
+            margin-right: 40px; /* Added margin to increase spacing to the right */
         }
 
         .stats-item h3 {
@@ -336,13 +325,6 @@
             height: 100%;
             transition: width 400ms var(--fx);
             box-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
-        }
-
-        .total-progress-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-top: 10px;
         }
 
         .total-progress-circle {
@@ -617,6 +599,86 @@
             pointer-events: none;
         }
 
+        /* YouTube Modal Styles */
+        .youtube-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(4, 8, 20, .85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 12;
+            transition: opacity var(--anim-dur) var(--fx);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .youtube-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .youtube-modal::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 20% 80%, rgba(255, 193, 7, .15), transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(41, 182, 246, .12), transparent 50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .youtube-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: min(96vw, 1480px);
+            padding: 0 20px;
+            position: absolute;
+            top: 20px;
+        }
+
+        .youtube-content {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            font-family: "Hind Siliguri", sans-serif;
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+            line-height: 1.6;
+            color: var(--text-light);
+        }
+
+        .youtube-content .highlight {
+            font-weight: 700;
+            color: #FF0000;
+            text-shadow: 0 0 6px rgba(255, 0, 0, 0.6);
+        }
+
+        .youtube-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: "Hind Siliguri", sans-serif;
+            color: var(--text-light);
+            border: 1px solid var(--glass-border);
+            background: #FF0000;
+            box-shadow: var(--shadow);
+            transition: transform 300ms var(--fx), box-shadow 300ms var(--fx);
+            text-decoration: none;
+            margin-top: 20px;
+        }
+
+        .youtube-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
         .bubble {
             position: absolute;
             background: rgba(255, 255, 255, 0.1);
@@ -659,7 +721,7 @@
         }
 
         .social-content .highlight {
-            font-weight: .googleusercontent: 700;
+            font-weight: 700;
             text-shadow: 0 0 6px currentColor;
         }
 
@@ -757,87 +819,9 @@
             background: #bb86fc;
             border-color: #9b6dde;
         }
-
-        /* YouTube Modal Styles */
-        .youtube-modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(4, 8, 20, .85);
-            backdrop-filter: blur(8px);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 12;
-            transition: opacity var(--anim-dur) var(--fx);
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .youtube-modal.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .youtube-modal::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 20% 80%, rgba(255, 193, 7, .15), transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(41, 182, 246, .12), transparent 50%);
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        .youtube-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: min(96vw, 1480px);
-            padding: 0 20px;
-            position: absolute;
-            top: 20px;
-        }
-
-        .youtube-content {
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto;
-            font-family: "Hind Siliguri", sans-serif;
-            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
-            line-height: 1.6;
-            color: var(--text-light);
-        }
-
-        .youtube-content a {
-            color: #FF0000;
-            text-decoration: none;
-            font-weight: 700;
-            text-shadow: 0 0 6px rgba(255, 0, 0, 0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 12px 24px;
-            box-shadow: var(--shadow);
-            transition: transform 300ms var(--fx), box-shadow 300ms var(--fx);
-        }
-
-        .youtube-content a:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .youtube-content a i {
-            font-size: 1.4rem;
-        }
     </style>
 </head>
 <body>
-    <div class="custom-cursor" id="custom-cursor"></div>
     <div class="intro-overlay" id="intro-overlay">
         <div class="intro-header">
             <div class="profile">
@@ -900,6 +884,11 @@
         </div>
     </div>
     <div class="youtube-modal" id="youtube-modal">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
         <div class="youtube-header">
             <div class="profile">
                 <img src="https://github.com/sd-rubel/n5-word-meaning-trainer/blob/main/profile.jpg?raw=true" alt="Profile" class="circle-img">
@@ -911,8 +900,8 @@
             </div>
         </div>
         <div class="youtube-content">
-            <p>আমাদের ইউটিউব চ্যানেলে আরও শিক্ষামূলক কনটেন্ট দেখতে ভিজিট করুন:</p>
-            <a href="https://youtube.com/@sdnrubel" target="_blank"><i class="fab fa-youtube"></i> https://youtube.com/@sdnrubel</a>
+            <p>আমাদের <span class="highlight">ইউটিউব</span> চ্যানেলে স্বাগতম! এখানে আপনি JLPT N5 এবং অন্যান্য জাপানি ভাষার পাঠ পাবেন। <span class="highlight">সাবস্ক্রাইব</span> করুন এবং নতুন ভিডিওর জন্য <span class="highlight">বেল আইকন</span> চাপুন!</p>
+            <a href="https://youtube.com/@sdnrubel" class="youtube-button" target="_blank"><i class="fab fa-youtube"></i> Visit YouTube Channel</a>
         </div>
     </div>
     <div class="app-frame">
@@ -962,19 +951,6 @@
         let prevTranslate = 0;
         let startX = 0;
         let selectedLesson = 1;
-
-        // Custom Cursor Logic
-        const cursor = document.getElementById('custom-cursor');
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = `${e.clientX - 10}px`;
-            cursor.style.top = `${e.clientY - 10}px`;
-        });
-        document.addEventListener('mousedown', () => {
-            cursor.classList.add('click');
-        });
-        document.addEventListener('mouseup', () => {
-            cursor.classList.remove('click');
-        });
 
         function loadVoices() {
             voices = synth.getVoices();
@@ -1037,7 +1013,7 @@
                     unit += word[i];
                     i++;
                 }
-                if (i < word.length && (word[i] === 'ー' || ['う', 'উ'].includes(word[i])) {
+                if (i < word.length && (word[i] === 'ー' || ['う', 'উ'].includes(word[i]))) {
                     unit += word[i];
                     i++;
                 }
@@ -1055,7 +1031,7 @@
                             unit += word[i];
                             i++;
                         }
-                        if (i < word.length && (word[i] === 'ー' || ['う', 'উ'].includes(word[i])) {
+                        if (i < word.length && (word[i] === 'ー' || ['う', 'উ'].includes(word[i]))) {
                             unit += word[i];
                             i++;
                         }
@@ -1143,7 +1119,7 @@
                         <span class="total-progress-text">${totalProgressPercentage}%</span>
                     </div>
                     <div class="total-progress-info">
-                        <h3>Total Words</h3>
+                        <h3>মোট শব্দ</h3>
                         <p>${wordsViewed.size} / ${totalWords}</p>
                     </div>
                 </div>
@@ -1151,10 +1127,11 @@
             statsPanel.appendChild(totalProgressItem);
 
             Object.entries(stats).forEach(([type, data]) => {
+                const englishType = type; // Use English type directly
                 const statsItem = document.createElement('div');
                 statsItem.className = 'stats-item';
                 statsItem.innerHTML = `
-                    <h3>${type}</h3>
+                    <h3>${englishType}</h3>
                     <p>${data.viewed.size} / ${data.total}</p>
                     <div class="progress-container">
                         <div class="progress-bar" style="width: ${data.total ? (data.viewed.size / data.total) * 100 : 0}%"></div>
@@ -1285,10 +1262,11 @@
             introTotalWords.textContent = `মোট শব্দ: ${vocab.length}`;
             introTypeList.innerHTML = '';
             Object.entries(typeStats).forEach(([type, count]) => {
+                const englishType = type; // Use English type directly
                 const item = document.createElement('div');
                 item.className = 'intro-type-item';
                 item.innerHTML = `
-                    <div class="intro-type-name">${type}</div>
+                    <div class="intro-type-name">${englishType}</div>
                     <div class="intro-type-count">${count} টি</div>
                 `;
                 introTypeList.appendChild(item);
