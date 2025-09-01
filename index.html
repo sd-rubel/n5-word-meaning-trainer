@@ -270,7 +270,7 @@
 
         .stats-container {
             position: absolute;
-            bottom: -35px;
+            bottom: -50px;
             left: 20px;
             z-index: 2;
             display: flex;
@@ -284,7 +284,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
-            max-width: 80%;
+            max-width: 100%;
         }
 
         .stats-item {
@@ -506,8 +506,6 @@
             top: 100%;
             left: 0;
             background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius);
             backdrop-filter: blur(var(--blur));
             box-shadow: var(--shadow);
             max-height: 0;
@@ -639,6 +637,7 @@
             font-size: clamp(1.2rem, 2.5vw, 1.8rem);
             line-height: 1.6;
             color: var(--text-light);
+            margin-bottom: 150px;
         }
 
         .social-content .highlight {
@@ -940,7 +939,6 @@
             <a href="https://facebook.com/sdxrubel" class="facebook" target="_blank"><i class="fab fa-facebook-f"></i>https://facebook.com/sdxrubel</a>
             <a href="https://facebook.com/NihonGoBDAcademy" class="facebook" target="_blank"><i class="fab fa-facebook-f"></i>https://facebook.com/NihonGoBDAcademy</a>
             <a href="https://youtube.com/@sdnrubel" class="youtube" target="_blank"><i class="fab fa-youtube"></i>https://youtube.com/@sdnrubel</a>
-            <a href="https://www.tiktok.com/@nihongo_bd_academy" class="tiktok" target="_blank"><i class="fab fa-tiktok"></i>https://www.tiktok.com/@nihongo_bd_academy</a>
             <a href="https://t.me/NihonGoBD" class="telegram" target="_blank"><i class="fab fa-telegram-plane"></i>https://t.me/NihonGoBD</a>
         </div>
     </div>
@@ -971,12 +969,12 @@
         let selectedLesson = 1;
 
         const typeDefinitions = {
-            Noun: "জাপানি ভাষায় বিশেষ্য (名詞, めいし) হলো এমন শব্দ যা কোনো ব্যক্তি, স্থান, বস্তু বা ধারণাকে নির্দেশ করে। উদাহরণ: 猫 (ねこ, বিড়াল), 学校 (がっこう, স্কুল)।",
-            Pronoun: "জাপানি ভাষায় সর্বনাম (代名詞, だいめいし) এমন শব্দ যা কোনো বিশেষ্যের পরিবর্তে ব্যবহৃত হয়। জাপানি ভাষায় সর্বনামের ব্যবহার কম এবং প্রেক্ষাপটের উপর নির্ভর করে। উদাহরণ: 私 (わたし, আমি), あなた (তুমি)।",
-            Adjective: "জাপানি ভাষায় বিশেষণ (形容詞, けいようし) এমন শব্দ যা কোনো বিশেষ্যের গুণ, পরিমাণ বা অবস্থা বর্ণনা করে। জাপানিতে দুই ধরনের বিশেষণ আছে: い-বিশেষণ এবং な-বিশেষণ। উদাহরণ: 高い (たかい, উঁচু), きれいな (সুন্দর)।",
-            Adverb: "জাপানি ভাষায় ক্রিয়া-বিশেষণ (副詞, ふくし) এমন শব্দ যা ক্রিয়া, বিশেষণ বা অন্য ক্রিয়া-বিশেষণের অর্থ পরিবর্তন বা বর্ণনা করে। উদাহরণ: 早く (はやく, তাড়াতাড়ি), とても (খুব)।",
-            Verb: "জাপানি ভাষায় ক্রিয়া (動詞, どうし) এমন শব্দ যা কোনো কাজ, অবস্থা বা ঘটনা প্রকাশ করে। জাপানি ক্রিয়াগুলো বিভিন্ন গ্রুপে বিভক্ত এবং রূপ পরিবর্তন করে। উদাহরণ: 食べる (たべる, খাওয়া), 行く (いく, যাওয়া)।",
-            Suffix: "জাপানি ভাষায় প্রত্যয় (接尾辞, せつびじ) এমন শব্দাংশ যা শব্দের শেষে যোগ হয়ে তার অর্থ বা ভূমিকা পরিবর্তন করে। উদাহরণ: さん (সম্মানসূচক প্রত্যয়), たち (বহুবচন সূচক)।"
+            Noun: "জাপানি ভাষায় বিশেষ্য হলো এমন শব্দ যা কোনো ব্যক্তি, স্থান, বস্তু বা ধারণাকে নির্দেশ করে। উদাহরণ: 猫 (ねこ, বিড়াল), 学校 (がっこう, স্কুল)।",
+            Pronoun: "জাপানি ভাষায় সর্বনাম এমন শব্দ যা কোনো বিশেষ্যের পরিবর্তে ব্যবহৃত হয়। জাপানি ভাষায় সর্বনামের ব্যবহার কম এবং প্রেক্ষাপটের উপর নির্ভর করে। উদাহরণ: 私 (わたし, আমি), あなた (তুমি)।",
+            Adjective: "জাপানি ভাষায় বিশেষণ এমন শব্দ যা কোনো বিশেষ্যের গুণ, পরিমাণ বা অবস্থা বর্ণনা করে। জাপানিতে দুই ধরনের বিশেষণ আছে: い-বিশেষণ এবং な-বিশেষণ। উদাহরণ: 高い (たかい, উঁচু), きれいな (সুন্দর)।",
+            Adverb: "জাপানি ভাষায় ক্রিয়া-বিশেষণ এমন শব্দ যা ক্রিয়া, বিশেষণ বা অন্য ক্রিয়া-বিশেষণের অর্থ পরিবর্তন বা বর্ণনা করে। উদাহরণ: 早く (はやく, তাড়াতাড়ি), とても (খুব)।",
+            Verb: "জাপানি ভাষায় ক্রিয়া এমন শব্দ যা কোনো কাজ, অবস্থা বা ঘটনা প্রকাশ করে। জাপানি ক্রিয়াগুলো বিভিন্ন গ্রুপে বিভক্ত এবং রূপ পরিবর্তন করে। উদাহরণ: 食べる (たべる, খাওয়া), 行く (いく, যাওয়া)।",
+            Suffix: "জাপানি ভাষায় প্রত্যয় এমন শব্দাংশ যা শব্দের শেষে যোগ হয়ে তার অর্থ বা ভূমিকা পরিবর্তন করে। উদাহরণ: さん (সম্মানসূচক প্রত্যয়), たち (বহুবচন সূচক)।"
         };
 
         function loadVoices() {
