@@ -301,7 +301,7 @@
             gap: 15px;
             margin-top: 10px;
             margin-left: -5px;
-            margin-right: 40px; /* Added margin to increase spacing to the right */
+            margin-right: 40px;
         }
 
         .stats-item h3 {
@@ -380,42 +380,50 @@
             background: linear-gradient(to right, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.7));
             padding: 10px 20px;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 15px;
             z-index: 2;
             font-family: "Hind Siliguri", sans-serif;
-            color: var(--text-light);
         }
 
         .footer-links a {
-            color: var(--text-light);
+            color: white;
             text-decoration: none;
             font-size: 0.9rem;
             display: flex;
             align-items: center;
             gap: 8px;
+            padding: 8px 15px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            transition: transform 300ms var(--fx), box-shadow 300ms var(--fx);
+        }
+
+        .footer-links a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .footer-links a.facebook {
+            background: #1877F2;
+        }
+
+        .footer-links a.youtube {
+            background: #FF0000;
+        }
+
+        .footer-links a.tiktok {
+            background: #000000;
+        }
+
+        .footer-links a.telegram {
+            background: #0088cc;
         }
 
         .footer-links a i {
             font-size: 1.2rem;
-        }
-
-        .footer-links a.facebook i {
-            color: #1877F2;
-        }
-
-        .footer-links a.youtube i {
-            color: #FF0000;
-        }
-
-        .footer-links a.tiktok i {
-            color: #000000;
-        }
-
-        .footer-links a.telegram i {
-            color: #0088cc;
         }
 
         /* Intro Page Styles */
@@ -481,6 +489,7 @@
             border-radius: 8px;
             background: rgba(0, 255, 136, 0.1);
             transition: background 300ms var(--fx);
+            text-decoration: none;
         }
 
         .lesson-current:hover {
@@ -527,9 +536,10 @@
         }
 
         .intro-total-words {
-            font-size: 1.2rem;
+            font-size: 1.8rem;
             color: var(--accent);
             margin-bottom: 20px;
+            font-weight: 700;
         }
 
         .intro-type-list {
@@ -549,6 +559,13 @@
             box-shadow: var(--shadow);
             text-align: center;
             min-width: 150px;
+            cursor: pointer;
+            transition: transform 300ms var(--fx), box-shadow 300ms var(--fx);
+        }
+
+        .intro-type-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
 
         .intro-type-name {
@@ -599,107 +616,6 @@
             pointer-events: none;
         }
 
-        /* YouTube Modal Styles */
-        .youtube-modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(4, 8, 20, .85);
-            backdrop-filter: blur(8px);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 12;
-            transition: opacity var(--anim-dur) var(--fx);
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .youtube-modal.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .youtube-modal::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 20% 80%, rgba(255, 193, 7, .15), transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(41, 182, 246, .12), transparent 50%);
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        .youtube-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: min(96vw, 1480px);
-            padding: 0 20px;
-            position: absolute;
-            top: 20px;
-        }
-
-        .youtube-content {
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto;
-            font-family: "Hind Siliguri", sans-serif;
-            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
-            line-height: 1.6;
-            color: var(--text-light);
-        }
-
-        .youtube-content .highlight {
-            font-weight: 700;
-            color: #FF0000;
-            text-shadow: 0 0 6px rgba(255, 0, 0, 0.6);
-        }
-
-        .youtube-button {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 600;
-            font-family: "Hind Siliguri", sans-serif;
-            color: var(--text-light);
-            border: 1px solid var(--glass-border);
-            background: #FF0000;
-            box-shadow: var(--shadow);
-            transition: transform 300ms var(--fx), box-shadow 300ms var(--fx);
-            text-decoration: none;
-            margin-top: 20px;
-        }
-
-        .youtube-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .bubble {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-            animation: floatBubble 10s infinite ease-in-out;
-            z-index: -1;
-        }
-
-        .bubble:nth-child(1) { width: 40px; height: 40px; left: 10%; bottom: -40px; animation-duration: 8s; }
-        .bubble:nth-child(2) { width: 60px; height: 60px; left: 30%; bottom: -60px; animation-duration: 12s; animation-delay: 2s; }
-        .bubble:nth-child(3) { width: 30px; height: 30px; left: 50%; bottom: -30px; animation-duration: 10s; animation-delay: 4s; }
-        .bubble:nth-child(4) { width: 50px; height: 50px; left: 70%; bottom: -50px; animation-duration: 9s; animation-delay: 1s; }
-        .bubble:nth-child(5) { width: 35px; height: 35px; left: 90%; bottom: -35px; animation-duration: 11s; animation-delay: 3s; }
-
-        @keyframes floatBubble {
-            0% { transform: translateY(0) translateX(0); opacity: 0.6; }
-            50% { transform: translateY(-100vh) translateX(20px); opacity: 0.8; }
-            100% { transform: translateY(-200vh) translateX(-20px); opacity: 0; }
-        }
-
         .social-header {
             display: flex;
             justify-content: space-between;
@@ -745,7 +661,6 @@
             flex-direction: column;
             gap: 15px;
             font-family: "Hind Siliguri", sans-serif;
-            color: var(--text-light);
         }
 
         .social-link-item {
@@ -753,11 +668,27 @@
             align-items: center;
             gap: 10px;
             font-size: 0.9rem;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
             padding: 8px 15px;
+            border-radius: 12px;
             box-shadow: var(--shadow);
+            color: white;
+            text-decoration: none;
+        }
+
+        .social-link-item.facebook {
+            background: #1877F2;
+        }
+
+        .social-link-item.youtube {
+            background: #FF0000;
+        }
+
+        .social-link-item.tiktok {
+            background: #000000;
+        }
+
+        .social-link-item.telegram {
+            background: #0088cc;
         }
 
         .social-link-item i {
@@ -819,6 +750,84 @@
             background: #bb86fc;
             border-color: #9b6dde;
         }
+
+        /* Type Modal Styles */
+        .type-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(4, 8, 20, .85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 11;
+            transition: opacity var(--anim-dur) var(--fx);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .type-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .type-modal::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 20% 80%, rgba(255, 193, 7, .15), transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(41, 182, 246, .12), transparent 50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .type-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: min(96vw, 1480px);
+            padding: 0 20px;
+            position: absolute;
+            top: 20px;
+        }
+
+        .type-content {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            font-family: "Hind Siliguri", sans-serif;
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+            line-height: 1.6;
+            color: var(--text-light);
+        }
+
+        .type-content .highlight {
+            font-weight: 700;
+            color: #00ff88;
+            text-shadow: 0 0 6px rgba(0, 255, 136, 0.8);
+        }
+
+        .bubble {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            animation: floatBubble 10s infinite ease-in-out;
+            z-index: -1;
+        }
+
+        .bubble:nth-child(1) { width: 40px; height: 40px; left: 10%; bottom: -40px; animation-duration: 8s; }
+        .bubble:nth-child(2) { width: 60px; height: 60px; left: 30%; bottom: -60px; animation-duration: 12s; animation-delay: 2s; }
+        .bubble:nth-child(3) { width: 30px; height: 30px; left: 50%; bottom: -30px; animation-duration: 10s; animation-delay: 4s; }
+        .bubble:nth-child(4) { width: 50px; height: 50px; left: 70%; bottom: -50px; animation-duration: 9s; animation-delay: 1s; }
+        .bubble:nth-child(5) { width: 35px; height: 35px; left: 90%; bottom: -35px; animation-duration: 11s; animation-delay: 3s; }
+
+        @keyframes floatBubble {
+            0% { transform: translateY(0) translateX(0); opacity: 0.6; }
+            50% { transform: translateY(-100vh) translateX(20px); opacity: 0.8; }
+            100% { transform: translateY(-200vh) translateX(-20px); opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -869,11 +878,11 @@
             <p>আপনার বন্ধুদের সাথে আমাদের কনটেন্ট <span class="highlight share-highlight">শেয়ার</span> করে আমাদের উৎসাহিত করুন।</p>
         </div>
         <div class="social-links">
-            <div class="social-link-item"><i class="fab fa-facebook-f"></i> https://facebook.com/sdxrubel</div>
-            <div class="social-link-item"><i class="fab fa-facebook-f"></i> https://facebook.com/NihonGoBDAcademy</div>
-            <div class="social-link-item"><i class="fab fa-youtube"></i> https://youtube.com/@sdnrubel</div>
-            <div class="social-link-item"><i class="fab fa-tiktok"></i> https://www.tiktok.com/@nihongo_bd_academy</div>
-            <div class="social-link-item"><i class="fab fa-telegram-plane"></i> https://t.me/NihonGoBD</div>
+            <a href="https://facebook.com/sdxrubel" class="social-link-item facebook"><i class="fab fa-facebook-f"></i>https://facebook.com/sdxrubel</a>
+            <a href="https://facebook.com/NihonGoBDAcademy" class="social-link-item facebook"><i class="fab fa-facebook-f"></i>https://facebook.com/NihonGoBDAcademy</a>
+            <a href="https://youtube.com/@sdnrubel" class="social-link-item youtube"><i class="fab fa-youtube"></i>https://youtube.com/@sdnrubel</a>
+            <a href="https://www.tiktok.com/@nihongo_bd_academy" class="social-link-item tiktok"><i class="fab fa-tiktok"></i>https://www.tiktok.com/@nihongo_bd_academy</a>
+            <a href="https://t.me/NihonGoBD" class="social-link-item telegram"><i class="fab fa-telegram-plane"></i>https://t.me/NihonGoBD</a>
         </div>
         <div class="social-buttons">
             <div class="social-button subscribe"><i class="fas fa-bell"></i> Subscribe</div>
@@ -883,13 +892,13 @@
             <div class="social-button comment"><i class="fas fa-comment"></i> Comment</div>
         </div>
     </div>
-    <div class="youtube-modal" id="youtube-modal">
+    <div class="type-modal" id="type-modal">
         <div class="bubble"></div>
         <div class="bubble"></div>
         <div class="bubble"></div>
         <div class="bubble"></div>
         <div class="bubble"></div>
-        <div class="youtube-header">
+        <div class="type-header">
             <div class="profile">
                 <img src="https://github.com/sd-rubel/n5-word-meaning-trainer/blob/main/profile.jpg?raw=true" alt="Profile" class="circle-img">
                 <p>Sd Rubel</p>
@@ -899,9 +908,9 @@
                 <p>NihonGoBD<br>Academy</p>
             </div>
         </div>
-        <div class="youtube-content">
-            <p>আমাদের <span class="highlight">ইউটিউব</span> চ্যানেলে স্বাগতম! এখানে আপনি JLPT N5 এবং অন্যান্য জাপানি ভাষার পাঠ পাবেন। <span class="highlight">সাবস্ক্রাইব</span> করুন এবং নতুন ভিডিওর জন্য <span class="highlight">বেল আইকন</span> চাপুন!</p>
-            <a href="https://youtube.com/@sdnrubel" class="youtube-button" target="_blank"><i class="fab fa-youtube"></i> Visit YouTube Channel</a>
+        <div class="type-content" id="type-content">
+            <p>এই অধ্যায়ে আমরা শিখব <span class="highlight" id="type-count"></span>টি <span class="highlight" id="type-name"></span></p>
+            <p id="type-definition"></p>
         </div>
     </div>
     <div class="app-frame">
@@ -941,7 +950,11 @@
         const introTypeList = document.getElementById('intro-type-list');
         const mainLessonTitle = document.getElementById('main-lesson-title');
         const socialModal = document.getElementById('social-modal');
-        const youtubeModal = document.getElementById('youtube-modal');
+        const typeModal = document.getElementById('type-modal');
+        const typeContent = document.getElementById('type-content');
+        const typeCount = document.getElementById('type-count');
+        const typeName = document.getElementById('type-name');
+        const typeDefinition = document.getElementById('type-definition');
         let vocab = [];
         let current = 0;
         let highlightIndex = -1;
@@ -951,6 +964,15 @@
         let prevTranslate = 0;
         let startX = 0;
         let selectedLesson = 1;
+
+        const typeDefinitions = {
+            Noun: "জাপানি ভাষায় বিশেষ্য (名詞, めいし) হলো এমন শব্দ যা কোনো ব্যক্তি, স্থান, বস্তু বা ধারণাকে নির্দেশ করে। উদাহরণ: 猫 (ねこ, বিড়াল), 学校 (がっこう, স্কুল)।",
+            Pronoun: "জাপানি ভাষায় সর্বনাম (代名詞, だいめいし) এমন শব্দ যা কোনো বিশেষ্যের পরিবর্তে ব্যবহৃত হয়। জাপানি ভাষায় সর্বনামের ব্যবহার কম এবং প্রেক্ষাপটের উপর নির্ভর করে। উদাহরণ: 私 (わたし, আমি), あなた (তুমি)।",
+            Adjective: "জাপানি ভাষায় বিশেষণ (形容詞, けいようし) এমন শব্দ যা কোনো বিশেষ্যের গুণ, পরিমাণ বা অবস্থা বর্ণনা করে। জাপানিতে দুই ধরনের বিশেষণ আছে: い-বিশেষণ এবং な-বিশেষণ। উদাহরণ: 高い (たかい, উঁচু), きれいな (সুন্দর)।",
+            Adverb: "জাপানি ভাষায় ক্রিয়া-বিশেষণ (副詞, ふくし) এমন শব্দ যা ক্রিয়া, বিশেষণ বা অন্য ক্রিয়া-বিশেষণের অর্থ পরিবর্তন বা বর্ণনা করে। উদাহরণ: 早く (はやく, তাড়াতাড়ি), とても (খুব)।",
+            Verb: "জাপানি ভাষায় ক্রিয়া (動詞, どうし) এমন শব্দ যা কোনো কাজ, অবস্থা বা ঘটনা প্রকাশ করে। জাপানি ক্রিয়াগুলো বিভিন্ন গ্রুপে বিভক্ত এবং রূপ পরিবর্তন করে। উদাহরণ: 食べる (たべる, খাওয়া), 行く (いく, যাওয়া)।",
+            Suffix: "জাপানি ভাষায় প্রত্যয় (接尾辞, せつびじ) এমন শব্দাংশ যা শব্দের শেষে যোগ হয়ে তার অর্থ বা ভূমিকা পরিবর্তন করে। উদাহরণ: さん (সম্মানসূচক প্রত্যয়), たち (বহুবচন সূচক)।"
+        };
 
         function loadVoices() {
             voices = synth.getVoices();
@@ -1127,7 +1149,7 @@
             statsPanel.appendChild(totalProgressItem);
 
             Object.entries(stats).forEach(([type, data]) => {
-                const englishType = type; // Use English type directly
+                const englishType = type;
                 const statsItem = document.createElement('div');
                 statsItem.className = 'stats-item';
                 statsItem.innerHTML = `
@@ -1243,7 +1265,7 @@
                     selectedLesson = i;
                     lessonCurrent.textContent = `Lesson ${i}`;
                     JSON_URL = `https://raw.githubusercontent.com/sd-rubel/n5-word-meaning-trainer/main/lesson-${i}.json`;
-                    loadData(true); // Update intro preview
+                    loadData(true);
                     lessonDropdown.classList.remove('open');
                 });
                 lessonDropdown.appendChild(item);
@@ -1262,13 +1284,21 @@
             introTotalWords.textContent = `মোট শব্দ: ${vocab.length}`;
             introTypeList.innerHTML = '';
             Object.entries(typeStats).forEach(([type, count]) => {
-                const englishType = type; // Use English type directly
+                const englishType = type;
                 const item = document.createElement('div');
                 item.className = 'intro-type-item';
+                item.dataset.type = type;
+                item.dataset.count = count;
                 item.innerHTML = `
                     <div class="intro-type-name">${englishType}</div>
                     <div class="intro-type-count">${count} টি</div>
                 `;
+                item.addEventListener('click', () => {
+                    typeCount.textContent = count;
+                    typeName.textContent = englishType;
+                    typeDefinition.textContent = typeDefinitions[englishType] || "এই শব্দের ধরনের জন্য কোনো সংজ্ঞা পাওয়া যায়নি।";
+                    typeModal.classList.add('active');
+                });
                 introTypeList.appendChild(item);
             });
         }
@@ -1277,8 +1307,8 @@
             socialModal.classList.toggle('active');
         }
 
-        function toggleYouTubeModal() {
-            youtubeModal.classList.toggle('active');
+        function toggleTypeModal() {
+            typeModal.classList.toggle('active');
         }
 
         lessonCurrent.addEventListener('click', () => {
@@ -1286,20 +1316,19 @@
         });
 
         document.addEventListener('keydown', e => {
-            if (youtubeModal.classList.contains('active')) {
-                if (e.key === 'l') {
-                    toggleYouTubeModal();
-                }
-                return;
-            }
             if (socialModal.classList.contains('active')) {
                 if (e.key === 'e') {
                     toggleSocialModal();
                 }
                 return;
             }
+            if (typeModal.classList.contains('active')) {
+                if (e.key === 'Escape') {
+                    toggleTypeModal();
+                }
+                return;
+            }
             if (introOverlay.classList.contains('hidden')) {
-                // Main page key events
                 if (e.key === 'ArrowRight') slideNext();
                 else if (e.key === 'ArrowLeft') slidePrev();
                 else if (e.key === ' ') {
@@ -1310,11 +1339,8 @@
                     highlightCharacter();
                 } else if (e.key === 'e') {
                     toggleSocialModal();
-                } else if (e.key === 'l') {
-                    toggleYouTubeModal();
                 }
             } else {
-                // Intro page: Enter to start
                 if (e.key === 'Enter') {
                     introOverlay.classList.add('hidden');
                     mainLessonTitle.textContent = `Lesson ${selectedLesson}`;
@@ -1323,9 +1349,20 @@
             }
         });
 
-        // Initialize
+        socialModal.addEventListener('click', e => {
+            if (e.target === socialModal) {
+                toggleSocialModal();
+            }
+        });
+
+        typeModal.addEventListener('click', e => {
+            if (e.target === typeModal) {
+                toggleTypeModal();
+            }
+        });
+
         initDropdown();
-        loadData(true); // Load default Lesson 1 for intro preview
+        loadData(true);
     </script>
 </body>
 </html>
